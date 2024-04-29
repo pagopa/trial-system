@@ -1,4 +1,4 @@
-# Trial-System
+# Trial System
 
 ## Requirements
 
