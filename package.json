@@ -1,0 +1,22 @@
+{
+  "name": "trial-system",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint:check": "turbo run lint:check",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "yarn@4.1.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "turbo": "^1.13.3"
+  }
+}
