@@ -1,0 +1,16 @@
+{
+  "name": "trial-system",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "yarn@4.1.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
