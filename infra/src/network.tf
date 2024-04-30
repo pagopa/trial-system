@@ -13,6 +13,67 @@ resource "azurerm_virtual_network" "vnet" {
   tags = var.tags
 }
 
+resource "azurerm_private_dns_zone" "privatelink_blob_core" {
+  name                = "privatelink.blob.core.windows.net"
+  resource_group_name = azurerm_resource_group.net_rg.name
+
+  tags = var.tags
+}
+
+resource "azurerm_private_dns_zone" "privatelink_queue_core" {
+  name                = "privatelink.queue.core.windows.net"
+  resource_group_name = azurerm_resource_group.net_rg.name
+
+  tags = var.tags
+}
+
+resource "azurerm_private_dns_zone" "privatelink_table_core" {
+  name                = "privatelink.table.core.windows.net"
+  resource_group_name = azurerm_resource_group.net_rg.name
+
+  tags = var.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "blob_core_private_vnet" {
+  name                  = azurerm_virtual_network.vnet.name
+  resource_group_name   = azurerm_resource_group.net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_blob_core.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+  registration_enabled  = false
+
+  tags = var.tags
+}
+resource "azurerm_private_dns_zone_virtual_network_link" "queue_core_private_vnet" {
+  name                  = azurerm_virtual_network.vnet.name
+  resource_group_name   = azurerm_resource_group.net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_queue_core.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+  registration_enabled  = false
+
+  tags = var.tags
+}
+resource "azurerm_private_dns_zone_virtual_network_link" "table_core_private_vnet" {
+  name                  = azurerm_virtual_network.vnet.name
+  resource_group_name   = azurerm_resource_group.net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_table_core.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+  registration_enabled  = false
+
+  tags = var.tags
+}
+
+resource "azurerm_private_dns_zone" "privatelink_documents" {
+  name                = "privatelink.documents.azure.com"
+  resource_group_name = azurerm_resource_group.net_rg.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "link" {
+  name                  = azurerm_virtual_network.vnet.name
+  resource_group_name = azurerm_resource_group.net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_documents.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+}
+
 #
 # Private endpoints
 #
@@ -26,18 +87,6 @@ module "pendpoints_snet" {
 
   private_endpoint_network_policies_enabled     = false
   
-}
-
-resource "azurerm_private_dns_zone" "privatelink_documents" {
-  name                = "privatelink.documents.azure.com"
-  resource_group_name = azurerm_resource_group.net_rg.name
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "link" {
-  name                  = azurerm_virtual_network.vnet.name
-  resource_group_name = azurerm_resource_group.net_rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.privatelink_documents.name
-  virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
 resource "azurerm_private_endpoint" "sql" {

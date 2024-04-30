@@ -41,6 +41,17 @@ variable "snet_pendpoints_address_spaces" {
   default = ["10.10.3.0/24"]
 }
 
+
+variable "cidr_subnet_fnsubscriptionasync" {
+  type    = list(string)
+  description = "The subscription async function address space"
+}
+
+variable "cidr_subnet_fnsubscription" {
+  type    = list(string)
+  description = "The subscription function address space"
+}
+
 variable "vnet_common" {
    type = object({
     name           = string
