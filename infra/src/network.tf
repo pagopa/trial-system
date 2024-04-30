@@ -18,7 +18,7 @@ resource "azurerm_virtual_network" "vnet" {
 #
 
 module "pendpoints_snet" {
-  source               = "github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v7.77.0"
+  source               = "github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.7.0"
   name                 = "${local.project}-pendpoints-snet"
   address_prefixes     = var.snet_pendpoints_address_spaces
   resource_group_name  = azurerm_resource_group.net_rg.name
@@ -49,7 +49,7 @@ resource "azurerm_private_endpoint" "sql" {
 
   private_service_connection {
     name                           = format("%s-private-endpoint-sql", local.project)
-    private_connection_resource_id = azurerm_cosmosdb_account.cosmos_account.id
+    private_connection_resource_id = module.cosmosdb_account.id
     is_manual_connection           = false
     subresource_names              = ["Sql"]
   }
@@ -70,7 +70,7 @@ data "azurerm_virtual_network" "vnet_common" {
 }
 
 module "vnet_peering_common" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//virtual_network_peering?ref=v7.61.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//virtual_network_peering?ref=v8.7.0"
 
   source_resource_group_name       = azurerm_resource_group.net_rg.name
   source_virtual_network_name      = azurerm_virtual_network.vnet.name

@@ -1,6 +1,6 @@
 variable "prefix" {
   type    = string
-  default = "trial"
+  default = "ts"
   validation {
     condition = (
       length(var.prefix) < 6
@@ -22,10 +22,6 @@ variable "env_short" {
 variable "location" {
   type    = string
   default = "italynorth"
-}
-
-variable "domain" {
-  type    = string
 }
 
 variable "tags" {
@@ -56,7 +52,7 @@ variable "vnet_common" {
   }
 }
 
-variable "function_cqrs_config" {
+variable "function_async_config" {
   type = object({
     kind     = string
     sku_tier = string
@@ -75,38 +71,21 @@ variable "function_cqrs_config" {
   }
 }
 
-variable "functions_kind" {
-  type        = string
-  description = "App service plan kind"
-  default     = null
-}
-
-variable "functions_sku_tier" {
-  type        = string
-  description = "App service plan sku tier"
-  default     = null
-}
-
-variable "functions_sku_size" {
-  type        = string
-  description = "App service plan sku size"
-  default     = null
-}
-
-variable "functions_autoscale_minimum" {
-  type        = number
-  description = "The minimum number of instances for this resource."
-  default     = 1
-}
-
-variable "functions_autoscale_maximum" {
-  type        = number
-  description = "The maximum number of instances for this resource."
-  default     = 30
-}
-
-variable "functions_autoscale_default" {
-  type        = number
-  description = "The number of instances that are available for scaling if metrics are not available for evaluation."
-  default     = 1
+variable "function_subscription_config" {
+  type = object({
+    kind     = string
+    sku_tier = string
+    sku_size = string
+    autoscale_minimum = number
+    autoscale_maximum = number
+    autoscale_default = number
+  })
+  default = {
+    kind     = "Linux"
+    sku_tier = "PremiumV3"
+    sku_size = "P1v3"
+    autoscale_minimum = 1
+    autoscale_maximum = 30
+    autoscale_default = 1
+  }
 }

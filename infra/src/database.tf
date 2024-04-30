@@ -5,10 +5,10 @@ resource "azurerm_resource_group" "data_rg" {
 }
 
 module "cosmosdb_account" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3//cosmosdb_account?ref=v7.62.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3//cosmosdb_account?ref=v8.7.0"
 
-  name                = "${local.project}-cosmos-account"
-  domain              = upper(var.domain)
+  name                = "${local.project}-trial-account"
+  domain              = upper(local.domain)
   location            = azurerm_resource_group.data_rg.location
   resource_group_name = azurerm_resource_group.data_rg.name
   offer_type          = "Standard"
@@ -17,16 +17,16 @@ module "cosmosdb_account" {
 
   public_network_access_enabled       = false
   private_endpoint_enabled            = true
-  private_endpoint_sql_name           = "${local.project}-citizen-auth-account"
-  private_service_connection_sql_name = "${local.project}-citizen-auth-account-private-endpoint"
-  private_dns_zone_sql_ids            = [data.azurerm_private_dns_zone.privatelink_documents_azure_com.id]
-  subnet_id                           = data.azurerm_subnet.private_endpoints_subnet.id
+  private_endpoint_sql_name           = "${local.project}-trial-cosmosdb-account"
+  private_service_connection_sql_name = "${local.project}-trial-cosmosdb-account-private-endpoint"
+  private_dns_zone_sql_ids            = [azurerm_private_dns_zone.privatelink_documents.id]
+  subnet_id                           = module.pendpoints_snet.id
   is_virtual_network_filter_enabled   = false
 
   main_geo_location_location       = azurerm_resource_group.data_rg.location
   main_geo_location_zone_redundant = true
   additional_geo_locations = [{
-    location          = "northeurope"
+    location          = "germanywestcentral"
     failover_priority = 1
     zone_redundant    = false
   }]
@@ -37,13 +37,15 @@ module "cosmosdb_account" {
   }
 
   # Action groups for alerts
-  action = []
+  action = [
+    azurerm_monitor_action_group.error_action_group.id
+  ]
 
   tags = var.tags
 }
 
 module "cosmosdb_sql_database_trial" {
-  source              = "git::https://github.com/pagopa/terraform-azurerm-v3//cosmosdb_sql_database?ref=v7.62.0"
+  source              = "git::https://github.com/pagopa/terraform-azurerm-v3//cosmosdb_sql_database?ref=v8.7.0"
   name                = "db"
   resource_group_name = azurerm_resource_group.data_rg.name
   account_name        = module.cosmosdb_account.name
@@ -56,7 +58,7 @@ module "cosmosdb_sql_database_trial" {
 
 resource "azurerm_monitor_metric_alert" "cosmosdb_account_normalized_RU_consumption_exceeded" {
 
-  name                = "[${upper(var.domain)} | ${module.cosmosdb_account.name}] Normalized RU Consumption Exceeded"
+  name                = "[${upper(local.domain)} | ${module.cosmosdb_account.name}] Normalized RU Consumption Exceeded"
   resource_group_name = azurerm_resource_group.data_rg.name
   scopes              = [module.cosmosdb_account.id]
   description         = "A collection Normalized RU Consumption exceed the threshold, see dimensions. Please, consider to increase RU. Runbook: not needed."
@@ -88,6 +90,10 @@ resource "azurerm_monitor_metric_alert" "cosmosdb_account_normalized_RU_consumpt
       values   = ["*"]
     }
 
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.error_action_group.id
   }
 
   tags = var.tags
