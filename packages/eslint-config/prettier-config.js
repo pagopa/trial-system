@@ -1,7 +1,5 @@
 import prettier from 'eslint-plugin-prettier/recommended';
 
-// Runs Prettier as an ESLint rule and reports differences as individual
-// ESLint issues
 export default {
   ...prettier,
   rules: {
