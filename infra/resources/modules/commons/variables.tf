@@ -24,6 +24,11 @@ variable "location" {
   default = "italynorth"
 }
 
+variable "location_short" {
+  type    = string
+  default = "itn"
+}
+
 variable "tags" {
   type = map(any)
   default = {

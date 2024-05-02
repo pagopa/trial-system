@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "data_rg" {
-    name     = "${local.project}-data-rg"
+    name     = "${local.project}-data-rg-01"
     location = var.location
     tags = var.tags
 }
@@ -7,7 +7,7 @@ resource "azurerm_resource_group" "data_rg" {
 module "cosmosdb_account" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3//cosmosdb_account?ref=v8.7.0"
 
-  name                = "${local.project}-trial-account"
+  name                = "${local.project}-trial-account-01"
   domain              = upper(local.domain)
   location            = azurerm_resource_group.data_rg.location
   resource_group_name = azurerm_resource_group.data_rg.name
@@ -38,7 +38,10 @@ module "cosmosdb_account" {
 
   # Action groups for alerts
   action = [
-    azurerm_monitor_action_group.error_action_group.id
+    {
+      action_group_id    = azurerm_monitor_action_group.error_action_group.id
+      webhook_properties = {}
+    }
   ]
 
   tags = var.tags

@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "monitor_rg" {
-    name     = "${local.project}-monitor-rg"
+    name     = "${local.project}-monitor-rg-01"
     location = var.location
     tags = var.tags
 }
@@ -11,8 +11,8 @@ data "azurerm_key_vault_secret" "alert_error_notification_slack" {
 
 resource "azurerm_monitor_action_group" "error_action_group" {
   resource_group_name = azurerm_resource_group.monitor_rg.name
-  name                = "${var.prefix}${var.env_short}error"
-  short_name          = "${var.prefix}${var.env_short}error"
+  name                = "${var.prefix}${var.env_short}error01"
+  short_name          = "${var.prefix}${var.env_short}error01"
 
   email_receiver {
     name                    = "slack"

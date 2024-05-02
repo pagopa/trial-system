@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 3.92.0"
+      version = "<= 3.101.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -30,7 +30,12 @@ terraform {
     }
   }
 
-  backend "azurerm" {}
+  backend "azurerm" {
+    resource_group_name  = "terraform-state-rg"
+    storage_account_name = "tfinfprodtrial"
+    container_name       = "terraform-state"
+    key                  = "trial-infra.prod.tfstate"
+  }
 }
 
 provider "azurerm" {
@@ -40,6 +45,19 @@ provider "azurerm" {
 provider "azapi" {
 }
 
-data "azurerm_subscription" "current" {}
+module "resources" {
+  source = "../../modules/commons"
 
-data "azurerm_client_config" "current" {}
+  env_short = "p" 
+
+  tags = {
+    CreatedBy   = "Terraform"
+    Environment = "Prod"
+    Owner       = "TRIAL"
+    Source      = "https://github.com/pagopa/trial-system"
+    CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
+  }
+
+  cidr_subnet_fnsubscription = ["10.10.100.0/24"]
+  cidr_subnet_fnsubscriptionasync = ["10.10.101.0/24"]
+}

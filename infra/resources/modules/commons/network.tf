@@ -1,11 +1,11 @@
 resource "azurerm_resource_group" "net_rg" {
-    name     = "${local.project}-net-rg"
+    name     = "${local.project}-net-rg-01"
     location = var.location
     tags = var.tags
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${local.project}-vnet"
+  name                = "${local.project}-vnet-01"
   address_space       = var.vnet_address_space
   resource_group_name = azurerm_resource_group.net_rg.name
   location            = azurerm_resource_group.net_rg.location
@@ -80,7 +80,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "link" {
 
 module "pendpoints_snet" {
   source               = "github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.7.0"
-  name                 = "${local.project}-pendpoints-snet"
+  name                 = "${local.project}-pendpoints-snet-01"
   address_prefixes     = var.snet_pendpoints_address_spaces
   resource_group_name  = azurerm_resource_group.net_rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
@@ -91,7 +91,7 @@ module "pendpoints_snet" {
 
 resource "azurerm_private_endpoint" "sql" {
 
-  name                = format("%s-private-endpoint-sql", local.project)
+  name                = format("%s-private-endpoint-sql-01", local.project)
   location            = var.location
   resource_group_name = azurerm_resource_group.net_rg.name
   subnet_id           = module.pendpoints_snet.id
@@ -113,20 +113,15 @@ resource "azurerm_private_endpoint" "sql" {
 ## VNET Peering
 #################################################
 
-data "azurerm_virtual_network" "vnet_common" {
-  name                = var.vnet_common.name
-  resource_group_name = var.vnet_common.resource_group_name
-}
+# module "vnet_peering_common" {
+#   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//virtual_network_peering?ref=v8.7.0"
 
-module "vnet_peering_common" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//virtual_network_peering?ref=v8.7.0"
-
-  source_resource_group_name       = azurerm_resource_group.net_rg.name
-  source_virtual_network_name      = azurerm_virtual_network.vnet.name
-  source_remote_virtual_network_id = azurerm_virtual_network.vnet.id
-  source_allow_gateway_transit     = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
-  target_resource_group_name       = var.vnet_common.resource_group_name
-  target_virtual_network_name      = data.azurerm_virtual_network.vnet_common.name
-  target_remote_virtual_network_id = data.azurerm_virtual_network.vnet_common.id
-  target_use_remote_gateways       = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
-}
+#   source_resource_group_name       = azurerm_resource_group.net_rg.name
+#   source_virtual_network_name      = azurerm_virtual_network.vnet.name
+#   source_remote_virtual_network_id = azurerm_virtual_network.vnet.id
+#   source_allow_gateway_transit     = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
+#   target_resource_group_name       = var.vnet_common.resource_group_name
+#   target_virtual_network_name      = data.azurerm_virtual_network.vnet_common.name
+#   target_remote_virtual_network_id = data.azurerm_virtual_network.vnet_common.id
+#   target_use_remote_gateways       = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
+# }

@@ -22,15 +22,15 @@ locals {
 }
 
 resource "azurerm_resource_group" "subscription_rg" {
-  name     = "${local.project}-subscription-rg"
+  name     = "${local.project}-subscription-rg-01"
   location = var.location
 
   tags = var.tags
 }
 
 module "subscription_snet" {
-  source                                    = "git::https://github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v6.19.1"
-  name                                      = format("%s-subscription-snet", local.project)
+  source                                    = "git::https://github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.7.0"
+  name                                      = format("%s-subscription-snet-01", local.project)
   address_prefixes                          = var.cidr_subnet_fnsubscription
   resource_group_name                       = azurerm_virtual_network.vnet.resource_group_name
   virtual_network_name                      = azurerm_virtual_network.vnet.name
@@ -52,10 +52,10 @@ module "subscription_snet" {
 }
 
 module "subscription_fn" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v6.19.1"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.7.0"
 
   resource_group_name = azurerm_resource_group.subscription_rg.name
-  name                = format("%s-subscription-fn", local.project)
+  name                = format("%s-subscription-fn-01", local.project)
   location            = var.location
   domain              = local.domain
   health_check_path   = "/info"
@@ -82,12 +82,15 @@ module "subscription_fn" {
 
   sticky_app_setting_names = []
 
+  storage_account_name = replace(format("%ssubfn01", local.project), "-", "")
+  storage_account_durable_name = replace(format("%ssubfn01", local.project), "-", "")
+
   internal_storage = {
     "enable"                     = true,
     "private_endpoint_subnet_id" = module.pendpoints_snet.id,
     "private_dns_zone_blob_ids"  = [azurerm_private_dns_zone.privatelink_blob_core.id],
-    "private_dns_zone_queue_ids" = [data.azurerm_private_dns_zone.privatelink_queue_core.id],
-    "private_dns_zone_table_ids" = [data.azurerm_private_dns_zone.privatelink_table_core.id],
+    "private_dns_zone_queue_ids" = [azurerm_private_dns_zone.privatelink_queue_core.id],
+    "private_dns_zone_table_ids" = [azurerm_private_dns_zone.privatelink_table_core.id],
     "queues"                     = [],
     "containers"                 = [],
     "blobs_retention_days"       = 0,
@@ -110,7 +113,7 @@ module "subscription_fn" {
 }
 
 module "subscription_fn_staging_slot" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v6.19.1"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v8.7.0"
 
   name                = "staging"
   location            = var.location
@@ -143,7 +146,7 @@ module "subscription_fn_staging_slot" {
 }
 
 resource "azurerm_monitor_autoscale_setting" "function_subscription" {
-  name                = format("%s-autoscale", module.subscription_fn.name)
+  name                = format("%s-autoscale-01", module.subscription_fn.name)
   resource_group_name = azurerm_resource_group.subscription_rg.name
   location            = var.location
   target_resource_id  = module.subscription_fn.app_service_plan_id
@@ -248,7 +251,7 @@ resource "azurerm_monitor_autoscale_setting" "function_subscription" {
       rule {
         metric_trigger {
           metric_name              = "Requests"
-          metric_resource_id       = module.function_fast_login[0].id
+          metric_resource_id       = module.subscription_fn.id
           metric_namespace         = "microsoft.web/sites"
           time_grain               = "PT1M"
           statistic                = "Average"
