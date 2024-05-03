@@ -81,7 +81,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "link" {
 module "pendpoints_snet" {
   source               = "github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.7.0"
   name                 = "${local.project}-pendpoints-snet-01"
-  address_prefixes     = var.snet_pendpoints_address_spaces
+  address_prefixes     = var.snet_pendpoints_address_space
   resource_group_name  = azurerm_resource_group.net_rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
 
