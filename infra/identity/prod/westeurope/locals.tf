@@ -2,10 +2,10 @@ locals {
   prefix    = "ts"
   env_short = "p"
 
-  location_short = "itn"
-  location       = "italynorth"
+  location_short = "weu"
+  location       = "westeurope"
   domain         = "trial-system"
-  project        = "${local.prefix}-${local.env_short}-${local.location_short}"
+  project        = "${local.prefix}-${local.env_short}"
 
   repo_name = "trial-system"
 
