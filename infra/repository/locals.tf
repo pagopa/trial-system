@@ -1,7 +1,10 @@
 locals {
+  prefix = "ts"
+  env_short = "p"
   project = "trial-system"
+  product = "${local.prefix}-${local.env_short}"
 
-  identity_resource_group_name = "${local.project}-identity-rg"
+  identity_resource_group_name = "${local.product}-identity-rg"
 
   repo_secrets = {
     "ARM_TENANT_ID"       = data.azurerm_client_config.current.tenant_id,
