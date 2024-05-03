@@ -59,6 +59,8 @@ module "resources" {
     ManagementTeam = "IO Platform"
   }
 
-  cidr_subnet_fnsubscription      = ["10.10.100.0/24"]
-  cidr_subnet_fnsubscriptionasync = ["10.10.101.0/24"]
+  vnet_address_space              = ["10.30.0.0/20"]
+  snet_pendpoints_address_space   = ["10.30.252.0/23"]
+  cidr_subnet_fnsubscription      = ["10.30.1.0/24"]
+  cidr_subnet_fnsubscriptionasync = ["10.10.2.0/24"]
 }

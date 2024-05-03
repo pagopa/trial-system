@@ -37,13 +37,13 @@ variable "tags" {
 }
 
 variable "vnet_address_space" {
-  type    = list(string)
-  default = ["10.10.0.0/20"]
+  type        = list(string)
+  description = "The VNET address space"
 }
 
-variable "snet_pendpoints_address_spaces" {
-  type    = list(string)
-  default = ["10.10.3.0/24"]
+variable "snet_pendpoints_address_space" {
+  type        = list(string)
+  description = "The Private endpoint subnet's address space"
 }
 
 
