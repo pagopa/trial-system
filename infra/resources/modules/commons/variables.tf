@@ -48,39 +48,39 @@ variable "snet_pendpoints_address_spaces" {
 
 
 variable "cidr_subnet_fnsubscriptionasync" {
-  type    = list(string)
+  type        = list(string)
   description = "The subscription async function address space"
 }
 
 variable "cidr_subnet_fnsubscription" {
-  type    = list(string)
+  type        = list(string)
   description = "The subscription function address space"
 }
 
 variable "vnet_common" {
-   type = object({
-    name           = string
+  type = object({
+    name                = string
     resource_group_name = string
   })
   default = {
-    name           = "io-p-vnet-common"
+    name                = "io-p-vnet-common"
     resource_group_name = "io-p-rg-common"
   }
 }
 
 variable "function_async_config" {
   type = object({
-    kind     = string
-    sku_tier = string
-    sku_size = string
+    kind              = string
+    sku_tier          = string
+    sku_size          = string
     autoscale_minimum = number
     autoscale_maximum = number
     autoscale_default = number
   })
   default = {
-    kind     = "Linux"
-    sku_tier = "PremiumV3"
-    sku_size = "P1v3"
+    kind              = "Linux"
+    sku_tier          = "PremiumV3"
+    sku_size          = "P1v3"
     autoscale_minimum = 1
     autoscale_maximum = 30
     autoscale_default = 1
@@ -89,17 +89,17 @@ variable "function_async_config" {
 
 variable "function_subscription_config" {
   type = object({
-    kind     = string
-    sku_tier = string
-    sku_size = string
+    kind              = string
+    sku_tier          = string
+    sku_size          = string
     autoscale_minimum = number
     autoscale_maximum = number
     autoscale_default = number
   })
   default = {
-    kind     = "Linux"
-    sku_tier = "PremiumV3"
-    sku_size = "P1v3"
+    kind              = "Linux"
+    sku_tier          = "PremiumV3"
+    sku_size          = "P1v3"
     autoscale_minimum = 1
     autoscale_maximum = 30
     autoscale_default = 1

@@ -1,7 +1,7 @@
 resource "azurerm_resource_group" "monitor_rg" {
-    name     = "${local.project}-monitor-rg-01"
-    location = var.location
-    tags = var.tags
+  name     = "${local.project}-monitor-rg-01"
+  location = var.location
+  tags     = var.tags
 }
 
 data "azurerm_key_vault_secret" "alert_error_notification_slack" {

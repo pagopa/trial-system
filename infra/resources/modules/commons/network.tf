@@ -1,7 +1,7 @@
 resource "azurerm_resource_group" "net_rg" {
-    name     = "${local.project}-net-rg-01"
-    location = var.location
-    tags = var.tags
+  name     = "${local.project}-net-rg-01"
+  location = var.location
+  tags     = var.tags
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -69,7 +69,7 @@ resource "azurerm_private_dns_zone" "privatelink_documents" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "link" {
   name                  = azurerm_virtual_network.vnet.name
-  resource_group_name = azurerm_resource_group.net_rg.name
+  resource_group_name   = azurerm_resource_group.net_rg.name
   private_dns_zone_name = azurerm_private_dns_zone.privatelink_documents.name
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
@@ -85,8 +85,8 @@ module "pendpoints_snet" {
   resource_group_name  = azurerm_resource_group.net_rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
 
-  private_endpoint_network_policies_enabled     = false
-  
+  private_endpoint_network_policies_enabled = false
+
 }
 
 resource "azurerm_private_endpoint" "sql" {

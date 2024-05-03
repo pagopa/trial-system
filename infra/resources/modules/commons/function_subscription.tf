@@ -82,7 +82,7 @@ module "subscription_fn" {
 
   sticky_app_setting_names = []
 
-  storage_account_name = replace(format("%ssubfn01", local.project), "-", "")
+  storage_account_name         = replace(format("%ssubfn01", local.project), "-", "")
   storage_account_durable_name = replace(format("%ssubfn01", local.project), "-", "")
 
   internal_storage = {

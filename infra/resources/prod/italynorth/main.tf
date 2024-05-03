@@ -48,16 +48,17 @@ provider "azapi" {
 module "resources" {
   source = "../../modules/commons"
 
-  env_short = "p" 
+  env_short = "p"
 
   tags = {
-    CreatedBy   = "Terraform"
-    Environment = "Prod"
-    Owner       = "TRIAL"
-    Source      = "https://github.com/pagopa/trial-system"
-    CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
+    CreatedBy      = "Terraform"
+    Environment    = "Prod"
+    Owner          = "TRIAL"
+    Source         = "https://github.com/pagopa/trial-system"
+    CostCenter     = "TS310 - PAGAMENTI & SERVIZI"
+    ManagementTeam = "IO Platform"
   }
 
-  cidr_subnet_fnsubscription = ["10.10.100.0/24"]
+  cidr_subnet_fnsubscription      = ["10.10.100.0/24"]
   cidr_subnet_fnsubscriptionasync = ["10.10.101.0/24"]
 }

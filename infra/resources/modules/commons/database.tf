@@ -1,7 +1,7 @@
 resource "azurerm_resource_group" "data_rg" {
-    name     = "${local.project}-data-rg-01"
-    location = var.location
-    tags = var.tags
+  name     = "${local.project}-data-rg-01"
+  location = var.location
+  tags     = var.tags
 }
 
 module "cosmosdb_account" {
