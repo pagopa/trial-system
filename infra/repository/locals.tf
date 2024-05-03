@@ -1,8 +1,8 @@
 locals {
-  prefix = "ts"
+  prefix    = "ts"
   env_short = "p"
-  project = "trial-system"
-  product = "${local.prefix}-${local.env_short}"
+  project   = "trial-system"
+  product   = "${local.prefix}-${local.env_short}"
 
   identity_resource_group_name = "${local.product}-identity-rg"
 
