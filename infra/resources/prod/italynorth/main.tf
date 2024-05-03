@@ -45,7 +45,7 @@ provider "azurerm" {
 provider "azapi" {
 }
 
-module "resources" {
+module "commons" {
   source = "../../modules/commons"
 
   env_short = "p"
@@ -60,7 +60,7 @@ module "resources" {
   }
 
   vnet_address_space              = ["10.30.0.0/20"]
-  snet_pendpoints_address_space   = ["10.30.252.0/23"]
-  cidr_subnet_fnsubscription      = ["10.30.1.0/24"]
-  cidr_subnet_fnsubscriptionasync = ["10.10.2.0/24"]
+  snet_pendpoints_address_space   = ["10.30.2.0/23"]
+  cidr_subnet_fnsubscription      = ["10.30.5.0/24"]
+  cidr_subnet_fnsubscriptionasync = ["10.30.6.0/24"]
 }

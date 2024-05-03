@@ -16,8 +16,6 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
-    APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.ai.instrumentation_key
-
   }
 }
 
@@ -29,7 +27,7 @@ resource "azurerm_resource_group" "subscription_rg" {
 }
 
 module "subscription_snet" {
-  source                                    = "git::https://github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.7.0"
+  source                                    = "git::https://github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.8.0"
   name                                      = format("%s-subscription-snet-01", local.project)
   address_prefixes                          = var.cidr_subnet_fnsubscription
   resource_group_name                       = azurerm_virtual_network.vnet.resource_group_name
@@ -52,7 +50,7 @@ module "subscription_snet" {
 }
 
 module "subscription_fn" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.7.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.9.0"
 
   resource_group_name = azurerm_resource_group.subscription_rg.name
   name                = format("%s-subscription-fn-01", local.project)
@@ -85,6 +83,16 @@ module "subscription_fn" {
   storage_account_name         = replace(format("%ssubfn01", local.project), "-", "")
   storage_account_durable_name = replace(format("%ssubfn01", local.project), "-", "")
 
+  storage_account_info = {
+    account_kind                      = "StorageV2"
+    account_tier                      = "Standard"
+    account_replication_type          = "ZRS"
+    access_tier                       = "Hot"
+    advanced_threat_protection_enable = false
+    use_legacy_defender_version       = false
+    public_network_access_enabled     = true
+  }
+
   internal_storage = {
     "enable"                     = true,
     "private_endpoint_subnet_id" = module.pendpoints_snet.id,
@@ -113,7 +121,7 @@ module "subscription_fn" {
 }
 
 module "subscription_fn_staging_slot" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v8.7.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v8.9.0"
 
   name                = "staging"
   location            = var.location
