@@ -1,4 +1,4 @@
-name: Decorate PR
+name: Enrich PR
 
 on:
   pull_request:
