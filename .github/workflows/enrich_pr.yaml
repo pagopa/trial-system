@@ -14,3 +14,26 @@ jobs:
         uses: kentaro-m/auto-assign-action@f4648c0a9fdb753479e9e75fc251f507ce17bb7e # v2.0.0
         with:
           configuration-path: '.github/auto-assign.yaml'
+
+  add_labels:
+    name: Add labels
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Label PR
+        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler.yaml
+          sync-labels: true
+
+      - name: Add size label
+        uses: pagopa/github-actions-template/check-pr-size@5db4c9108164a07d96527978da1c3febec934f22 # v1.11.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          ignored_files: 'yarn.lock, docs/ infra/**/.terraform.lock.hcl'
+          min_size: 200
+          max_size: 800

@@ -1,0 +1,23 @@
+apps:
+  - changed-files:
+      - any-glob-to-any-file: ['apps/**']
+
+packages:
+  - changed-files:
+      - any-glob-to-any-file: ['packages/**']
+
+infra:
+  - changed-files:
+      - any-glob-to-any-file: ['infra/**']
+
+workflows:
+  - changed-files:
+      - any-glob-to-any-file: [ '.github/workflows/**' ]
+
+changeset:
+  - changed-files:
+      - any-glob-to-any-file: [ '.changeset/**' ]
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: [ 'docs/**' ]
