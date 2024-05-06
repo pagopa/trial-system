@@ -6,7 +6,9 @@
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky"
+    "prepare": "husky",
+    "version": "changeset version",
+    "release": "changeset tag"
   },
   "engines": {
     "node": ">=20"
