@@ -412,6 +412,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/node20@npm:^20.1.4":
+  version: 20.1.4
+  resolution: "@tsconfig/node20@npm:20.1.4"
+  checksum: 10c0/239cd6abaceaaffc758e7a9dd3748ec1acfdabd6de28a9a16a3824c21f17ad69a16184870298460345d2fb6f3663d092c21d5b764bef669a179658b4a7eac739
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:^7.0.15":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
@@ -1614,6 +1621,14 @@ __metadata:
   checksum: 10c0/33e77fd29bddc2d9bb78ab3eb854c165909201f88c75faa8272e35899e2d35a8a642a15e7420ef945e1f64a9670d6aa3ec744106b2aa42be68ca5114025954ca
   languageName: node
   linkType: hard
+
+"functions-subscription@workspace:apps/functions-subscription":
+  version: 0.0.0-use.local
+  resolution: "functions-subscription@workspace:apps/functions-subscription"
+  dependencies:
+    "@tsconfig/node20": "npm:^20.1.4"
+  languageName: unknown
+  linkType: soft
 
 "get-caller-file@npm:^2.0.1, get-caller-file@npm:^2.0.5":
   version: 2.0.5
