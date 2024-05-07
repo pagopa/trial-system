@@ -1,0 +1,9 @@
+{
+  "name": "functions-subscription",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The Azure function that let users to subscribe to a trial and to provide information about the subscriptions.",
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4"
+  }
+}
