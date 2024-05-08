@@ -32,6 +32,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/200Subscription'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404NotFound'
         '500':
@@ -112,6 +114,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProblemJson'
+    401Unauthorized:
+      description: Unauthorized
     404NotFound:
       description: Not Found
     200Info:
