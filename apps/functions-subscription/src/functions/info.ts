@@ -5,7 +5,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { ApplicationInfo } from '../generated/definitions/internal/ApplicationInfo';
 
-export const makeInfoHandler: H.Handler<
+const makeInfoHandler: H.Handler<
   H.HttpRequest,
   | H.HttpResponse<ApplicationInfo, 200>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>
