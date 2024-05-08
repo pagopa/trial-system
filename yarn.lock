@@ -211,14 +211,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/functions@npm:^3.5.1":
-  version: 3.5.1
-  resolution: "@azure/functions@npm:3.5.1"
+"@azure/functions@npm:^4.0.1, @azure/functions@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "@azure/functions@npm:4.4.0"
   dependencies:
-    iconv-lite: "npm:^0.6.3"
+    cookie: "npm:^0.6.0"
     long: "npm:^4.0.0"
-    uuid: "npm:^8.3.0"
-  checksum: 10c0/1fc0723304b7a1defa273ff1f897bacb9ea4395865fe8bf5ef738cce870749c6afb5e873a00e46f83503f0e8512b28435085ebf8b48ca448b3ce4671d95f5642
+    undici: "npm:^5.13.0"
+  checksum: 10c0/81c97e20c0ce462f262b6a1ce18e1e45c2c690e0988b7221d7094d276cefe3312e1373a697c8408fc88f0fa004825057b455cb87366cf85a831baa83bf571ec5
   languageName: node
   linkType: hard
 
@@ -739,6 +739,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/busboy@npm:^2.0.0":
+  version: 2.1.1
+  resolution: "@fastify/busboy@npm:2.1.1"
+  checksum: 10c0/6f8027a8cba7f8f7b736718b013f5a38c0476eea67034c94a0d3c375e2b114366ad4419e6a6fa7ffc2ef9c6d3e0435d76dd584a7a1cbac23962fda7650b579e3
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.13.0":
   version: 0.13.0
   resolution: "@humanwhocodes/config-array@npm:0.13.0"
@@ -981,15 +988,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pagopa/handler-kit-azure-func@npm:^1.2.0":
-  version: 1.2.1
-  resolution: "@pagopa/handler-kit-azure-func@npm:1.2.1"
+"@pagopa/handler-kit-azure-func@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@pagopa/handler-kit-azure-func@npm:2.0.4"
   dependencies:
+    "@azure/functions": "npm:^4.0.1"
     "@pagopa/handler-kit": "npm:^1.0.1"
     "@pagopa/logger": "npm:^1.0.1"
     fp-ts: "npm:^2.13.1"
     io-ts: "npm:^2.2.20"
-  checksum: 10c0/a3d47d55f725072bd53d31ac61ff91290e75d39f8019ed039a1928e21657cf24c8d0c49aeb4f0c7eb862249ed3b61bee2cf4ab40aaf153afcff1b3ac6137f796
+  checksum: 10c0/440de4a81881c254be277a1d4e5ef109987ea0334b35bc809c16a44c4d6af3051ee4f67e66d427fc8acbe233d762a020165eeedf19a906bfb6446b8174c757f8
   languageName: node
   linkType: hard
 
@@ -2309,6 +2317,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "cookie@npm:0.6.0"
+  checksum: 10c0/f2318b31af7a31b4ddb4a678d024514df5e705f9be5909a192d7f116cfb6d45cbacf96a473fa733faa95050e7cff26e7832bb3ef94751592f1387b71c8956686
+  languageName: node
+  linkType: hard
+
 "core-util-is@npm:1.0.2":
   version: 1.0.2
   resolution: "core-util-is@npm:1.0.2"
@@ -3548,9 +3563,9 @@ __metadata:
   resolution: "functions-subscription@workspace:apps/functions-subscription"
   dependencies:
     "@azure/cosmos": "npm:^4.0.0"
-    "@azure/functions": "npm:^3.5.1"
+    "@azure/functions": "npm:^4.4.0"
     "@pagopa/handler-kit": "npm:^1.1.0"
-    "@pagopa/handler-kit-azure-func": "npm:^1.2.0"
+    "@pagopa/handler-kit-azure-func": "npm:^2.0.4"
     "@pagopa/io-functions-commons": "npm:^29.0.0"
     "@pagopa/openapi-codegen-ts": "npm:^13.1.0"
     "@pagopa/ts-commons": "npm:^13.0.0"
@@ -4003,7 +4018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iconv-lite@npm:^0.6.2, iconv-lite@npm:^0.6.3":
+"iconv-lite@npm:^0.6.2":
   version: 0.6.3
   resolution: "iconv-lite@npm:0.6.3"
   dependencies:
@@ -7293,6 +7308,15 @@ __metadata:
   version: 5.26.5
   resolution: "undici-types@npm:5.26.5"
   checksum: 10c0/bb673d7876c2d411b6eb6c560e0c571eef4a01c1c19925175d16e3a30c4c428181fb8d7ae802a261f283e4166a0ac435e2f505743aa9e45d893f9a3df017b501
+  languageName: node
+  linkType: hard
+
+"undici@npm:^5.13.0":
+  version: 5.28.4
+  resolution: "undici@npm:5.28.4"
+  dependencies:
+    "@fastify/busboy": "npm:^2.0.0"
+  checksum: 10c0/08d0f2596553aa0a54ca6e8e9c7f45aef7d042c60918564e3a142d449eda165a80196f6ef19ea2ef2e6446959e293095d8e40af1236f0d67223b06afac5ecad7
   languageName: node
   linkType: hard
 
