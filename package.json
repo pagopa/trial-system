@@ -6,7 +6,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check",
-    "code-review": "turbo run typecheck lint:check test //#test:coverage",
+    "code-review": "turbo run typecheck lint:check test",
     "test:coverage": "vitest run --coverage",
     "prepare": "husky",
     "version": "changeset version",
