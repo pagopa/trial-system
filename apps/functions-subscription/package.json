@@ -2,6 +2,7 @@
   "name": "functions-subscription",
   "private": true,
   "main": "./dist/main.js",
+  "type": "module",
   "version": "0.0.0",
   "description": "The Azure function that let users to subscribe to a trial and to provide information about the subscriptions.",
   "devDependencies": {
@@ -11,7 +12,7 @@
     "eslint-config-rules": "workspace:^",
     "rimraf": "^5.0.5",
     "shx": "^0.3.4",
-    "typescript": "^4.8.4"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "@azure/cosmos": "^4.0.0",
