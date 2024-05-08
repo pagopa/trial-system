@@ -8,6 +8,7 @@
   "devDependencies": {
     "@pagopa/openapi-codegen-ts": "^13.1.0",
     "@tsconfig/node20": "^20.1.4",
+    "azure-functions-core-tools": "^4.0.5700",
     "eslint": "^9.2.0",
     "eslint-config-rules": "workspace:^",
     "rimraf": "^5.0.5",
