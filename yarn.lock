@@ -3562,7 +3562,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "functions-subscription@workspace:apps/functions-subscription"
   dependencies:
-    "@azure/cosmos": "npm:^4.0.0"
     "@azure/functions": "npm:^4.4.0"
     "@pagopa/handler-kit": "npm:^1.1.0"
     "@pagopa/handler-kit-azure-func": "npm:^2.0.4"
