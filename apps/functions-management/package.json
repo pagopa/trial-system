@@ -1,0 +1,37 @@
+{
+    "name": "functions-management",
+    "private": true,
+    "main": "./dist/main.js",
+    "version": "0.0.0",
+    "description": "The Azure function used by owners to manage trial initiatives.",
+    "devDependencies": {
+        "@pagopa/openapi-codegen-ts": "^13.1.0",
+        "@tsconfig/node20": "^20.1.4",
+        "azure-functions-core-tools": "^4.0.5700",
+        "eslint": "^9.2.0",
+        "eslint-config-rules": "workspace:^",
+        "npm-run-all": "^4.1.5",
+        "rimraf": "^5.0.5",
+        "shx": "^0.3.4",
+        "typescript": "^5.4.5"
+    },
+    "dependencies": {
+        "@azure/cosmos": "^4.0.0",
+        "@azure/functions": "^4.4.0",
+        "@pagopa/handler-kit": "^1.1.0",
+        "@pagopa/handler-kit-azure-func": "^2.0.4",
+        "@pagopa/io-functions-commons": "^29.0.0",
+        "@pagopa/ts-commons": "^13.0.0",
+        "fp-ts": "^2.13.1",
+        "io-ts": "^2.2.19"
+    },
+    "scripts": {
+        "clean": "rimraf ./dist ./src/generated/definitions/internal",
+        "prebuild": "npm-run-all clean generate",
+        "build": "tsc",
+        "lint": "eslint --fix",
+        "lint:check": "eslint",
+        "generate": "rimraf ./src/generated/definitions/internal && shx mkdir -p ./src/generated/definitions/internal && gen-api-models --api-spec ./api/internal.yaml --no-strict --out-dir ./src/generated/definitions/internal",
+        "start": "func start --javascript"
+    }
+}

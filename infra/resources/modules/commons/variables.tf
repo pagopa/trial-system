@@ -57,6 +57,11 @@ variable "cidr_subnet_fnsubscription" {
   description = "The subscription function address space"
 }
 
+variable "cidr_subnet_fnmanagement" {
+  type        = list(string)
+  description = "The Management function address space"
+}
+
 variable "vnet_common" {
   type = object({
     name                = string
@@ -88,6 +93,25 @@ variable "function_async_config" {
 }
 
 variable "function_subscription_config" {
+  type = object({
+    kind              = string
+    sku_tier          = string
+    sku_size          = string
+    autoscale_minimum = number
+    autoscale_maximum = number
+    autoscale_default = number
+  })
+  default = {
+    kind              = "Linux"
+    sku_tier          = "PremiumV3"
+    sku_size          = "P1v3"
+    autoscale_minimum = 1
+    autoscale_maximum = 30
+    autoscale_default = 1
+  }
+}
+
+variable "function_management_config" {
   type = object({
     kind              = string
     sku_tier          = string
