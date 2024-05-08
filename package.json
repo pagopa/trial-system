@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check",
+    "code-review": "turbo run typecheck lint:check test",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
     "version": "changeset version",
