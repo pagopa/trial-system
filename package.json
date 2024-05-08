@@ -6,8 +6,9 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check",
-    "code-review": "turbo run typecheck lint:check test",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "code-review": "turbo run typecheck lint:check test //#test:coverage",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage",
     "prepare": "husky",
     "version": "changeset version",
     "release": "changeset tag"
