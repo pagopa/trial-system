@@ -9,11 +9,11 @@ export const makeInfoHandler: H.Handler<
   H.HttpRequest,
   | H.HttpResponse<ApplicationInfo, 200>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>
-> = H.of((_: H.HttpRequest) =>
+> = H.of((req: H.HttpRequest) =>
   pipe(
     // TODO: Add all the function health checks
     RTE.right(void 0),
-    RTE.map(() => H.successJson({ message: 'it works!' })),
+    RTE.map(() => H.successJson({ message: `Pong from ${req.url}` })),
     RTE.mapLeft(() => new H.HttpError('Function subscription not working!')),
   ),
 );
