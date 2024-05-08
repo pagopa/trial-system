@@ -7,7 +7,7 @@ import { ApplicationInfo } from '../generated/definitions/internal/ApplicationIn
 
 const makeInfoHandler: H.Handler<
   H.HttpRequest,
-  | H.HttpResponse<ApplicationInfo, 200>
+  | H.HttpResponse<ApplicationInfo>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>
 > = H.of((req: H.HttpRequest) =>
   pipe(
