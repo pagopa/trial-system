@@ -1,6 +1,11 @@
-import { getConfigOrThrow } from "./config";
-import { InfoFunction } from "./functions/info";
+import { app } from '@azure/functions';
+import { InfoFunction } from './functions/info';
 
-const config = getConfigOrThrow();
+const Info = InfoFunction({});
 
-export const Info = InfoFunction({});
+app.http('info', {
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  handler: Info,
+  route: 'info',
+});
