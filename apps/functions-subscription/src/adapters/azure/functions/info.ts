@@ -3,7 +3,7 @@ import * as H from '@pagopa/handler-kit';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
-import { ApplicationInfo } from '../generated/definitions/internal/ApplicationInfo';
+import { ApplicationInfo } from '../../../generated/definitions/internal/ApplicationInfo';
 
 const makeInfoHandler: H.Handler<
   H.HttpRequest,
