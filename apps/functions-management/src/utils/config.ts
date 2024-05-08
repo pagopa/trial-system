@@ -5,28 +5,28 @@
  * The configuration is evaluate eagerly at the first access to the module. The module exposes convenient methods to access such value.
  */
 
-import * as t from "io-ts";
+import * as t from 'io-ts';
 
-import * as E from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
+import * as E from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
 
-import * as reporters from "@pagopa/ts-commons/lib/reporters";
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import * as reporters from '@pagopa/ts-commons/lib/reporters';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 // ----------------------------
 // Global app configuration
 // ----------------------------
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.type({
-    COSMOS_CONNECTION_STRING: NonEmptyString,
-    COSMOS_DB_NAME: NonEmptyString,
+  COSMOS_CONNECTION_STRING: NonEmptyString,
+  COSMOS_DB_NAME: NonEmptyString,
 
-    isProduction: t.boolean
-  });
+  isProduction: t.boolean,
+});
 
 export const envConfig = {
   ...process.env,
-  isProduction: process.env.NODE_ENV === "production"
+  isProduction: process.env.NODE_ENV === 'production',
 };
 
 const errorOrConfig: t.Validation<IConfig> = IConfig.decode(envConfig);
@@ -49,9 +49,9 @@ export const getConfig = (): t.Validation<IConfig> => errorOrConfig;
 export const getConfigOrThrow = (): IConfig =>
   pipe(
     errorOrConfig,
-    E.getOrElseW((errors: ReadonlyArray<t.ValidationError>) => {
+    E.getOrElseW((errors: readonly t.ValidationError[]) => {
       throw new Error(
-        `Invalid configuration: ${reporters.readableReportSimplified(errors)}`
+        `Invalid configuration: ${reporters.readableReportSimplified(errors)}`,
       );
-    })
+    }),
   );
