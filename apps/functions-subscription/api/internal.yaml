@@ -19,7 +19,7 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
-  /subscriptions/{trialId}:
+  /trials/{trialId}/subscriptions/{userId}:
     get:
       operationId: getSubscription
       summary: Get subscription detail
@@ -28,7 +28,7 @@ paths:
         the specified trial.
       parameters:
         - $ref: '#/components/parameters/pathTrialId'
-        - $ref: '#/components/parameters/headerUserId'
+        - $ref: '#/components/parameters/pathUserId'
       responses:
         '200':
           $ref: '#/components/responses/200Subscription'
@@ -38,6 +38,28 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
+  /trials/{trialId}/subscriptions:
+    post:
+      operationId: createSubscription
+      summary: Create a subscription
+      description: Subscribe the given user to the given trial.
+      parameters:
+        - $ref: '#/components/parameters/pathTrialId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscription'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Subscription'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+
 
 components:
   securitySchemes:
@@ -53,9 +75,9 @@ components:
       schema:
         type: string
         minLength: 1
-    headerUserId:
+    pathUserId:
       name: userId
-      in: header
+      in: path
       required: true
       schema:
         $ref: '#/components/schemas/UserId'
@@ -94,6 +116,13 @@ components:
       type: string
       description: Unique identifier of the trial.
       minLength: 1
+    CreateSubscription:
+      type: object
+      properties:
+        trialId:
+          $ref: '#/components/schemas/TrialId'
+        userId:
+          $ref: '#/components/schemas/UserId'
     Subscription:
       type: object
       properties:
