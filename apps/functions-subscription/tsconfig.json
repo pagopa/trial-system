@@ -1,21 +1,11 @@
 {
-  "compilerOptions": {
-    "module": "CommonJS",
-    "target": "es6",
-    "outDir": "dist",
-    "rootDir": "src",
-    "sourceMap": true,
-    "inlineSources": true,
-    "strict": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true
-  },
+  "extends": "@tsconfig/node20/tsconfig.json",
   "exclude": [
-    "node_modules",
-    "dist",
-    "__mocks__",
-    "docker",
-    "**/__tests__",
-    "**/__integrations__"
-  ]
+    "dist"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+  }
 }
