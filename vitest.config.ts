@@ -5,7 +5,8 @@ import { defineConfig } from 'vitest/config';
  * coverage report, so the coverage report only consider out code.
  *
  * We tried to define the vitest.config.ts file within the functions-subscription
- * application, but it didn't work as expected.
+ * application, but it didn't work as expected: the execution of the test:coverage
+ * script still show the coverage of the excluded files.
  */
 export default defineConfig({
   test: {
