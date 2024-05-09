@@ -7,13 +7,14 @@
     "devDependencies": {
         "@pagopa/openapi-codegen-ts": "^13.1.0",
         "@tsconfig/node20": "^20.1.4",
+        "@vitest/coverage-v8": "^1.6.0",
         "azure-functions-core-tools": "^4.0.5700",
         "eslint": "^9.2.0",
         "eslint-config-rules": "workspace:^",
-        "npm-run-all": "^4.1.5",
         "rimraf": "^5.0.5",
         "shx": "^0.3.4",
-        "typescript": "^5.4.5"
+        "typescript": "^5.4.5",
+        "vitest": "^1.6.0"
     },
     "dependencies": {
         "@azure/cosmos": "^4.0.0",
@@ -26,12 +27,12 @@
         "io-ts": "^2.2.19"
     },
     "scripts": {
-        "clean": "rimraf ./dist ./src/generated/definitions/internal",
-        "prebuild": "npm-run-all clean generate",
-        "build": "tsc",
+        "build": "npm run generate && tsc",
         "lint": "eslint --fix",
         "lint:check": "eslint",
         "generate": "rimraf ./src/generated/definitions/internal && shx mkdir -p ./src/generated/definitions/internal && gen-api-models --api-spec ./api/internal.yaml --no-strict --out-dir ./src/generated/definitions/internal",
-        "start": "func start --javascript"
+        "start": "func start --javascript",
+        "test": "vitest run --passWithNoTests",
+        "test:coverage": "vitest run --coverage --passWithNoTests"
     }
 }
