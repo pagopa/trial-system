@@ -119,8 +119,6 @@ components:
     CreateSubscription:
       type: object
       properties:
-        trialId:
-          $ref: '#/components/schemas/TrialId'
         userId:
           $ref: '#/components/schemas/UserId'
     Subscription:
