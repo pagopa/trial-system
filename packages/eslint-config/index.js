@@ -15,6 +15,6 @@ export default [
   prettier,
   {
     // Ignore everything under any dist/ directory
-    ignores: ['**/dist/'],
+    ignores: ['**/dist/', '**/__tests__/', '**/__mocks__/'],
   },
 ];
