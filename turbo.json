@@ -40,24 +40,19 @@
       ]
     },
     "test": {
-      "inputs": [
-        "src/**/*.ts"
-      ],
-      "outputMode": "errors-only",
-      "dependsOn": [
-        "^test",
-        "^build"
-      ]
+      "dependsOn": ["^test"],
+      "inputs": ["src/**/*.test.ts"],
+      "outputMode": "errors-only"
     },
     "test:coverage": {
-      "inputs": [
-        "src/**/*.ts"
-      ],
-      "outputMode": "errors-only",
-      "dependsOn": [
-        "^test",
-        "^build"
-      ]
+      "dependsOn": ["^test"],
+      "inputs": ["src/**/*.test.ts"],
+      "outputMode": "errors-only"
+    },
+    "//#test:coverage": {
+      "inputs": ["apps/**/src/**/*.ts", "packages/**/src/**/*.ts"],
+      "outputs": ["coverage"],
+      "outputMode": "errors-only"
     }
   }
 }
