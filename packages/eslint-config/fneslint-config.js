@@ -26,5 +26,5 @@ export default {
     // Vanilla
     'no-var': 'error',
     'no-param-reassign': 'error',
-  }
+  },
 };
