@@ -1,5 +1,5 @@
-import { Database } from "@azure/cosmos";
+import { Database } from '@azure/cosmos';
 
-export type CosmosDBDependency = {
+export interface CosmosDBDependency {
   readonly db: Database;
-};
+}

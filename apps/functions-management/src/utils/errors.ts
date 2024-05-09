@@ -1,8 +1,8 @@
-import * as H from "@pagopa/handler-kit";
+import * as H from '@pagopa/handler-kit';
 
 export const CustomHttpUnauthorizedError = class extends H.HttpError {
   public readonly status = 401 as const;
-  public readonly title = "Unauthorized";
+  public readonly title = 'Unauthorized';
 };
 
 export const errorToHttpError = (error: Error): H.HttpError =>

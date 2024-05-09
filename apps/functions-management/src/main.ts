@@ -11,6 +11,6 @@ const database = cosmosClient.database(config.COSMOS_DB_NAME);
 app.http('info', {
   methods: ['GET'],
   authLevel: 'anonymous',
-  handler: InfoFunction({db: database}),
+  handler: InfoFunction({ db: database }),
   route: 'info',
 });
