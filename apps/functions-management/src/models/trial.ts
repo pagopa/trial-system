@@ -26,6 +26,7 @@ export type Trial = t.TypeOf<typeof Trial>;
 export const RetrievedTrial = t.intersection([Trial, CosmosResource]);
 export type RetrievedTrial = t.TypeOf<typeof RetrievedTrial>;
 
+// eslint-disable-next-line functional/no-classes
 export class TrialModel extends CosmosdbModel<
   Trial,
   Trial,
