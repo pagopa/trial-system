@@ -13,4 +13,8 @@ export default [
   // Runs Prettier as an ESLint rule and reports differences as individual
   // ESLint issues
   prettier,
+  {
+    // Ignore everything under any dist/ directory
+    ignores: ['**/dist/', '**/__tests__/', '**/__mocks__/'],
+  },
 ];

@@ -40,14 +40,9 @@
       ]
     },
     "test": {
-      "inputs": [
-        "src/**/*.ts"
-      ],
-      "outputMode": "errors-only",
-      "dependsOn": [
-        "^test",
-        "^build"
-      ]
+      "dependsOn": ["^test"],
+      "inputs": ["src/**/*.test.ts"],
+      "outputMode": "errors-only"
     },
     "test:coverage": {
       "dependsOn": ["^test"],

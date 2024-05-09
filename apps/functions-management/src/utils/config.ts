@@ -50,6 +50,7 @@ export const getConfigOrThrow = (): IConfig =>
   pipe(
     errorOrConfig,
     E.getOrElseW((errors: readonly t.ValidationError[]) => {
+      // eslint-disable-next-line functional/no-throw-statements
       throw new Error(
         `Invalid configuration: ${reporters.readableReportSimplified(errors)}`,
       );
