@@ -97,7 +97,7 @@ components:
       $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/Timestamp'
     UserId:
       $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/FiscalCode'
-    SubscriptionStatus:
+    SubscriptionState:
       type: string
       description: |-
         - UNSUBSCRIBED: The user is not subscribed to the specified trial and does
@@ -129,7 +129,7 @@ components:
         userId:
           $ref: '#/components/schemas/UserId'
         state:
-          $ref: '#/components/schemas/SubscriptionStatus'
+          $ref: '#/components/schemas/SubscriptionState'
         createdAt:
           $ref: '#/components/schemas/CreatedAt'
         updatedAt:
