@@ -51,8 +51,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateSubscription'
       responses:
-        '200':
-          $ref: '#/components/responses/200Subscription'
+        '201':
+          $ref: '#/components/responses/201Subscription'
         '400':
           $ref: '#/components/responses/400BadRequest'
         '401':
@@ -165,3 +165,5 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Subscription'
+    201Subscription:
+      $ref: '#/components/responses/200Subscription'
