@@ -4,6 +4,7 @@ import * as E from 'fp-ts/lib/Either';
 import { Container } from '@azure/cosmos';
 import { Trial, RetrievedTrial, TrialModel } from '../trial';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import { pipe } from 'fp-ts/lib/function';
 
 const aTrial: Trial = {
   id: 'aTrialID' as NonEmptyString,
@@ -40,6 +41,15 @@ describe('trial', () => {
   it('GIVEN a valid trial object WHEN the object is decode THEN the decode succeed', async () => {
     const result = Trial.decode(aTrial);
     expect(E.isRight(result)).toBeTruthy();
+  });
+
+  it('GIVEN a valid trial object without enabled flag WHEN the object is decode THEN the decoded object has enabled flag set to true', async () => {
+    const result = Trial.decode({...aTrial, isEnabled: undefined});
+    expect(E.isRight(result)).toBeTruthy();
+    pipe(
+      result,
+      E.map(decoded => expect(decoded).toMatchObject(aTrial))
+    )
   });
 
   it('GIVEN an invalid trial without a name WHEN the object is decoded THEN the decode fails', async () => {

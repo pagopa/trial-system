@@ -14,7 +14,7 @@ export const Trial = t.intersection([
   t.type({
     id: NonEmptyString,
     name: NonEmptyString,
-    isEnabled: withDefault(t.boolean, false),
+    isEnabled: withDefault(t.boolean, true),
   }),
   t.partial({
     description: NonEmptyString,
