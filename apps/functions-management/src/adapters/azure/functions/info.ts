@@ -22,7 +22,7 @@ const applicativeValidation = RTE.getApplicativeReaderTaskValidation(
 
 export const makeInfoHandler: H.Handler<
   H.HttpRequest,
-  H.HttpResponse<ApplicationInfo, 200>,
+  H.HttpResponse<ApplicationInfo>,
   CosmosDBDependency
 > = H.of((req: H.HttpRequest) =>
   pipe(
