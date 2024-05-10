@@ -62,7 +62,6 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
 
-
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -82,7 +81,10 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/UserId'
+        # Using the reference ($ref) to UserId breaks the client generator
+        # For now duplicate the type
+        type: string
+        minLength: 1
   schemas:
     ProblemJson:
       $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/ProblemJson'
@@ -98,7 +100,8 @@ components:
     UpdatedAt:
       $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/Timestamp'
     UserId:
-      $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/FiscalCode'
+      type: string
+      minLength: 1
     SubscriptionState:
       type: string
       description: |-
