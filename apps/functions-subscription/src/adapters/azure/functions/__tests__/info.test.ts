@@ -9,7 +9,7 @@ const request = new HttpRequest({
 });
 const context = makeFunctionContext();
 
-describe('Info function', () => {
+describe('info', () => {
   it('should return 200 if the application is healthy', async () => {
     const actual = await makeInfoHandler({})(request, context);
     const expected = {
