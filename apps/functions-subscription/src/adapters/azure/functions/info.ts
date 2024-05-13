@@ -18,4 +18,4 @@ const makeInfoHandler: H.Handler<
   ),
 );
 
-export const InfoFunction = httpAzureFunction(makeInfoHandler);
+export const makeInfoFunction = httpAzureFunction(makeInfoHandler);
