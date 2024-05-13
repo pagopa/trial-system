@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { makeInfoFunction } from '../info';
+import { makeInfoHandler } from '../info';
 import { HttpRequest } from '@azure/functions';
 import { makeFunctionContext } from './mocks';
 
@@ -11,7 +11,7 @@ const context = makeFunctionContext();
 
 describe('Info function', () => {
   it('should return 200 if the application is healthy', async () => {
-    const actual = await makeInfoFunction({})(request, context);
+    const actual = await makeInfoHandler({})(request, context);
     const expected = {
       message: `Pong from ${request.url}`,
     };
