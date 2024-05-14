@@ -5,12 +5,12 @@ import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
 
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
-import { CreatedTrial } from '../../../generated/definitions/internal/CreatedTrial';
 import { RetrievedTrial, Trial } from '../../../models/trial';
 import { RequiredBodyMiddleware } from '../../../middlewares/request';
 import { CreateTrial } from '../../../generated/definitions/internal/CreateTrial';
 import { TrialModelDependency } from '../../../utils/trials/dependency';
 import { ulid } from 'ulid';
+import { CreatedTrial } from '../../../generated/definitions/internal/CreatedTrial';
 
 export const storeNewTrial: (
   createTrialBody: CreateTrial,
