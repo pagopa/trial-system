@@ -53,7 +53,7 @@ describe('trial', () => {
 
 describe('upsert', () => {
   it('GIVEN a valid trial WHEN the client upsert is called THEN the create return a Right', async () => {
-    mockUpsert.mockImplementationOnce((_, __) =>
+    mockUpsert.mockImplementationOnce(() =>
       Promise.resolve({
         resource: { ...aRetrievedTrial },
       }),
@@ -70,7 +70,7 @@ describe('upsert', () => {
 
   it('GIVEN an invalid trial WHEN the client upsert is called THEN the create return a Left', async () => {
     const model = new TrialModel(containerMock);
-    const result = await model.upsert({ ...aTrial, name: undefined } as any)();
+    const result = await model.upsert({ ...aTrial, name: undefined } as unknown as Trial)();
     expect(mockUpsert).toHaveBeenCalled();
     expect(E.isLeft(result)).toBeTruthy();
   });
