@@ -9,7 +9,7 @@ export default [
   // Load ts strict and stylistic config
   ...tseslint,
   // Define rules to enforce functional paradigm
-  fneslint,
+  ...fneslint,
   // Runs Prettier as an ESLint rule and reports differences as individual
   // ESLint issues
   prettier,

@@ -10,7 +10,7 @@ on:
       - ready_for_review
     paths:
       # Trigger the workflow when resources are modified
-      - "infra/resources"
+      - "infra/resources/**"
       # Trigger the workflow when the involved workflows are modified
       - ".github/workflows/code_review_infra.yaml"
       - ".github/workflows/templates/infra_**"
