@@ -15,7 +15,6 @@ export default [
       'functional/no-let': 'error',
       'functional/prefer-readonly-type': 'error',
       // No other paradigms
-      'functional/no-classes': 'error',
       'functional/no-this-expressions': 'error',
       // No statements
       'functional/no-expression-statements': 'error',
