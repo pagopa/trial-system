@@ -39,6 +39,7 @@ export class TrialModel extends CosmosdbModel<
    * @param container the Cosmos container client
    */
   constructor(container: Container) {
+    // eslint-disable-next-line functional/no-expression-statements
     super(container, Trial, RetrievedTrial);
   }
 }
