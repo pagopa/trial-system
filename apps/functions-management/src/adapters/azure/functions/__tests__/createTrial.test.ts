@@ -5,7 +5,6 @@ import * as E from "fp-ts/lib/Either";
 import * as TE from "fp-ts/lib/TaskEither";
 import { TrialModel } from "../../../../models/trial";
 import * as H from "@pagopa/handler-kit";
-import { CreateTrial } from "../../../../generated/definitions/internal/CreateTrial";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 
 const upsertMock = vi.fn();
@@ -13,7 +12,7 @@ const trialModelMock = ({
   upsert: upsertMock
 } as unknown) as TrialModel;
 
-const aValidBodyPayload: CreateTrial = {
+const aValidBodyPayload = {
   name: "TrialName" as NonEmptyString
 };
 
