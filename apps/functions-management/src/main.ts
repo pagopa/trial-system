@@ -21,6 +21,7 @@ app.http('info', {
   route: 'info',
 });
 
+// eslint-disable-next-line functional/no-expression-statements
 app.http('trials', {
   methods: ['POST'],
   authLevel: 'function',
