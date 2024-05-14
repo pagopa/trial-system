@@ -54,6 +54,20 @@ module "cosmosdb_sql_database_trial" {
   account_name        = module.cosmosdb_account.name
 }
 
+module "cosmosdb_sql_container_trials" {
+  source              = "git::https://github.com/pagopa/terraform-azurerm-v3//cosmosdb_sql_container?ref=v8.7.0"
+  name                = "trials"
+  resource_group_name = azurerm_resource_group.data_rg.name
+  account_name        = module.cosmosdb_account.name
+  database_name       = module.cosmosdb_sql_database_trial.name
+  partition_key_path  = "/id"
+
+  autoscale_settings = {
+    max_throughput = var.trial_database.trials.max_throughput
+  }
+
+  default_ttl = var.trial_database.trials.ttl
+}
 
 // ----------------------------------------------------
 // Alerts

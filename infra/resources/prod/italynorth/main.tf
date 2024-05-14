@@ -64,4 +64,11 @@ module "commons" {
   cidr_subnet_fnmanagement        = ["10.40.4.0/24"]
   cidr_subnet_fnsubscription      = ["10.30.5.0/24"]
   cidr_subnet_fnsubscriptionasync = ["10.30.6.0/24"]
+
+  trial_database = {
+    trials = {
+      max_throughput = 1000
+      ttl            = null
+    }
+  }
 }
