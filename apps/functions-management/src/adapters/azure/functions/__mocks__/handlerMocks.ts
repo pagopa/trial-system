@@ -10,7 +10,7 @@ export const httpHandlerInputMocks: H.HandlerEnvironment<
   input: H.request(mockUrl),
   inputDecoder: H.HttpRequest,
   logger: {
-    log: () => () => {},
+    log: () => () => console.log,
     format: L.format.simple,
   },
 };
