@@ -56,7 +56,7 @@ describe('upsert', () => {
     mockUpsert.mockImplementationOnce(() =>
       Promise.resolve({
         resource: { ...aRetrievedTrial },
-      })
+      }),
     );
     const model = new TrialModel(containerMock);
     const result = await model.upsert(aTrial)();
