@@ -136,7 +136,7 @@ resource "azurerm_private_endpoint" "management_fn" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
@@ -157,7 +157,7 @@ resource "azurerm_private_endpoint" "management_fn_staging" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
@@ -178,7 +178,7 @@ resource "azurerm_private_endpoint" "subscription_fn" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
@@ -199,7 +199,7 @@ resource "azurerm_private_endpoint" "subscription_fn_staging" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
