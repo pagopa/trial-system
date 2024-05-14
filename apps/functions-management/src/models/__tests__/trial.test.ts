@@ -23,7 +23,7 @@ const mockFetchAll = vi.fn();
 const mockGetAsyncIterator = vi.fn();
 const mockUpsert = vi.fn();
 
-const containerMock = ({
+const containerMock = {
   items: {
     readAll: vi.fn(() => ({
       fetchAll: mockFetchAll,
@@ -33,8 +33,8 @@ const containerMock = ({
     query: vi.fn(() => ({
       fetchAll: mockFetchAll,
     })),
-  }
-} as unknown) as Container;
+  },
+} as unknown as Container;
 
 describe('trial', () => {
   it('GIVEN a valid trial object WHEN the object is decode THEN the decode succeed', async () => {
@@ -55,7 +55,7 @@ describe('upsert', () => {
   it('GIVEN a valid trial WHEN the client upsert is called THEN the create return a Right', async () => {
     mockUpsert.mockImplementationOnce(() =>
       Promise.resolve({
-        resource: { ...aRetrievedTrial }
+        resource: { ...aRetrievedTrial },
       })
     );
     const model = new TrialModel(containerMock);
@@ -63,17 +63,17 @@ describe('upsert', () => {
     expect(mockUpsert).toHaveBeenCalled();
     expect(mockUpsert).toHaveBeenCalledWith(
       JSON.parse(JSON.stringify(aTrial)),
-      expect.objectContaining({})
+      expect.objectContaining({}),
     );
     expect(E.isRight(result)).toBeTruthy();
   });
 
   it('GIVEN an invalid trial WHEN the client upsert is called THEN the create return a Left', async () => {
     const model = new TrialModel(containerMock);
-    const result = await model.upsert(({
+    const result = await model.upsert({
       ...aTrial,
       name: undefined,
-    } as unknown) as Trial)();
+    } as unknown as Trial)();
     expect(mockUpsert).toHaveBeenCalled();
     expect(E.isLeft(result)).toBeTruthy();
   });
