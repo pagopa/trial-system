@@ -44,12 +44,12 @@ describe('trial', () => {
   });
 
   it('GIVEN a valid trial object without enabled flag WHEN the object is decode THEN the decoded object has enabled flag set to true', async () => {
-    const result = Trial.decode({...aTrial, isEnabled: undefined});
+    const result = Trial.decode({ ...aTrial, isEnabled: undefined });
     expect(E.isRight(result)).toBeTruthy();
     pipe(
       result,
-      E.map(decoded => expect(decoded).toMatchObject(aTrial))
-    )
+      E.map((decoded) => expect(decoded).toMatchObject(aTrial)),
+    );
   });
 
   it('GIVEN an invalid trial without a name WHEN the object is decoded THEN the decode fails', async () => {
