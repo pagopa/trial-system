@@ -9,12 +9,25 @@ export default [
   // Load ts strict and stylistic config
   ...tseslint,
   // Define rules to enforce functional paradigm
-  fneslint,
+  ...fneslint,
   // Runs Prettier as an ESLint rule and reports differences as individual
   // ESLint issues
   prettier,
   {
     // Ignore everything under any dist/ directory
-    ignores: ['**/dist/', '**/__tests__/', '**/__mocks__/'],
+    ignores: ['**/dist/'],
+  },
+  {
+    /**
+     * Test files are allowed to use expression statements
+     * (like `describe()`, `test()`, and so on).
+     * The `no-return-void` allow us to write
+     * `describe(() => {})`.
+     **/
+    files: ['**/__tests__/**'],
+    rules: {
+      'functional/no-expression-statements': 'off',
+      'functional/no-return-void': 'off',
+    },
   },
 ];

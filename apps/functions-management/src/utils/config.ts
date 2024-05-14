@@ -1,15 +1,13 @@
 /**
  * Config module
  *
- * Single point of access for the application confguration. Handles validation on required environment variables.
- * The configuration is evaluate eagerly at the first access to the module. The module exposes convenient methods to access such value.
+ * Single point of access for the application configuration. Handles validation on required environment variables.
+ * The configuration is evaluated eagerly at the first access to the module. The module exposes convenient methods to access such value.
  */
-
 import * as t from 'io-ts';
 
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-
 import * as reporters from '@pagopa/ts-commons/lib/reporters';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
@@ -33,7 +31,7 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode(envConfig);
 
 /**
  * Read the application configuration and check for invalid values.
- * Configuration is eagerly evalued when the application starts.
+ * Configuration is eagerly evaluated when the application starts.
  *
  * @returns either the configuration values or a list of validation errors
  */
