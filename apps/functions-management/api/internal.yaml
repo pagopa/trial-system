@@ -35,8 +35,6 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '401':
           $ref: '#/components/responses/401Unauthorized'
-        '404':
-          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
 
@@ -65,8 +63,6 @@ components:
     CreateTrial:
       type: object
       properties:
-        trialId:
-          $ref: '#/components/schemas/TrialId'
         name:
           type: string
           description: The Trial initiative's name
