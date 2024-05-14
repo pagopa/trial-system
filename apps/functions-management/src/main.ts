@@ -25,5 +25,5 @@ app.http('trials', {
   methods: ['POST'],
   authLevel: 'function',
   handler: CreateTrialFunction({ trialModel }),
-  route: 'api/v1/trials'
-})
+  route: 'api/v1/trials',
+});
