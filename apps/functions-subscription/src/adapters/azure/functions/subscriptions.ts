@@ -39,9 +39,9 @@ const makeSubscriptionResp = (
 ): Subscription => ({
   trialId: subscription.trialId as unknown as NonEmptyString,
   userId: subscription.userId as unknown as NonEmptyString,
-  state: SubscriptionStateEnum.UNSUBSCRIBED,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  state: SubscriptionStateEnum[subscription.state],
+  createdAt: subscription.createdAt,
+  updatedAt: subscription.updatedAt,
 });
 
 const makeHandlerKitHandler: H.Handler<
