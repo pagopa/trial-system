@@ -1,12 +1,13 @@
 import { app } from '@azure/functions';
 import { makeInfoHandler } from './adapters/azure/functions/info';
 import { makePostSubscriptionHandler } from './adapters/azure/functions/subscriptions';
-import { Capabilities } from './domain/capabilities';
+import { SystemEnv } from './system-env';
 
-/** FIXME: At the moment, we do not have implementations for the capabilities.
+/**
+ * FIXME: At the moment, we do not have implementations for the env.
  * To let the code properly work, we are creating an empty object.
  */
-const capabilities = {} as unknown as Capabilities;
+const env = {} as unknown as SystemEnv;
 
 // eslint-disable-next-line functional/no-expression-statements
 app.http('info', {
@@ -20,6 +21,6 @@ app.http('info', {
 app.http('/trials/{trialId}/subscriptions', {
   methods: ['POST'],
   authLevel: 'anonymous',
-  handler: makePostSubscriptionHandler(capabilities),
+  handler: makePostSubscriptionHandler(env),
   route: '/trials/{trialId}/subscriptions',
 });
