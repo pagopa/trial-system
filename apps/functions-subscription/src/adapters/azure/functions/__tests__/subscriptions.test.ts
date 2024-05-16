@@ -4,7 +4,10 @@ import { HttpRequest } from '@azure/functions';
 import { makeAValidCreateSubscriptionRequest } from './data';
 import { makeFunctionContext, makeSystemEnv } from './mocks';
 import { makePostSubscriptionHandler } from '../subscriptions';
-import { SubscriptionAlreadyExists } from '../../../../use-cases/errors';
+import {
+  SubscriptionAlreadyExists,
+  SubscriptionStoreError,
+} from '../../../../use-cases/errors';
 import { aSubscription } from '../../../../domain/__tests__/data';
 
 describe('subscriptions', () => {
@@ -19,10 +22,11 @@ describe('subscriptions', () => {
     expect(actual.status).toStrictEqual(201);
   });
 
-  it.skip('should return 202 TBD', async () => {
+  it('should return 202 if there was an issue storing the subscription', async () => {
     const env = makeSystemEnv();
-    // FIXME
-    env.insertSubscription.mockReturnValueOnce(TE.left(new Error('')));
+    env.insertSubscription.mockReturnValueOnce(
+      TE.left(new SubscriptionStoreError()),
+    );
 
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(),
@@ -48,7 +52,7 @@ describe('subscriptions', () => {
     expect(actual.status).toStrictEqual(400);
   });
 
-  it.skip('should return 409 because the subscription already exists', async () => {
+  it('should return 409 because the subscription already exists', async () => {
     const env = makeSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
       TE.left(new SubscriptionAlreadyExists('Already exists')),
