@@ -9,7 +9,7 @@ import {
   UserId,
   makeSubscriptionId,
 } from '../domain/subscription';
-import { SubscriptionAlreadyExists } from './errors';
+import { SubscriptionAlreadyExists, SubscriptionStoreError } from './errors';
 import { nowDate } from '../domain/clock';
 
 // Maps all the requirements for this use-case
@@ -39,18 +39,21 @@ const handleSubscriptionAlreadyExists =
 
 const handleMissingSubscription =
   (userId: UserId, trialId: TrialId, id: SubscriptionId, now: Date) =>
-  (env: Env) =>
+  ({ subscriptionRequestWriter, subscriptionWriter }: Env) =>
     pipe(
-      env.subscriptionRequestWriter.insert({ userId, trialId }),
+      subscriptionRequestWriter.insert({ userId, trialId }),
       TE.flatMap(() =>
-        env.subscriptionWriter.insert({
-          id,
-          userId,
-          trialId,
-          createdAt: now,
-          updatedAt: now,
-          state: 'SUBSCRIBED',
-        }),
+        pipe(
+          subscriptionWriter.insert({
+            id,
+            userId,
+            trialId,
+            createdAt: now,
+            updatedAt: now,
+            state: 'SUBSCRIBED',
+          }),
+          TE.mapLeft(() => new SubscriptionStoreError()),
+        ),
       ),
     );
 
