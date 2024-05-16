@@ -11,9 +11,10 @@ import {
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { SubscriptionAlreadyExists } from '../errors';
 
+const { userId, trialId } = aSubscription;
+
 describe('insertSubscription', () => {
   it('should return error if the subscription already exists', async () => {
-    const { userId, trialId } = aSubscription;
     const testEnv = makeTestEnv();
 
     testEnv.subscriptionReader.get.mockReturnValueOnce(
@@ -29,7 +30,6 @@ describe('insertSubscription', () => {
   });
 
   it('should return the subscription created', async () => {
-    const { userId, trialId } = aSubscription;
     const testEnv = makeTestEnv();
 
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
@@ -47,7 +47,6 @@ describe('insertSubscription', () => {
   });
 
   it('should return AsyncProcessing', async () => {
-    const { userId, trialId } = aSubscription;
     const testEnv = makeTestEnv();
     const error = new Error('Oh No!');
 
@@ -69,7 +68,6 @@ describe('insertSubscription', () => {
   });
 
   it('should return error if something fail', async () => {
-    const { userId, trialId } = aSubscription;
     const testEnv = makeTestEnv();
     const error = new Error('Oh No!');
 
