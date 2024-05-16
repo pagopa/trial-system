@@ -8,7 +8,7 @@ import {
   aSubscriptionRequest,
 } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
-import { SubscriptionAlreadyExists } from '../errors';
+import { SubscriptionAlreadyExists, SubscriptionStoreError } from '../errors';
 
 const { userId, trialId } = aSubscription;
 
@@ -58,7 +58,7 @@ describe('insertSubscription', () => {
     );
 
     const actual = await insertSubscription(userId, trialId)(testEnv)();
-    const expected = E.left(error);
+    const expected = E.left(new SubscriptionStoreError());
     expect(actual).toMatchObject(expected);
     expect(
       testEnv.subscriptionRequestWriter.insert.mock.invocationCallOrder[0],
