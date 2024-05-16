@@ -8,6 +8,9 @@ export const aSubscription = {
   id: aSubscriptionId,
   userId: aUserId,
   trialId: aTrialId,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  state: 'SUBSCRIBED',
 };
 
 export const aSubscriptionRequest = {

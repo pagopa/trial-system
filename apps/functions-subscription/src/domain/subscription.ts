@@ -8,11 +8,20 @@ export type SubscriptionId = string & { readonly __tag: unique symbol };
 export type UserId = string & { readonly __tag: unique symbol };
 export type TrialId = string & { readonly __tag: unique symbol };
 
+export type SubscriptionState =
+  | 'UNSUBSCRIBED'
+  | 'SUBSCRIBED'
+  | 'ACTIVE'
+  | 'DISABLED';
+
 export interface Subscription {
   readonly id: SubscriptionId;
   readonly userId: UserId;
   readonly trialId: TrialId;
   readonly activatedAt?: Date;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+  readonly state: SubscriptionState;
 }
 
 /**
@@ -39,6 +48,6 @@ export interface SubscriptionWriter {
 export const makeSubscriptionId = (trialId: TrialId, userId: UserId) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'hashFn'>>(),
-    RTE.flatMapIO(({ hashFn }) => hashFn(`${trialId}${userId}`)),
+    RTE.map(({ hashFn }) => hashFn(`${trialId}${userId}`)),
     RTE.map(({ value }) => value as SubscriptionId),
   );

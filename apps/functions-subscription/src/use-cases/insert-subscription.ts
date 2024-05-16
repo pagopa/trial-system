@@ -10,6 +10,7 @@ import {
   makeSubscriptionId,
 } from '../domain/subscription';
 import { SubscriptionAlreadyExists } from './errors';
+import { nowDate } from '../domain/clock';
 
 // Maps all the requirements for this use-case
 type Env = Pick<
@@ -18,6 +19,7 @@ type Env = Pick<
   | 'subscriptionReader'
   | 'subscriptionWriter'
   | 'hashFn'
+  | 'clock'
 >;
 
 const handleSubscriptionAlreadyExists =
@@ -36,10 +38,20 @@ const handleSubscriptionAlreadyExists =
     );
 
 const handleMissingSubscription =
-  (userId: UserId, trialId: TrialId, id: SubscriptionId) => (env: Env) =>
+  (userId: UserId, trialId: TrialId, id: SubscriptionId, now: Date) =>
+  (env: Env) =>
     pipe(
       env.subscriptionRequestWriter.insert({ userId, trialId }),
-      TE.flatMap(() => env.subscriptionWriter.insert({ userId, trialId, id })),
+      TE.flatMap(() =>
+        env.subscriptionWriter.insert({
+          id,
+          userId,
+          trialId,
+          createdAt: now,
+          updatedAt: now,
+          state: 'SUBSCRIBED',
+        }),
+      ),
     );
 
 export const insertSubscription = (userId: UserId, trialId: TrialId) =>
@@ -47,5 +59,8 @@ export const insertSubscription = (userId: UserId, trialId: TrialId) =>
     RTE.ask<Env>(),
     RTE.apSW('id', makeSubscriptionId(trialId, userId)),
     RTE.chainFirstW(({ id }) => handleSubscriptionAlreadyExists(id)),
-    RTE.chainW(({ id }) => handleMissingSubscription(userId, trialId, id)),
+    RTE.apSW('now', nowDate()),
+    RTE.chainW(({ id, now }) =>
+      handleMissingSubscription(userId, trialId, id, now),
+    ),
   );
