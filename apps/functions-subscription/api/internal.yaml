@@ -126,6 +126,8 @@ components:
       properties:
         userId:
           $ref: '#/components/schemas/UserId'
+      required:
+        - userId
     Subscription:
       type: object
       properties:
@@ -139,6 +141,11 @@ components:
           $ref: '#/components/schemas/CreatedAt'
         updatedAt:
           $ref: '#/components/schemas/UpdatedAt'
+      required:
+        - trialId
+        - userId
+        - state
+        - createdAt
   responses:
     500InternalServerError:
       description: Internal Server Error
