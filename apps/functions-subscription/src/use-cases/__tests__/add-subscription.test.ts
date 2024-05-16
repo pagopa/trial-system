@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import * as IO from 'fp-ts/IO';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
@@ -20,7 +19,7 @@ describe('insertSubscription', () => {
     testEnv.subscriptionReader.get.mockReturnValueOnce(
       TE.right(O.some(aSubscription)),
     );
-    testEnv.hashFn.mockReturnValueOnce(IO.of(aSubscription.id));
+    testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
 
     const actual = await insertSubscription(userId, trialId)(testEnv)();
     const expected = E.left(
@@ -32,10 +31,11 @@ describe('insertSubscription', () => {
   it('should return the subscription created', async () => {
     const testEnv = makeTestEnv();
 
+    testEnv.clock.now.mockReturnValue(aSubscription.createdAt);
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
-    testEnv.hashFn.mockReturnValueOnce(IO.of(aSubscription.id));
-    testEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.right(aSubscription),
+    testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
+    testEnv.subscriptionWriter.insert.mockImplementationOnce((_) =>
+      TE.right(_),
     );
     testEnv.subscriptionRequestWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionRequest),
@@ -51,7 +51,7 @@ describe('insertSubscription', () => {
     const error = new Error('Oh No!');
 
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
-    testEnv.hashFn.mockReturnValueOnce(IO.of(aSubscription.id));
+    testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
     testEnv.subscriptionWriter.insert.mockReturnValueOnce(TE.left(error));
     testEnv.subscriptionRequestWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionRequest),
@@ -72,7 +72,7 @@ describe('insertSubscription', () => {
     const error = new Error('Oh No!');
 
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.left(error));
-    testEnv.hashFn.mockReturnValueOnce(IO.of(aSubscription.id));
+    testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
 
     const actual = await insertSubscription(userId, trialId)(testEnv)();
     const expected = E.left(error);

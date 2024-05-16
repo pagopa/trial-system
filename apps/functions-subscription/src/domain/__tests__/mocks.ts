@@ -11,11 +11,15 @@ export const makeTestEnv = () => {
     insert: vi.fn(),
   };
   const hashFnMock = vi.fn();
+  const clockMock = {
+    now: vi.fn(),
+  };
 
   return {
     subscriptionReader: subscriptionReaderMock,
     subscriptionWriter: subscriptionWriterMock,
     subscriptionRequestWriter: subscriptionRequestWriterMock,
     hashFn: hashFnMock,
+    clock: clockMock,
   };
 };

@@ -1,6 +1,7 @@
 /**
  * This file is a capabilities mapper, maps a capability to a given key.
  */
+import { Clock } from './clock';
 import { HashFn } from './hash';
 import { SubscriptionReader, SubscriptionWriter } from './subscription';
 import { SubscriptionRequestWriter } from './subscription-request';
@@ -16,4 +17,5 @@ export interface Capabilities {
   readonly subscriptionWriter: SubscriptionWriter;
   readonly subscriptionRequestWriter: SubscriptionRequestWriter;
   readonly hashFn: HashFn;
+  readonly clock: Clock;
 }
