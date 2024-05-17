@@ -2,7 +2,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import * as TE from 'fp-ts/TaskEither';
 import { insertSubscription } from './use-cases/insert-subscription';
 
-type Test<T> = T extends (
+type RemoveReaderType<T> = T extends (
   ...args: infer I
   /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
 ) => RTE.ReaderTaskEither<any, infer E, infer A>
@@ -10,5 +10,5 @@ type Test<T> = T extends (
   : never;
 
 export interface SystemEnv {
-  readonly insertSubscription: Test<typeof insertSubscription>;
+  readonly insertSubscription: RemoveReaderType<typeof insertSubscription>;
 }
