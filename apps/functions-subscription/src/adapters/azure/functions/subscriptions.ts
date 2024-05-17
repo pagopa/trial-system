@@ -1,5 +1,5 @@
 import * as H from '@pagopa/handler-kit';
-import { flow, pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import * as E from 'fp-ts/Either';
 import { Decoder } from 'io-ts';
@@ -14,6 +14,8 @@ import {
 } from '../../../domain/subscription';
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
 import { SystemEnv } from '../../../system-env';
+import { ItemAlreadyExists } from '../../../domain/errors';
+import { SubscriptionStoreError } from '../../../use-cases/errors';
 
 const parseRequestBody =
   <T>(schema: Decoder<unknown, T>) =>
@@ -47,6 +49,7 @@ const makeSubscriptionResp = (
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
   | H.HttpResponse<Subscription, 201>
+  | H.HttpResponse<unknown, 202>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
   Pick<SystemEnv, 'insertSubscription'>
 > = H.of((req: H.HttpRequest) => {
@@ -66,8 +69,25 @@ const makeHandlerKitHandler: H.Handler<
         trialId as unknown as TrialId,
       ),
     ),
-    RTE.map(flow(makeSubscriptionResp, H.createdJson)),
-    RTE.orElseW(flow(H.toProblemJson, H.problemJson, RTE.of)),
+    RTE.map((sub) => ({ kind: '201' as const, ...sub })),
+    RTE.orElseW((err) => {
+      if (err instanceof SubscriptionStoreError) {
+        return RTE.right({ kind: '202' as const });
+      } else return RTE.left(err);
+    }),
+    RTE.map((result) => {
+      if (result.kind === '201')
+        return pipe(result, makeSubscriptionResp, H.createdJson);
+      else return pipe({}, H.successJson, H.withStatusCode(202));
+    }),
+    RTE.mapLeft((err) => {
+      if (err instanceof ItemAlreadyExists) {
+        return pipe(err, H.toProblemJson, H.problemJson, H.withStatusCode(409));
+      } else {
+        return pipe(err, H.toProblemJson, H.problemJson);
+      }
+    }),
+    RTE.orElseW(RTE.of),
   );
 });
 
