@@ -14,11 +14,19 @@ paths:
       operationId: info
       responses:
         '200':
-          $ref: '#/components/responses/200Info'
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationInfo'
         '404':
-          $ref: '#/components/responses/404NotFound'
+          description: Not Found
         '500':
-          $ref: '#/components/responses/500InternalServerError'
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
   /trials/{trialId}/subscriptions/{userId}:
     get:
       operationId: getSubscription
@@ -31,13 +39,21 @@ paths:
         - $ref: '#/components/parameters/pathUserId'
       responses:
         '200':
-          $ref: '#/components/responses/200Subscription'
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
         '401':
-          $ref: '#/components/responses/401Unauthorized'
+          description: Unauthorized
         '404':
-          $ref: '#/components/responses/404NotFound'
+          description: Not Found
         '500':
-          $ref: '#/components/responses/500InternalServerError'
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
   /trials/{trialId}/subscriptions:
     post:
       operationId: createSubscription
@@ -52,15 +68,27 @@ paths:
               $ref: '#/components/schemas/CreateSubscription'
       responses:
         '201':
-          $ref: '#/components/responses/201Subscription'
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
         '401':
-          $ref: '#/components/responses/401Unauthorized'
+          description: Unauthorized
         '404':
-          $ref: '#/components/responses/404NotFound'
+          description: Not Found
         '500':
-          $ref: '#/components/responses/500InternalServerError'
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
 
 components:
   securitySchemes:
@@ -139,34 +167,3 @@ components:
           $ref: '#/components/schemas/CreatedAt'
         updatedAt:
           $ref: '#/components/schemas/UpdatedAt'
-  responses:
-    500InternalServerError:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ProblemJson'
-    400BadRequest:
-      description: Bad Request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ProblemJson'
-    401Unauthorized:
-      description: Unauthorized
-    404NotFound:
-      description: Not Found
-    200Info:
-      description: Success
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApplicationInfo'
-    200Subscription:
-      description: Success
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Subscription'
-    201Subscription:
-      $ref: '#/components/responses/200Subscription'
