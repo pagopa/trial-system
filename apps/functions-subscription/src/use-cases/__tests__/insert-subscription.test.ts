@@ -50,9 +50,14 @@ describe('insertSubscription', () => {
     expect(testEnv.subscriptionRequestWriter.insert).toBeCalledWith(
       aSubscriptionRequest,
     );
+    expect(
+      testEnv.subscriptionRequestWriter.insert.mock.invocationCallOrder[0],
+    ).toBeLessThan(
+      testEnv.subscriptionWriter.insert.mock.invocationCallOrder[0],
+    );
   });
 
-  it('should return AsyncProcessing', async () => {
+  it('should return SubscriptionStoreError if item insertion fails but request insertion succeeds', async () => {
     const testEnv = makeTestEnv();
     const error = new Error('Oh No!');
 
