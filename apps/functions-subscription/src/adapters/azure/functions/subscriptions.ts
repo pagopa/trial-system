@@ -49,14 +49,14 @@ const makeHandlerKitHandler: H.Handler<
         trialId as unknown as TrialId,
       ),
     ),
-    RTE.map((sub) => ({ kind: '201' as const, ...sub })),
+    RTE.map((sub) => ({ kind: 'Subscription' as const, ...sub })),
     RTE.orElseW((err) => {
       if (err instanceof SubscriptionStoreError) {
-        return RTE.right({ kind: '202' as const });
+        return RTE.right({ kind: 'SubscriptionRequest' as const });
       } else return RTE.left(err);
     }),
     RTE.map((result) => {
-      if (result.kind === '201')
+      if (result.kind === 'Subscription')
         return pipe(result, makeSubscriptionResp, H.createdJson);
       else return pipe({}, H.successJson, H.withStatusCode(202));
     }),
