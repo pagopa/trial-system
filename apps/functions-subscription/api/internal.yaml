@@ -151,11 +151,19 @@ components:
       minLength: 1
     CreateSubscription:
       type: object
+      required:
+        - userId
       properties:
         userId:
           $ref: '#/components/schemas/UserId'
     Subscription:
       type: object
+      required:
+        - trialId
+        - userId
+        - state
+        - createdAt
+        - updatedAt
       properties:
         trialId:
           $ref: '#/components/schemas/TrialId'
