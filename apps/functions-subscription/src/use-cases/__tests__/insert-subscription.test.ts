@@ -8,7 +8,8 @@ import {
   aSubscriptionRequest,
 } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
-import { SubscriptionAlreadyExists, SubscriptionStoreError } from '../errors';
+import { SubscriptionStoreError } from '../errors';
+import { ItemAlreadyExists } from '../../domain/errors';
 
 const { userId, trialId } = aSubscription;
 
@@ -23,7 +24,7 @@ describe('insertSubscription', () => {
 
     const actual = await insertSubscription(userId, trialId)(testEnv)();
     const expected = E.left(
-      new SubscriptionAlreadyExists('Subscription already exists'),
+      new ItemAlreadyExists('Subscription already exists'),
     );
     expect(actual).toStrictEqual(expected);
   });

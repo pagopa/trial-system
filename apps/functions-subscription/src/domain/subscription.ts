@@ -4,6 +4,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import * as TE from 'fp-ts/TaskEither';
 import { Capabilities } from './capabilities';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import { ItemAlreadyExists, TooManyRequestsError } from './errors';
 
 export type SubscriptionId = NonEmptyString & { readonly __tag: unique symbol };
 export type UserId = NonEmptyString & { readonly __tag: unique symbol };
@@ -31,7 +32,7 @@ export interface Subscription {
 export interface SubscriptionReader {
   readonly get: (
     id: SubscriptionId,
-  ) => TE.TaskEither<Error, O.Option<Subscription>>;
+  ) => TE.TaskEither<Error | TooManyRequestsError, O.Option<Subscription>>;
 }
 
 /**
@@ -40,7 +41,10 @@ export interface SubscriptionReader {
 export interface SubscriptionWriter {
   readonly insert: (
     subscription: Subscription,
-  ) => TE.TaskEither<Error, Subscription>;
+  ) => TE.TaskEither<
+    Error | TooManyRequestsError | ItemAlreadyExists,
+    Subscription
+  >;
 }
 
 /**
