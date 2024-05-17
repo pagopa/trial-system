@@ -1,30 +1,66 @@
+import * as t from 'io-ts';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import * as TE from 'fp-ts/TaskEither';
 import { Capabilities } from './capabilities';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
-import { ItemAlreadyExists, TooManyRequestsError } from './errors';
+import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 
-export type SubscriptionId = NonEmptyString & { readonly __tag: unique symbol };
-export type UserId = NonEmptyString & { readonly __tag: unique symbol };
-export type TrialId = NonEmptyString & { readonly __tag: unique symbol };
-
-export type SubscriptionState =
-  | 'UNSUBSCRIBED'
-  | 'SUBSCRIBED'
-  | 'ACTIVE'
-  | 'DISABLED';
-
-export interface Subscription {
-  readonly id: SubscriptionId;
-  readonly userId: UserId;
-  readonly trialId: TrialId;
-  readonly activatedAt?: Date;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-  readonly state: SubscriptionState;
+// a unique brand for subscriptionId
+interface SubscriptionIdBrand {
+  // use `unique symbol` here to ensure uniqueness across modules / packages
+  readonly SubscriptionId: unique symbol;
 }
+export const SubscriptionIdCodec = t.brand(
+  t.string,
+  (str): str is t.Branded<string, SubscriptionIdBrand> => str.length > 0,
+  'SubscriptionId',
+);
+export type SubscriptionId = t.TypeOf<typeof SubscriptionIdCodec>;
+
+// a unique brand for userId
+interface UserIdBrand {
+  // use `unique symbol` here to ensure uniqueness across modules / packages
+  readonly UserId: unique symbol;
+}
+export const UserIdCodec = t.brand(
+  t.string,
+  (str): str is t.Branded<string, UserIdBrand> => str.length > 0,
+  'UserId',
+);
+export type UserId = t.TypeOf<typeof UserIdCodec>;
+
+// a unique brand for trialId
+interface TrialIdBrand {
+  // use `unique symbol` here to ensure uniqueness across modules / packages
+  readonly TrialId: unique symbol;
+}
+export const TrialIdCodec = t.brand(
+  t.string,
+  (str): str is t.Branded<string, TrialIdBrand> => str.length > 0,
+  'TrialId',
+);
+export type TrialId = t.TypeOf<typeof TrialIdCodec>;
+
+export const SubscriptionCodec = t.intersection([
+  t.strict({
+    id: SubscriptionIdCodec,
+    userId: UserIdCodec,
+    trialId: TrialIdCodec,
+    createdAt: IsoDateFromString,
+    updatedAt: IsoDateFromString,
+    state: t.keyof({
+      UNSUBSCRIBED: null,
+      SUBSCRIBED: null,
+      ACTIVE: null,
+      DISABLED: null,
+    }),
+  }),
+  t.partial({
+    activatedAt: IsoDateFromString,
+  }),
+]);
+export type Subscription = t.TypeOf<typeof SubscriptionCodec>;
 
 /**
  * This type represents the capability do get a subscription.
@@ -32,7 +68,7 @@ export interface Subscription {
 export interface SubscriptionReader {
   readonly get: (
     id: SubscriptionId,
-  ) => TE.TaskEither<Error | TooManyRequestsError, O.Option<Subscription>>;
+  ) => TE.TaskEither<Error, O.Option<Subscription>>;
 }
 
 /**
@@ -41,10 +77,7 @@ export interface SubscriptionReader {
 export interface SubscriptionWriter {
   readonly insert: (
     subscription: Subscription,
-  ) => TE.TaskEither<
-    Error | TooManyRequestsError | ItemAlreadyExists,
-    Subscription
-  >;
+  ) => TE.TaskEither<Error, Subscription>;
 }
 
 /**
