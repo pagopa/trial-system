@@ -160,8 +160,6 @@ components:
       properties:
         userId:
           $ref: '#/components/schemas/UserId'
-      required:
-        - userId
     Subscription:
       type: object
       required:
