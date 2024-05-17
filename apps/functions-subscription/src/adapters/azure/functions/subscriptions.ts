@@ -1,8 +1,6 @@
 import * as H from '@pagopa/handler-kit';
 import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
-import * as E from 'fp-ts/Either';
-import { Decoder } from 'io-ts';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { Subscription } from '../../../generated/definitions/internal/Subscription';
@@ -16,31 +14,13 @@ import { SubscriptionStateEnum } from '../../../generated/definitions/internal/S
 import { SystemEnv } from '../../../system-env';
 import { ItemAlreadyExists } from '../../../domain/errors';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
-
-const parseRequestBody =
-  <T>(schema: Decoder<unknown, T>) =>
-  (req: H.HttpRequest) =>
-    pipe(
-      req.body,
-      H.parse(schema, 'Missing or invalid body'),
-      E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
-    );
-
-const parsePathParameter =
-  <T>(schema: Decoder<unknown, T>) =>
-  (paramName: string) =>
-  (req: H.HttpRequest) =>
-    pipe(
-      req.path[paramName],
-      H.parse(schema, `Invalid format of ${paramName} parameter`),
-      E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
-    );
+import { parsePathParameter, parseRequestBody } from './middleware';
 
 const makeSubscriptionResp = (
   subscription: DomainSubscription,
 ): Subscription => ({
-  trialId: subscription.trialId as unknown as NonEmptyString,
-  userId: subscription.userId as unknown as NonEmptyString,
+  trialId: subscription.trialId,
+  userId: subscription.userId,
   state: SubscriptionStateEnum[subscription.state],
   createdAt: subscription.createdAt,
   updatedAt: subscription.updatedAt,
