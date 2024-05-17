@@ -27,7 +27,7 @@ export const makeSubscriptionCosmosContainer = (
       pipe(
         TE.tryCatch(() => container.items.create(subscription), E.toError),
         TE.map(() => subscription),
-       TE.mapLeft(cosmosErrorToDomainError),
+        TE.mapLeft(cosmosErrorToDomainError),
       ),
   };
 };

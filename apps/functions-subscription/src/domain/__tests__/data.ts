@@ -10,7 +10,7 @@ export const aSubscription = {
   trialId: aTrialId,
   createdAt: new Date(),
   updatedAt: new Date(),
-  state: 'SUBSCRIBED',
+  state: 'SUBSCRIBED' as const,
 };
 
 export const aSubscriptionRequest = {
