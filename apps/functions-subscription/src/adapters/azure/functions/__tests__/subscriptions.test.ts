@@ -4,11 +4,9 @@ import { HttpRequest } from '@azure/functions';
 import { makeAValidCreateSubscriptionRequest } from './data';
 import { makeFunctionContext, makeSystemEnv } from './mocks';
 import { makePostSubscriptionHandler } from '../subscriptions';
-import {
-  SubscriptionAlreadyExists,
-  SubscriptionStoreError,
-} from '../../../../use-cases/errors';
+import { SubscriptionStoreError } from '../../../../use-cases/errors';
 import { aSubscription } from '../../../../domain/__tests__/data';
+import { ItemAlreadyExists } from '../../../../domain/errors';
 
 describe('subscriptions', () => {
   it('should return 201 with the created subscription', async () => {
@@ -55,7 +53,7 @@ describe('subscriptions', () => {
   it('should return 409 because the subscription already exists', async () => {
     const env = makeSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
-      TE.left(new SubscriptionAlreadyExists('Already exists')),
+      TE.left(new ItemAlreadyExists('Already exists')),
     );
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(),
