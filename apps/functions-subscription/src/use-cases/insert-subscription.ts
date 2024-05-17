@@ -30,10 +30,7 @@ const handleSubscriptionAlreadyExists =
       TE.flatMap(
         O.fold(
           () => TE.right(id),
-          () =>
-            TE.left(
-              new ItemAlreadyExists('Subscription already exists'),
-            ),
+          () => TE.left(new ItemAlreadyExists('Subscription already exists')),
         ),
       ),
     );
