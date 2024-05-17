@@ -5,6 +5,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import * as TE from 'fp-ts/TaskEither';
 import { Capabilities } from './capabilities';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 // a unique brand for subscriptionId
 interface SubscriptionIdBrand {
@@ -12,8 +13,9 @@ interface SubscriptionIdBrand {
   readonly SubscriptionId: unique symbol;
 }
 export const SubscriptionIdCodec = t.brand(
-  t.string,
-  (str): str is t.Branded<string, SubscriptionIdBrand> => str.length > 0,
+  NonEmptyString,
+  (str): str is t.Branded<NonEmptyString, SubscriptionIdBrand> =>
+    str.length > 0,
   'SubscriptionId',
 );
 export type SubscriptionId = t.TypeOf<typeof SubscriptionIdCodec>;
@@ -24,8 +26,8 @@ interface UserIdBrand {
   readonly UserId: unique symbol;
 }
 export const UserIdCodec = t.brand(
-  t.string,
-  (str): str is t.Branded<string, UserIdBrand> => str.length > 0,
+  NonEmptyString,
+  (str): str is t.Branded<NonEmptyString, UserIdBrand> => str.length > 0,
   'UserId',
 );
 export type UserId = t.TypeOf<typeof UserIdCodec>;
@@ -36,8 +38,8 @@ interface TrialIdBrand {
   readonly TrialId: unique symbol;
 }
 export const TrialIdCodec = t.brand(
-  t.string,
-  (str): str is t.Branded<string, TrialIdBrand> => str.length > 0,
+  NonEmptyString,
+  (str): str is t.Branded<NonEmptyString, TrialIdBrand> => str.length > 0,
   'TrialId',
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
