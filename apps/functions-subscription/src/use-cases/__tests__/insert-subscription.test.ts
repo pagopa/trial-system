@@ -35,8 +35,8 @@ describe('insertSubscription', () => {
     testEnv.clock.now.mockReturnValue(aSubscription.createdAt);
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
     testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
-    testEnv.subscriptionWriter.insert.mockImplementationOnce((_) =>
-      TE.right(_),
+    testEnv.subscriptionWriter.insert.mockReturnValueOnce(
+      TE.right(aSubscription),
     );
     testEnv.subscriptionRequestWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionRequest),
@@ -44,7 +44,12 @@ describe('insertSubscription', () => {
 
     const actual = await insertSubscription(userId, trialId)(testEnv)();
     const expected = E.right(aSubscription);
+
     expect(actual).toMatchObject(expected);
+    expect(testEnv.subscriptionWriter.insert).toBeCalledWith(aSubscription);
+    expect(testEnv.subscriptionRequestWriter.insert).toBeCalledWith(
+      aSubscriptionRequest,
+    );
   });
 
   it('should return AsyncProcessing', async () => {
