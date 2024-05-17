@@ -1,5 +1,6 @@
 import * as TE from 'fp-ts/TaskEither';
 import { TrialId, UserId } from './subscription';
+import { TooManyRequestsError } from './errors';
 
 /**
  * Represents a subscription request to a trial.
@@ -15,5 +16,5 @@ export interface SubscriptionRequest {
 export interface SubscriptionRequestWriter {
   readonly insert: (
     request: SubscriptionRequest,
-  ) => TE.TaskEither<Error, SubscriptionRequest>;
+  ) => TE.TaskEither<Error | TooManyRequestsError, SubscriptionRequest>;
 }

@@ -9,8 +9,9 @@ import {
   UserId,
   makeSubscriptionId,
 } from '../domain/subscription';
-import { SubscriptionAlreadyExists, SubscriptionStoreError } from './errors';
 import { nowDate } from '../domain/clock';
+import { SubscriptionStoreError } from './errors';
+import { ItemAlreadyExists } from '../domain/errors';
 
 // Maps all the requirements for this use-case
 type Env = Pick<
@@ -29,10 +30,7 @@ const handleSubscriptionAlreadyExists =
       TE.flatMap(
         O.fold(
           () => TE.right(id),
-          () =>
-            TE.left(
-              new SubscriptionAlreadyExists('Subscription already exists'),
-            ),
+          () => TE.left(new ItemAlreadyExists('Subscription already exists')),
         ),
       ),
     );
