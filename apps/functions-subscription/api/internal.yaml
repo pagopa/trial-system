@@ -73,6 +73,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Subscription'
+        '202':
+          description: Accepted
         '400':
           description: Bad Request.
           content:
@@ -83,6 +85,8 @@ paths:
           description: Unauthorized
         '404':
           description: Not Found
+        '409':
+          description: Conflict
         '500':
           description: Internal Server Error
           content:
