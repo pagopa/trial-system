@@ -8,6 +8,9 @@ const aCreateSubscription: CreateSubscription = {
   userId: aUserId,
 };
 
+/** This is a function because, if it were an object, the `body` property
+ * would be removed during the execution of the tests.
+ */
 export const makeAValidCreateSubscriptionRequest = () =>
   new HttpRequest({
     url: 'https://function/trials/{trialId}/subscriptions',
