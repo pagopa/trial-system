@@ -12,7 +12,7 @@ const aValidBody: DummySchema = {
   name: 'Anakin Skywalker',
 };
 
-const aValidRequest: H.HttpRequest = H.request('https://function/anEndpoint');
+const aValidRequest = H.request('https://function/anEndpoint');
 
 describe('parseRequestBody', () => {
   it('should return a parsed body', async () => {
