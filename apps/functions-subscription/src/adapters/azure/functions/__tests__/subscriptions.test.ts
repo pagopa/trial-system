@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import { HttpRequest } from '@azure/functions';
 import { makeAValidCreateSubscriptionRequest } from './data';
-import { makeFunctionContext, makeSystemEnv } from './mocks';
+import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { makePostSubscriptionHandler } from '../subscriptions';
 import { SubscriptionStoreError } from '../../../../use-cases/errors';
 import { aSubscription } from '../../../../domain/__tests__/data';
@@ -10,7 +10,7 @@ import { ItemAlreadyExists } from '../../../../domain/errors';
 
 describe('subscriptions azure function', () => {
   it('should return 201 with the created subscription', async () => {
-    const env = makeSystemEnv();
+    const env = makeTestSystemEnv();
     env.insertSubscription.mockReturnValueOnce(TE.right(aSubscription));
 
     const actual = await makePostSubscriptionHandler(env)(
@@ -21,7 +21,7 @@ describe('subscriptions azure function', () => {
   });
 
   it('should return 202 on SubscriptionStoreError', async () => {
-    const env = makeSystemEnv();
+    const env = makeTestSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
       TE.left(new SubscriptionStoreError()),
     );
@@ -42,7 +42,7 @@ describe('subscriptions azure function', () => {
         trialId: 'aTrialId',
       },
     });
-    const env = makeSystemEnv();
+    const env = makeTestSystemEnv();
     const actual = await makePostSubscriptionHandler(env)(
       aRequestWithInvalidBody,
       makeFunctionContext(),
@@ -51,7 +51,7 @@ describe('subscriptions azure function', () => {
   });
 
   it('should return 409 when the subscription already exists', async () => {
-    const env = makeSystemEnv();
+    const env = makeTestSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('Already exists')),
     );
@@ -63,7 +63,7 @@ describe('subscriptions azure function', () => {
   });
 
   it('should return 500 when the use case returned an error', async () => {
-    const env = makeSystemEnv();
+    const env = makeTestSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
       TE.left(new Error('Something went wrong')),
     );

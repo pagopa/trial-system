@@ -7,7 +7,7 @@ export const makeFunctionContext = () =>
     debug: console.debug,
   }) as InvocationContext;
 
-export const makeSystemEnv = () => {
+export const makeTestSystemEnv = () => {
   const insertSubscriptionUCMock = vi.fn();
   return {
     insertSubscription: insertSubscriptionUCMock,
