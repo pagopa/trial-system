@@ -40,12 +40,12 @@
       ]
     },
     "test": {
-      "dependsOn": ["^test"],
+      "dependsOn": [ "typecheck", "^test"],
       "inputs": ["src/**/*.test.ts"],
       "outputMode": "errors-only"
     },
     "test:coverage": {
-      "dependsOn": ["^test"],
+      "dependsOn": ["^typecheck", "^test"],
       "inputs": ["src/**/*.test.ts"],
       "outputMode": "errors-only"
     },
