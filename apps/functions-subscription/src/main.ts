@@ -1,6 +1,13 @@
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
 import { app } from '@azure/functions';
+import { parseConfig } from './config';
+import { EventHubProducerClient } from '@azure/event-hubs';
+import { CosmosClient } from '@azure/cosmos';
 import { makeInfoHandler } from './adapters/azure/functions/info';
 import { makePostSubscriptionHandler } from './adapters/azure/functions/subscriptions';
+import { makeSubscriptionCosmosContainer } from './adapters/azure/cosmosdb/subscription';
+import { makeSubscriptionRequestEventHubProducer } from './adapters/azure/eventhubs/subscription-request';
 import { SystemEnv } from './system-env';
 
 /**
@@ -9,16 +16,48 @@ import { SystemEnv } from './system-env';
  */
 const env = {} as unknown as SystemEnv;
 
-app.http('info', {
-  methods: ['GET'],
-  authLevel: 'anonymous',
-  handler: makeInfoHandler({}),
-  route: 'info',
-});
 
-app.http('createSubscription', {
-  methods: ['POST'],
-  authLevel: 'anonymous',
-  handler: makePostSubscriptionHandler(env),
-  route: '/trials/{trialId}/subscriptions',
-});
+// the application entry-point
+pipe(
+  TE.Do,
+  TE.apS('config', TE.fromEither(parseConfig(process.env))),
+  TE.bind('cosmosDB', ({ config }) =>
+    TE.of(new CosmosClient(config.subscription.cosmosdb.connectionString)),
+  ),
+  TE.bind('subscriptionReaderWriter', ({ config, cosmosDB }) =>
+    TE.of(
+      makeSubscriptionCosmosContainer(
+        cosmosDB.database(config.subscription.cosmosdb.databaseName),
+      ),
+    ),
+  ),
+  TE.bind('subscriptionRequestWriter', ({ config }) =>
+    TE.of(
+      makeSubscriptionRequestEventHubProducer(
+        new EventHubProducerClient(
+          config.subscriptionRequest.eventhub.connectionString,
+          config.subscriptionRequest.eventhub.name,
+        ),
+      ),
+    ),
+  ),
+  // eslint-disable-next-line functional/no-return-void
+  TE.map(() => {
+    app.http('info', {
+      methods: ['GET'],
+      authLevel: 'anonymous',
+      handler: makeInfoHandler({}),
+      route: 'info',
+    });
+    app.http('createSubscription', {
+      methods: ['POST'],
+      authLevel: 'anonymous',
+      handler: makePostSubscriptionHandler(env),
+      route: '/trials/{trialId}/subscriptions',
+    });
+  }),
+  TE.getOrElse((error) => {
+    // eslint-disable-next-line functional/no-throw-statements
+    throw new Error(error);
+  }),
+)();
