@@ -13,6 +13,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       exclude: [
+        '**/__tests__/data.ts',
+        '**/__tests__/mocks.ts',
         '**/generated/**',
         '**/coverage/**',
         '.yarn',
