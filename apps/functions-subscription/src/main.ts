@@ -24,6 +24,15 @@ pipe(
   TE.bind('cosmosDB', ({ config }) =>
     TE.of(new CosmosClient(config.subscription.cosmosdb.connectionString)),
   ),
+  TE.bind('subscriptionRequestEventHub', ({ config }) =>
+    TE.of(
+      new EventHubProducerClient(
+        config.subscriptionRequest.eventhub.connectionString,
+        config.subscriptionRequest.eventhub.name,
+      ),
+    ),
+  ),
+
   TE.bind('subscriptionReaderWriter', ({ config, cosmosDB }) =>
     TE.of(
       makeSubscriptionCosmosContainer(
@@ -31,22 +40,15 @@ pipe(
       ),
     ),
   ),
-  TE.bind('subscriptionRequestWriter', ({ config }) =>
-    TE.of(
-      makeSubscriptionRequestEventHubProducer(
-        new EventHubProducerClient(
-          config.subscriptionRequest.eventhub.connectionString,
-          config.subscriptionRequest.eventhub.name,
-        ),
-      ),
-    ),
+  TE.bind('subscriptionRequestWriter', ({ subscriptionRequestEventHub }) =>
+    TE.of(makeSubscriptionRequestEventHubProducer(subscriptionRequestEventHub)),
   ),
   // eslint-disable-next-line functional/no-return-void
-  TE.map(() => {
+  TE.map(({ cosmosDB, subscriptionRequestEventHub }) => {
     app.http('info', {
       methods: ['GET'],
       authLevel: 'anonymous',
-      handler: makeInfoHandler({}),
+      handler: makeInfoHandler({ cosmosDB, subscriptionRequestEventHub }),
       route: 'info',
     });
     app.http('createSubscription', {
