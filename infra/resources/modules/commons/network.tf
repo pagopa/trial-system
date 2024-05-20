@@ -113,15 +113,27 @@ resource "azurerm_private_endpoint" "sql" {
 ## VNET Peering
 #################################################
 
-# module "vnet_peering_common" {
-#   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//virtual_network_peering?ref=v8.7.0"
+resource "azurerm_virtual_network_peering" "vnet_to_vnet_common" {
+  name                      = format("%s-to-%s", azurerm_virtual_network.vnet.name, var.vnet_common.name)
+  resource_group_name       = azurerm_resource_group.net_rg.name
+  virtual_network_name      = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id = var.vnet_common.id
 
-#   source_resource_group_name       = azurerm_resource_group.net_rg.name
-#   source_virtual_network_name      = azurerm_virtual_network.vnet.name
-#   source_remote_virtual_network_id = azurerm_virtual_network.vnet.id
-#   source_allow_gateway_transit     = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
-#   target_resource_group_name       = var.vnet_common.resource_group_name
-#   target_virtual_network_name      = data.azurerm_virtual_network.vnet_common.name
-#   target_remote_virtual_network_id = data.azurerm_virtual_network.vnet_common.id
-#   target_use_remote_gateways       = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
-# }
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+resource "azurerm_virtual_network_peering" "vnet_common_to_vnet" {
+  provider                  = azurerm.prodio
+  name                      = format("%s-to-%s", var.vnet_common.name, azurerm_virtual_network.vnet.name)
+  resource_group_name       = var.vnet_common.resource_group_name
+  virtual_network_name      = var.vnet_common.name
+  remote_virtual_network_id = azurerm_virtual_network.vnet.id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}

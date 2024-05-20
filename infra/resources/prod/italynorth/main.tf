@@ -59,6 +59,12 @@ module "commons" {
     ManagementTeam = "IO Platform"
   }
 
+  vnet_common = {
+    id                  = "/subscriptions/ec285037-c673-4f58-b594-d7c480da4e8b/resourceGroups/io-p-rg-common/providers/Microsoft.Network/virtualNetworks/io-p-vnet-common"
+    name                = "io-p-vnet-common"
+    resource_group_name = "io-p-rg-common"
+  }
+
   vnet_address_space              = ["10.30.0.0/20"]
   snet_pendpoints_address_space   = ["10.30.2.0/23"]
   cidr_subnet_fnsubscription      = ["10.30.5.0/24"]
