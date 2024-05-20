@@ -41,7 +41,7 @@ const makeHandlerKitHandler: H.Handler<
     ),
     RTE.apSW(
       'trialId',
-      RTE.fromEither(parsePathParameter(NonEmptyString)('trialId')(req)),
+      RTE.fromEither(parsePathParameter(NonEmptyString, 'trialId')(req)),
     ),
     RTE.flatMapTaskEither(({ insertSubscription, trialId, requestBody }) =>
       insertSubscription(
