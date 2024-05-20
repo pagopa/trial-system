@@ -40,7 +40,7 @@
       ]
     },
     "test": {
-      "dependsOn": [ "typecheck", "^test"],
+      "dependsOn": ["typecheck", "^test"],
       "inputs": ["src/**/*.test.ts"],
       "outputMode": "errors-only"
     },

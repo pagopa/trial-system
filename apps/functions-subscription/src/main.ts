@@ -16,7 +16,7 @@ app.http('info', {
   route: 'info',
 });
 
-app.http('/trials/{trialId}/subscriptions', {
+app.http('createSubscription', {
   methods: ['POST'],
   authLevel: 'anonymous',
   handler: makePostSubscriptionHandler(env),
