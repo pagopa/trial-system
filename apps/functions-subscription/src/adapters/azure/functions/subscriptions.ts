@@ -3,22 +3,16 @@ import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
-import { Subscription } from '../../../generated/definitions/internal/Subscription';
+import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
 import { CreateSubscription } from '../../../generated/definitions/internal/CreateSubscription';
-import {
-  UserId,
-  TrialId,
-  Subscription as DomainSubscription,
-} from '../../../domain/subscription';
+import { UserId, TrialId, Subscription } from '../../../domain/subscription';
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
 import { SystemEnv } from '../../../system-env';
 import { ItemAlreadyExists } from '../../../domain/errors';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
 import { parsePathParameter, parseRequestBody } from './middleware';
 
-const makeSubscriptionResp = (
-  subscription: DomainSubscription,
-): Subscription => ({
+const makeSubscriptionResp = (subscription: Subscription): SubscriptionAPI => ({
   trialId: subscription.trialId,
   userId: subscription.userId,
   state: SubscriptionStateEnum[subscription.state],
@@ -28,7 +22,7 @@ const makeSubscriptionResp = (
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
-  | H.HttpResponse<Subscription, 201>
+  | H.HttpResponse<SubscriptionAPI, 201>
   | H.HttpResponse<unknown, 202>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
   Pick<SystemEnv, 'insertSubscription'>
