@@ -45,14 +45,23 @@ const makeHandlerKitHandler: H.Handler<
     ),
     RTE.map((sub) => ({ kind: 'Subscription' as const, ...sub })),
     RTE.orElseW((err) => {
+      // Handle errors
       if (err instanceof SubscriptionStoreError) {
+        // If SubscriptionStoreError, we should return a 202 on HTTP
+        // So we are passing a structure to the next step with the `kind`
+        // parameter that we are going to use as discriminator.
         return RTE.right({ kind: 'SubscriptionRequest' as const });
       } else return RTE.left(err);
     }),
     RTE.map((result) => {
-      if (result.kind === 'Subscription')
+      if (result.kind === 'Subscription') {
+        // Subscription created, return 201
         return pipe(result, makeSubscriptionResp, H.createdJson);
-      else return pipe({}, H.successJson, H.withStatusCode(202));
+      } else {
+        // Subscription queued, but not yet persisted.
+        // Return 202
+        return pipe({}, H.successJson, H.withStatusCode(202));
+      }
     }),
     RTE.mapLeft((err) => {
       if (err instanceof ItemAlreadyExists) {
