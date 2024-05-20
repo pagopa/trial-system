@@ -8,7 +8,7 @@ import { SubscriptionStoreError } from '../../../../use-cases/errors';
 import { aSubscription } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 
-describe('subscriptions', () => {
+describe('subscriptions azure function', () => {
   it('should return 201 with the created subscription', async () => {
     const env = makeSystemEnv();
     env.insertSubscription.mockReturnValueOnce(TE.right(aSubscription));
@@ -20,7 +20,7 @@ describe('subscriptions', () => {
     expect(actual.status).toStrictEqual(201);
   });
 
-  it('should return 202 if there was an issue storing the subscription', async () => {
+  it('should return 202 on SubscriptionStoreError', async () => {
     const env = makeSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
       TE.left(new SubscriptionStoreError()),
@@ -33,7 +33,7 @@ describe('subscriptions', () => {
     expect(actual.status).toStrictEqual(202);
   });
 
-  it('should return 400 because the request body is not valid', async () => {
+  it('should return 400 when the request body is not valid', async () => {
     const aRequestWithInvalidBody = new HttpRequest({
       url: 'https://function/trials/{trialId}/subscriptions',
       method: 'POST',
@@ -50,7 +50,7 @@ describe('subscriptions', () => {
     expect(actual.status).toStrictEqual(400);
   });
 
-  it('should return 409 because the subscription already exists', async () => {
+  it('should return 409 when the subscription already exists', async () => {
     const env = makeSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('Already exists')),
@@ -62,7 +62,7 @@ describe('subscriptions', () => {
     expect(actual.status).toStrictEqual(409);
   });
 
-  it('should return 500 because the use case returned an error', async () => {
+  it('should return 500 when the use case returned an error', async () => {
     const env = makeSystemEnv();
     env.insertSubscription.mockReturnValueOnce(
       TE.left(new Error('Something went wrong')),

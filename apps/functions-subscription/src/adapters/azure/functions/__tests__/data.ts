@@ -1,6 +1,6 @@
+import { HttpRequest } from '@azure/functions';
 import { CreateSubscription } from '../../../../generated/definitions/internal/CreateSubscription';
 import { UserId } from '../../../../generated/definitions/internal/UserId';
-import { HttpRequest } from '@azure/functions';
 
 const aUserId = 'aUserId' as UserId;
 
@@ -8,7 +8,8 @@ const aCreateSubscription: CreateSubscription = {
   userId: aUserId,
 };
 
-/** This is a function because, if it were an object, the `body` property
+/**
+ * This is a function because, if it were an object, the `body` property
  * would be removed during the execution of the tests.
  */
 export const makeAValidCreateSubscriptionRequest = () =>
