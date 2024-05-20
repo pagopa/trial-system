@@ -16,7 +16,6 @@ import { SystemEnv } from './system-env';
  */
 const env = {} as unknown as SystemEnv;
 
-
 // the application entry-point
 pipe(
   TE.Do,
