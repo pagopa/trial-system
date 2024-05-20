@@ -150,9 +150,9 @@ resource "azurerm_private_endpoint" "subscription_fn_staging" {
 
   private_service_connection {
     name                           = "${local.project}-subscription-fn-staging-endpoint"
-    private_connection_resource_id = module.subscription_fn_staging_slot.id
+    private_connection_resource_id = module.subscription_fn.id
     is_manual_connection           = false
-    subresource_names              = ["sites"]
+    subresource_names              = ["sites-${module.subscription_fn_staging_slot.name}"]
   }
 
   private_dns_zone_group {

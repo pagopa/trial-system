@@ -105,10 +105,6 @@ module "subscription_fn" {
   }
   subnet_id = module.subscription_snet.id
 
-  allowed_subnets = [
-    module.subscription_snet.id
-  ]
-
   # Action groups for alerts
   action = [
     {
