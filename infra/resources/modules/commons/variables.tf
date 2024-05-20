@@ -59,13 +59,11 @@ variable "cidr_subnet_fnsubscription" {
 
 variable "vnet_common" {
   type = object({
+    id                  = string
     name                = string
     resource_group_name = string
   })
-  default = {
-    name                = "io-p-vnet-common"
-    resource_group_name = "io-p-rg-common"
-  }
+  description = "Th VNET Common variable references for PROD-IO subscription"
 }
 
 variable "function_async_config" {

@@ -109,19 +109,85 @@ resource "azurerm_private_endpoint" "sql" {
   }
 }
 
+resource "azurerm_private_dns_zone" "privatelink_azure_websites" {
+  name                = "privatelink.azurewebsites.net"
+  resource_group_name = azurerm_resource_group.net_rg.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "websites_link" {
+  name                  = azurerm_virtual_network.vnet.name
+  resource_group_name   = azurerm_resource_group.net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_azure_websites.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+}
+
+resource "azurerm_private_endpoint" "subscription_fn" {
+  name                = "${local.project}-subscription-fn-endpoint"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.net_rg.name
+  subnet_id           = module.pendpoints_snet.id
+
+  private_service_connection {
+    name                           = "${local.project}-subscription-fn-endpoint"
+    private_connection_resource_id = module.subscription_fn.id
+    is_manual_connection           = false
+    subresource_names              = ["sites"]
+  }
+
+  private_dns_zone_group {
+    name                 = "private-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_private_endpoint" "subscription_fn_staging" {
+  name                = "${local.project}-subscription-fn-staging-endpoint"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.net_rg.name
+  subnet_id           = module.pendpoints_snet.id
+
+  private_service_connection {
+    name                           = "${local.project}-subscription-fn-staging-endpoint"
+    private_connection_resource_id = module.subscription_fn.id
+    is_manual_connection           = false
+    subresource_names              = ["sites-${module.subscription_fn_staging_slot.name}"]
+  }
+
+  private_dns_zone_group {
+    name                 = "private-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
+  }
+
+  tags = var.tags
+}
+
 ##################################################
 ## VNET Peering
 #################################################
 
-# module "vnet_peering_common" {
-#   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//virtual_network_peering?ref=v8.7.0"
+resource "azurerm_virtual_network_peering" "vnet_to_vnet_common" {
+  name                      = format("%s-to-%s", azurerm_virtual_network.vnet.name, var.vnet_common.name)
+  resource_group_name       = azurerm_resource_group.net_rg.name
+  virtual_network_name      = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id = var.vnet_common.id
 
-#   source_resource_group_name       = azurerm_resource_group.net_rg.name
-#   source_virtual_network_name      = azurerm_virtual_network.vnet.name
-#   source_remote_virtual_network_id = azurerm_virtual_network.vnet.id
-#   source_allow_gateway_transit     = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
-#   target_resource_group_name       = var.vnet_common.resource_group_name
-#   target_virtual_network_name      = data.azurerm_virtual_network.vnet_common.name
-#   target_remote_virtual_network_id = data.azurerm_virtual_network.vnet_common.id
-#   target_use_remote_gateways       = false # needed by vpn gateway for enabling routing from vnet to vnet_integration
-# }
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+resource "azurerm_virtual_network_peering" "vnet_common_to_vnet" {
+  provider                  = azurerm.prodio
+  name                      = format("%s-to-%s", var.vnet_common.name, azurerm_virtual_network.vnet.name)
+  resource_group_name       = var.vnet_common.resource_group_name
+  virtual_network_name      = var.vnet_common.name
+  remote_virtual_network_id = azurerm_virtual_network.vnet.id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
