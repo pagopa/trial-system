@@ -4,7 +4,7 @@ import { insertSubscription } from './use-cases/insert-subscription';
 
 /*
  * This is an utility to extract the TaskEither type from a
- * ReaderTaskEither.
+ * function that returns ReaderTaskEither.
  */
 type RemoveReaderType<T> = T extends (
   ...args: infer I
