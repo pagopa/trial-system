@@ -45,7 +45,7 @@ const makeHandlerKitHandler: H.Handler<
     ),
     RTE.flatMapTaskEither(({ insertSubscription, trialId, requestBody }) =>
       insertSubscription(
-        requestBody.userId as unknown as UserId, // FIXME Cast
+        requestBody.userId as unknown as UserId,
         trialId as unknown as TrialId,
       ),
     ),

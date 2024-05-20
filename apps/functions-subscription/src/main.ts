@@ -9,7 +9,6 @@ import { SystemEnv } from './system-env';
  */
 const env = {} as unknown as SystemEnv;
 
-// eslint-disable-next-line functional/no-expression-statements
 app.http('info', {
   methods: ['GET'],
   authLevel: 'anonymous',
@@ -17,7 +16,6 @@ app.http('info', {
   route: 'info',
 });
 
-// eslint-disable-next-line functional/no-expression-statements
 app.http('/trials/{trialId}/subscriptions', {
   methods: ['POST'],
   authLevel: 'anonymous',
