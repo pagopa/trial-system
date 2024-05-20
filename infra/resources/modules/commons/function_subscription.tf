@@ -105,10 +105,6 @@ module "subscription_fn" {
   }
   subnet_id = module.subscription_snet.id
 
-  allowed_subnets = [
-    module.subscription_snet.id
-  ]
-
   # Action groups for alerts
   action = [
     {
@@ -145,10 +141,6 @@ module "subscription_fn_staging_slot" {
   )
 
   subnet_id = module.subscription_snet.id
-
-  allowed_subnets = [
-    module.subscription_snet.id
-  ]
 
   tags = var.tags
 }
