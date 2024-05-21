@@ -1,14 +1,16 @@
+import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
-import { TrialId, UserId } from './subscription';
+import { TrialIdCodec, UserIdCodec } from './subscription';
 import { TooManyRequestsError } from './errors';
 
 /**
  * Represents a subscription request to a trial.
  */
-export interface SubscriptionRequest {
-  readonly userId: UserId;
-  readonly trialId: TrialId;
-}
+export const SubscriptionRequestCodec = t.strict({
+  userId: UserIdCodec,
+  trialId: TrialIdCodec,
+});
+export type SubscriptionRequest = t.TypeOf<typeof SubscriptionRequestCodec>;
 
 /**
  * This type represents the capability to insert a subscription request
