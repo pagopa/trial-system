@@ -5,9 +5,3 @@
 export class SubscriptionStoreError extends Error {
   readonly _tag = 'SubscriptionStoreError';
 }
-
-/**
- */
-export class ItemAlreadyExists extends Error {
-  readonly _tag = 'ItemAlreadyExists';
-}
