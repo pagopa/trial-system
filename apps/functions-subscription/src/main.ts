@@ -21,9 +21,7 @@ const config = pipe(
   }),
 );
 
-const cosmosDB = new CosmosClient(
-  config.subscription.cosmosdb.connectionString,
-);
+const cosmosDB = new CosmosClient(config.cosmosdb.connectionString);
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
   config.subscriptionRequest.eventhub.connectionString,
@@ -31,7 +29,7 @@ const subscriptionRequestEventHub = new EventHubProducerClient(
 );
 
 const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
-  cosmosDB.database(config.subscription.cosmosdb.databaseName),
+  cosmosDB.database(config.cosmosdb.databaseName),
 );
 
 const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(

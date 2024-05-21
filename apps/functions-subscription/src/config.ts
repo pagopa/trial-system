@@ -11,11 +11,9 @@ export interface Config {
       readonly name: string;
     };
   };
-  readonly subscription: {
-    readonly cosmosdb: {
-      readonly connectionString: string;
-      readonly databaseName: string;
-    };
+  readonly cosmosdb: {
+    readonly connectionString: string;
+    readonly databaseName: string;
   };
 }
 
@@ -34,11 +32,9 @@ export const parseConfig = (
     E.bimap(
       (errors) => PR.failure(errors).join('\n'),
       (envs) => ({
-        subscription: {
-          cosmosdb: {
-            connectionString: envs.COSMOSDB_CONNECTION_STRING,
-            databaseName: envs.COSMOSDB_DATABASE_NAME,
-          },
+        cosmosdb: {
+          connectionString: envs.COSMOSDB_CONNECTION_STRING,
+          databaseName: envs.COSMOSDB_DATABASE_NAME,
         },
         subscriptionRequest: {
           eventhub: {
