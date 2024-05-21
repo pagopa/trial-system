@@ -1275,9 +1275,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pagopa/io-functions-commons@npm:^29.0.0":
-  version: 29.0.0
-  resolution: "@pagopa/io-functions-commons@npm:29.0.0"
+"@pagopa/io-functions-commons@npm:^29.0.4":
+  version: 29.0.4
+  resolution: "@pagopa/io-functions-commons@npm:29.0.4"
   dependencies:
     "@azure/cosmos": "npm:^4.0.0"
     "@azure/data-tables": "npm:^13.2.2"
@@ -1304,7 +1304,7 @@ __metadata:
     express: ^4.15.3
     fp-ts: ^2.16.5
     io-ts: ^2.2.21
-  checksum: 10c0/b01b826a1af47bc9434c3700788f949e192d522a64415f92bc052204a91413e1ac71715dce2616d13f299238ebe821b1bda318d841b0f15e9c591a2301f88707
+  checksum: 10c0/f7b348ca9d4fc6f007b4364a06edfffb87aaef429244076abe11128ee24ded6b756b223203516960f325c112f1e474ce6e9b386cbc4475f496a29673fb34c380
   languageName: node
   linkType: hard
 
@@ -2257,9 +2257,9 @@ __metadata:
   linkType: hard
 
 "aws4@npm:^1.8.0":
-  version: 1.12.0
-  resolution: "aws4@npm:1.12.0"
-  checksum: 10c0/1e39c266f53b04daf88e112de93a6006375b386a1b7ab6197260886e39abd012aa90bdd87949c3bf9c30754846031f6d5d8ac4f8676628097c11065b5d39847a
+  version: 1.13.0
+  resolution: "aws4@npm:1.13.0"
+  checksum: 10c0/4c71398543e432631a226cabafaa138f8070482f99790233840d84847291ec744e739cb18684a68f52125d0e73f82f16f0246d93524ec85167fadb3cf60dfa4f
   languageName: node
   linkType: hard
 
@@ -3927,13 +3927,13 @@ __metadata:
   linkType: hard
 
 "fast-xml-parser@npm:^4.3.2":
-  version: 4.3.6
-  resolution: "fast-xml-parser@npm:4.3.6"
+  version: 4.4.0
+  resolution: "fast-xml-parser@npm:4.4.0"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/9ebe2ac142c6978cae423c39c2a9b561edb76be584317d578768ed4a006a61fc0e83abf8c6fe31029139c4ad15ea1f2e7b6720ba9e6eda0e5266d7f2770fb079
+  checksum: 10c0/ce32fad713471a40bea67959894168f297a5dd0aba64b89a2abc71a4fec0b1ae1d49c2dd8d8719ca8beeedf477824358c8a486b360b9f3ef12abc2e355d11318
   languageName: node
   linkType: hard
 
@@ -4223,11 +4223,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "functions-subscription@workspace:apps/functions-subscription"
   dependencies:
+    "@azure/cosmos": "npm:^4.0.0"
     "@azure/event-hubs": "npm:^5.11.4"
     "@azure/functions": "npm:^4.4.0"
     "@pagopa/handler-kit": "npm:^1.1.0"
     "@pagopa/handler-kit-azure-func": "npm:^2.0.4"
-    "@pagopa/io-functions-commons": "npm:^29.0.0"
+    "@pagopa/io-functions-commons": "npm:^29.0.4"
     "@pagopa/openapi-codegen-ts": "npm:^13.1.0"
     "@pagopa/ts-commons": "npm:^13.0.0"
     "@tsconfig/node20": "npm:^20.1.4"

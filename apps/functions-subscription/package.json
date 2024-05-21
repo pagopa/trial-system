@@ -16,11 +16,12 @@
     "start": "func start --javascript"
   },
   "dependencies": {
+    "@azure/cosmos": "^4.0.0",
     "@azure/event-hubs": "^5.11.4",
     "@azure/functions": "^4.4.0",
     "@pagopa/handler-kit": "^1.1.0",
     "@pagopa/handler-kit-azure-func": "^2.0.4",
-    "@pagopa/io-functions-commons": "^29.0.0",
+    "@pagopa/io-functions-commons": "^29.0.4",
     "@pagopa/ts-commons": "^13.0.0",
     "fp-ts": "^2.16.5",
     "io-ts": "^2.2.19"

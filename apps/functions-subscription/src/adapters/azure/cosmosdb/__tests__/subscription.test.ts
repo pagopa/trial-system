@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as E from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/lib/Option';
-import { Database } from '@azure/cosmos';
-import { ErrorResponse } from '@azure/cosmos';
+import { Database, ErrorResponse } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
 import { makeSubscriptionCosmosContainer } from '../subscription';
 import { aSubscription } from '../../../../domain/__tests__/data';
