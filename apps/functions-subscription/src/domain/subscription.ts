@@ -6,6 +6,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { Capabilities } from './capabilities';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import { ItemAlreadyExists } from './errors';
 
 // a unique brand for subscriptionId
 interface SubscriptionIdBrand {
@@ -79,7 +80,7 @@ export interface SubscriptionReader {
 export interface SubscriptionWriter {
   readonly insert: (
     subscription: Subscription,
-  ) => TE.TaskEither<Error, Subscription>;
+  ) => TE.TaskEither<Error | ItemAlreadyExists, Subscription>;
 }
 
 /**
