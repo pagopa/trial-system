@@ -4,7 +4,3 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
-      # - id: terraform_validate
-        args:
-          - --args=-json
-          - --args=-no-color

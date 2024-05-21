@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 3.100.0"
+      version = "<= 3.104.0"
     }
   }
 
@@ -15,8 +15,17 @@ terraform {
 }
 
 provider "azurerm" {
-  features {
-  }
+  features {}
+}
+
+provider "azurerm" {
+  features {}
+  alias           = "prodio"
+  subscription_id = "ec285037-c673-4f58-b594-d7c480da4e8b"
+}
+
+data "azurerm_subscription" "prodio" {
+  provider = azurerm.prodio
 }
 
 resource "azurerm_resource_group" "identity" {
@@ -35,4 +44,18 @@ module "federated_identities" {
   tags         = local.tags
 
   depends_on = [azurerm_resource_group.identity]
+}
+
+resource "azurerm_role_assignment" "ci" {
+  provider             = azurerm.prodio
+  scope                = data.azurerm_subscription.prodio.id
+  principal_id         = module.federated_identities.federated_ci_identity.id
+  role_definition_name = "Reader"
+}
+
+resource "azurerm_role_assignment" "cd" {
+  provider             = azurerm.prodio
+  scope                = data.azurerm_subscription.prodio.id
+  principal_id         = module.federated_identities.federated_cd_identity.id
+  role_definition_name = "Reader"
 }
