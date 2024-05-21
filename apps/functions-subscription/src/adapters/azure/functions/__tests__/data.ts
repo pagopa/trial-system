@@ -21,3 +21,13 @@ export const makeAValidCreateSubscriptionRequest = () =>
       trialId: 'aTrialId',
     },
   });
+
+export const makeAValidGetSubscriptionRequest = () =>
+  new HttpRequest({
+    url: 'https://function/trials/{trialId}/subscriptions/{userId}',
+    method: 'GET',
+    params: {
+      trialId: 'aTrialId',
+      userId: aUserId,
+    },
+  });
