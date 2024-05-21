@@ -8,27 +8,23 @@ import {
   SubscriptionId,
 } from '../domain/subscription';
 import * as TE from 'fp-ts/TaskEither';
-import * as O from 'fp-ts/Option';
 import { ItemNotFound } from '../domain/errors';
 
 // Maps all the requirements for this use-case
-type Env = Pick<Capabilities, 'subscriptionReader' | 'hashFn'>;
+type GetSubscriptionEnv = Pick<Capabilities, 'subscriptionReader'>;
 
 const getSubscriptionById =
   (id: SubscriptionId) => (env: Pick<Capabilities, 'subscriptionReader'>) =>
     pipe(
       env.subscriptionReader.get(id),
       TE.flatMap(
-        O.fold(
-          () => TE.left(new ItemNotFound(`Subscription ${id} not found`)),
-          (subscription) => TE.right(subscription),
-        ),
+        TE.fromOption(() => new ItemNotFound(`Subscription ${id} not found`)),
       ),
     );
 
 export const getSubscription = (userId: UserId, trialId: TrialId) =>
   pipe(
-    RTE.ask<Env>(),
+    RTE.ask<GetSubscriptionEnv>(),
     RTE.apSW('id', makeSubscriptionId(trialId, userId)),
-    RTE.chainW(({ id }) => getSubscriptionById(id)),
+    RTE.flatMap(({ id }) => getSubscriptionById(id)),
   );
