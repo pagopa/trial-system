@@ -1,5 +1,5 @@
 import * as H from '@pagopa/handler-kit';
-import { pipe } from 'fp-ts/function';
+import { pipe, flow } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
@@ -11,7 +11,6 @@ import { SystemEnv } from '../../../system-env';
 import { ItemAlreadyExists, ItemNotFound } from '../../../domain/errors';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
 import { parsePathParameter, parseRequestBody } from './middleware';
-import { flow } from 'fp-ts/lib/function';
 
 const makeSubscriptionResp = (subscription: Subscription): SubscriptionAPI => ({
   trialId: subscription.trialId,
@@ -110,10 +109,20 @@ export const makeGetSubscriptionHandler = httpAzureFunction(
 const handleSubscriptionProblemJsonResponse = (err: Error) => {
   if (err instanceof ItemNotFound) {
     // ItemNotFound -> 404 HTTP
-    return pipe(err, H.toProblemJson, H.problemJson, H.withStatusCode(404));
+    return pipe(
+      new H.HttpNotFoundError(err.message),
+      H.toProblemJson,
+      H.problemJson,
+      H.withStatusCode(404),
+    );
   } else if (err instanceof ItemAlreadyExists) {
     // ItemAlreadyExists -> 409 HTTP
-    return pipe(err, H.toProblemJson, H.problemJson, H.withStatusCode(409));
+    return pipe(
+      new H.HttpConflictError(err.message),
+      H.toProblemJson,
+      H.problemJson,
+      H.withStatusCode(409),
+    );
   } else {
     // Everything else -> 500 HTTP
     return pipe(err, H.toProblemJson, H.problemJson);
