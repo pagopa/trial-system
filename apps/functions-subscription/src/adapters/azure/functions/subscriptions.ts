@@ -8,9 +8,10 @@ import { CreateSubscription } from '../../../generated/definitions/internal/Crea
 import { UserId, TrialId, Subscription } from '../../../domain/subscription';
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
 import { SystemEnv } from '../../../system-env';
-import { ItemAlreadyExists } from '../../../domain/errors';
+import { ItemAlreadyExists, ItemNotFound } from '../../../domain/errors';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
 import { parsePathParameter, parseRequestBody } from './middleware';
+import { flow } from 'fp-ts/lib/function';
 
 const makeSubscriptionResp = (subscription: Subscription): SubscriptionAPI => ({
   trialId: subscription.trialId,
@@ -63,13 +64,7 @@ const makeHandlerKitHandler: H.Handler<
         return pipe({}, H.successJson, H.withStatusCode(202));
       }
     }),
-    RTE.mapLeft((err) => {
-      if (err instanceof ItemAlreadyExists) {
-        return pipe(err, H.toProblemJson, H.problemJson, H.withStatusCode(409));
-      } else {
-        return pipe(err, H.toProblemJson, H.problemJson);
-      }
-    }),
+    RTE.mapLeft(handleSubscriptionProblemJsonResponse),
     RTE.orElseW(RTE.of),
   );
 });
@@ -77,3 +72,50 @@ const makeHandlerKitHandler: H.Handler<
 export const makePostSubscriptionHandler = httpAzureFunction(
   makeHandlerKitHandler,
 );
+
+const makeHandlerKitGetSubscriptionHandler: H.Handler<
+  H.HttpRequest,
+  | H.HttpResponse<SubscriptionAPI>
+  | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
+  Pick<SystemEnv, 'getSubscription'>
+> = H.of((req: H.HttpRequest) => {
+  return pipe(
+    RTE.ask<Pick<SystemEnv, 'getSubscription'>>(),
+    RTE.apSW(
+      'userId',
+      RTE.fromEither(parsePathParameter(NonEmptyString, 'userId')(req)),
+    ),
+    RTE.apSW(
+      'trialId',
+      RTE.fromEither(parsePathParameter(NonEmptyString, 'trialId')(req)),
+    ),
+    RTE.flatMapTaskEither(({ getSubscription, trialId, userId }) =>
+      getSubscription(
+        userId as unknown as UserId,
+        trialId as unknown as TrialId,
+      ),
+    ),
+    RTE.mapBoth(
+      handleSubscriptionProblemJsonResponse,
+      flow(makeSubscriptionResp, H.successJson),
+    ),
+    RTE.orElseW(RTE.of),
+  );
+});
+
+export const makeGetSubscriptionHandler = httpAzureFunction(
+  makeHandlerKitGetSubscriptionHandler,
+);
+
+const handleSubscriptionProblemJsonResponse = (err: Error) => {
+  if (err instanceof ItemNotFound) {
+    // ItemNotFound -> 404 HTTP
+    return pipe(err, H.toProblemJson, H.problemJson, H.withStatusCode(404));
+  } else if (err instanceof ItemAlreadyExists) {
+    // ItemAlreadyExists -> 409 HTTP
+    return pipe(err, H.toProblemJson, H.problemJson, H.withStatusCode(409));
+  } else {
+    // Everything else -> 500 HTTP
+    return pipe(err, H.toProblemJson, H.problemJson);
+  }
+};
