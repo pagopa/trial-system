@@ -1,8 +1,10 @@
 import { HttpRequest } from '@azure/functions';
 import { CreateSubscription } from '../../../../generated/definitions/internal/CreateSubscription';
 import { UserId } from '../../../../generated/definitions/internal/UserId';
+import { TrialId } from '../../../../generated/definitions/internal/TrialId';
 
 const aUserId = 'aUserId' as UserId;
+const aTrialId = 'aTrialId' as TrialId;
 
 const aCreateSubscription: CreateSubscription = {
   userId: aUserId,
@@ -18,7 +20,7 @@ export const makeAValidCreateSubscriptionRequest = () =>
     method: 'POST',
     body: { string: JSON.stringify(aCreateSubscription) },
     params: {
-      trialId: 'aTrialId',
+      trialId: aTrialId,
     },
   });
 
@@ -27,7 +29,7 @@ export const makeAValidGetSubscriptionRequest = () =>
     url: 'https://function/trials/{trialId}/subscriptions/{userId}',
     method: 'GET',
     params: {
-      trialId: 'aTrialId',
+      trialId: aTrialId,
       userId: aUserId,
     },
   });
