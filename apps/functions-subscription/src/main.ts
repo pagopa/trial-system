@@ -54,7 +54,7 @@ app.http('info', {
 });
 app.http('createSubscription', {
   methods: ['POST'],
-  authLevel: 'anonymous',
+  authLevel: 'function',
   handler: makePostSubscriptionHandler(env),
   route: '/trials/{trialId}/subscriptions',
 });
