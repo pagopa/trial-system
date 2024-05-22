@@ -2,4 +2,4 @@
 "functions-subscription": minor
 ---
 
-Add get subscription handler
+Add get subscription endpoint
