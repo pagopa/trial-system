@@ -25,7 +25,7 @@ on:
 jobs:
   deploy:
     name: Deploy
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@dbf94d961ad5dd22b5fb069e3a9f4da4221c489c
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@05c0ed3d57ae1ea1320afa3d9c7820f94b2b4289
     secrets: inherit
     with:
       workspace_name: ${{ inputs.workspace_name }}
