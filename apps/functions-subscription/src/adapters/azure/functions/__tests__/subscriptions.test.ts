@@ -55,25 +55,31 @@ describe('subscriptions azure function', () => {
         makeFunctionContext(),
       );
       expect(actual.status).toStrictEqual(400);
+      expect(await actual.json()).toMatchObject({
+        status: 400,
+        detail: 'Missing or invalid body',
+      });
     });
 
     it('should return 409 when the subscription already exists', async () => {
       const env = makeTestSystemEnv();
-      env.insertSubscription.mockReturnValueOnce(
-        TE.left(new ItemAlreadyExists('Already exists')),
-      );
+      const error = new ItemAlreadyExists('Already exists');
+      env.insertSubscription.mockReturnValueOnce(TE.left(error));
       const actual = await makePostSubscriptionHandler(env)(
         makeAValidCreateSubscriptionRequest(),
         makeFunctionContext(),
       );
       expect(actual.status).toStrictEqual(409);
+      expect(await actual.json()).toMatchObject({
+        status: 409,
+        detail: error.message,
+      });
     });
 
     it('should return 500 when the use case returned an error', async () => {
       const env = makeTestSystemEnv();
-      env.insertSubscription.mockReturnValueOnce(
-        TE.left(new Error('Something went wrong')),
-      );
+      const error = new Error('Something went wrong');
+      env.insertSubscription.mockReturnValueOnce(TE.left(error));
 
       const actual = await makePostSubscriptionHandler(env)(
         makeAValidCreateSubscriptionRequest(),
@@ -81,6 +87,10 @@ describe('subscriptions azure function', () => {
       );
 
       expect(actual.status).toStrictEqual(500);
+      expect(await actual.json()).toMatchObject({
+        status: 500,
+        detail: error.message,
+      });
     });
   });
 
@@ -88,9 +98,8 @@ describe('subscriptions azure function', () => {
     it('should return 404 when the subscription does not exist', async () => {
       const env = makeTestSystemEnv();
 
-      env.getSubscription.mockReturnValueOnce(
-        TE.left(new ItemNotFound('Subscription not found')),
-      );
+      const error = new ItemNotFound('Subscription not found');
+      env.getSubscription.mockReturnValueOnce(TE.left(error));
 
       const actual = await makeGetSubscriptionHandler(env)(
         makeAValidGetSubscriptionRequest(),
@@ -98,13 +107,17 @@ describe('subscriptions azure function', () => {
       );
 
       expect(actual.status).toStrictEqual(404);
+      expect(await actual.json()).toMatchObject({
+        status: 404,
+        detail: error.message,
+      });
     });
+
     it('should return 500 when an error occurred', async () => {
       const env = makeTestSystemEnv();
 
-      env.getSubscription.mockReturnValueOnce(
-        TE.left(new Error('Something went wrong')),
-      );
+      const error = new Error('Something went wrong');
+      env.getSubscription.mockReturnValueOnce(TE.left(error));
 
       const actual = await makeGetSubscriptionHandler(env)(
         makeAValidGetSubscriptionRequest(),
@@ -112,7 +125,12 @@ describe('subscriptions azure function', () => {
       );
 
       expect(actual.status).toStrictEqual(500);
+      expect(await actual.json()).toMatchObject({
+        status: 500,
+        detail: error.message,
+      });
     });
+
     it('should return 200 when the subscription exist', async () => {
       const env = makeTestSystemEnv();
 
