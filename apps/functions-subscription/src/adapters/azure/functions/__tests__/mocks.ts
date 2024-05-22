@@ -9,9 +9,11 @@ export const makeFunctionContext = () =>
   }) as InvocationContext;
 
 export const makeTestSystemEnv = () => {
-  const insertSubscriptionUCMock = vi.fn();
+  const insertSubscriptionMock = vi.fn();
+  const processSubscriptionRequestMock = vi.fn();
   return {
-    insertSubscription: insertSubscriptionUCMock,
+    insertSubscription: insertSubscriptionMock,
+    processSubscriptionRequest: processSubscriptionRequestMock,
   };
 };
 
