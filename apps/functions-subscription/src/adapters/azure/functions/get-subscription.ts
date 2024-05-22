@@ -4,19 +4,11 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
-import { UserId, TrialId, Subscription } from '../../../domain/subscription';
-import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
+import { UserId, TrialId } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import { parsePathParameter } from './middleware';
 import { toHttpProblemJson } from './errors';
-
-const makeSubscriptionResp = (subscription: Subscription): SubscriptionAPI => ({
-  trialId: subscription.trialId,
-  userId: subscription.userId,
-  state: SubscriptionStateEnum[subscription.state],
-  createdAt: subscription.createdAt,
-  updatedAt: subscription.updatedAt,
-});
+import { toSubscriptionAPI } from './codec';
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
@@ -40,7 +32,7 @@ const makeHandlerKitHandler: H.Handler<
         trialId as unknown as TrialId,
       ),
     ),
-    RTE.mapBoth(toHttpProblemJson, flow(makeSubscriptionResp, H.successJson)),
+    RTE.mapBoth(toHttpProblemJson, flow(toSubscriptionAPI, H.successJson)),
     RTE.orElseW(RTE.of),
   );
 });
