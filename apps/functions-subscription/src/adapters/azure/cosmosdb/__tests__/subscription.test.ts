@@ -40,7 +40,7 @@ describe('makeSubscriptionCosmosContainer', () => {
     expect(mockDB.container('').item).toBeCalledWith(id, id);
   });
 
-  it('should insert the item if doesn not already exist', async () => {
+  it('should insert the item if does not already exist', async () => {
     const mockDB = makeDatabaseMock();
 
     mockDB
