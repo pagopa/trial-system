@@ -22,5 +22,4 @@ jobs:
     secrets: inherit
     with:
       environment: prod
-      region: italynorth
       base_path: infra/resources

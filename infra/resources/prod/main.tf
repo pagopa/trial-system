@@ -46,7 +46,7 @@ provider "azapi" {
 }
 
 module "commons" {
-  source = "../../modules/commons"
+  source = "../modules/commons"
 
   env_short = "p"
 
