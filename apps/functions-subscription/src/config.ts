@@ -7,20 +7,20 @@ import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 export interface Config {
   readonly subscriptionRequest: {
     readonly eventhub: {
-      readonly connectionString: string;
+      readonly namespace: string;
       readonly name: string;
     };
   };
   readonly cosmosdb: {
-    readonly connectionString: string;
+    readonly endpoint: string;
     readonly databaseName: string;
   };
 }
 
 const EnvsCodec = t.strict({
-  COSMOSDB_CONNECTION_STRING: NonEmptyString,
+  COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
-  SUBSCRIPTION_REQUEST_EVENTHUB_CONNECTION_STRING: NonEmptyString,
+  SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
 });
 
@@ -33,13 +33,13 @@ export const parseConfig = (
       (errors) => PR.failure(errors).join('\n'),
       (envs) => ({
         cosmosdb: {
-          connectionString: envs.COSMOSDB_CONNECTION_STRING,
+          endpoint: envs.COSMOSDB_ENDPOINT,
           databaseName: envs.COSMOSDB_DATABASE_NAME,
         },
         subscriptionRequest: {
           eventhub: {
-            connectionString:
-              envs.SUBSCRIPTION_REQUEST_EVENTHUB_CONNECTION_STRING,
+            namespace:
+              envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE,
             name: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAME,
           },
         },
