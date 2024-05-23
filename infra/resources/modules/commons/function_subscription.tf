@@ -16,6 +16,10 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
+    COSMOSDB_ENDPOINT= module.cosmosdb_account.endpoint,
+    COSMOSDB_DATABASE_NAME= module.cosmosdb_sql_database_trial.name,
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE= module.event_hub.namespace_id,
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME= "${local.domain}-subscription-requests"
   }
 }
 
