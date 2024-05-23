@@ -1,7 +1,7 @@
-module "subscription_requests_event_hub" {
+module "event_hub" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//eventhub?ref=v8.13.0"
 
-  name                = "${local.domain}-evh-${local.application_basename}"
+  name                = "${local.domain}-evh"
   resource_group_name = azurerm_resource_group.data_rg.name
   location            = var.location
   sku                 = "Standard"
