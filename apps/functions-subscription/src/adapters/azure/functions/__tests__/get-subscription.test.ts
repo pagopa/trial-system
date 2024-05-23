@@ -54,5 +54,10 @@ describe('makeGetSubscriptionHandler', () => {
     );
 
     expect(actual.status).toStrictEqual(200);
+    expect(await actual.json()).toMatchObject({
+      userId: aSubscription.userId,
+      trialId: aSubscription.trialId,
+      state: aSubscription.state,
+    });
   });
 });
