@@ -6,7 +6,7 @@ import { aSubscription } from '../../../../domain/__tests__/data';
 import { ItemNotFound } from '../../../../domain/errors';
 import { makeGetSubscriptionHandler } from '../get-subscription';
 
-describe('get subscription', () => {
+describe('makeGetSubscriptionHandler', () => {
   it('should return 404 when the subscription does not exist', async () => {
     const env = makeTestSystemEnv();
 

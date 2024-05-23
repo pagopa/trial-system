@@ -8,7 +8,7 @@ import { aSubscription } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makePostSubscriptionHandler } from '../insert-subscription';
 
-describe('insert subscription', () => {
+describe('makePostSubscriptionHandler', () => {
   it('should return 201 with the created subscription', async () => {
     const env = makeTestSystemEnv();
     env.insertSubscription.mockReturnValueOnce(TE.right(aSubscription));
