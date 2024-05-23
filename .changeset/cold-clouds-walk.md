@@ -2,4 +2,4 @@
 "functions-subscription": patch
 ---
 
-Change authLevel for create subcription endpoint
+Change authLevel for create subscription endpoint

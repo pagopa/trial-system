@@ -10,8 +10,10 @@ export const makeFunctionContext = () =>
 
 export const makeTestSystemEnv = () => {
   const insertSubscriptionUCMock = vi.fn();
+  const getSubscriptionUCMock = vi.fn();
   return {
     insertSubscription: insertSubscriptionUCMock,
+    getSubscription: getSubscriptionUCMock,
   };
 };
 

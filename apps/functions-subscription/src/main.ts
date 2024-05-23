@@ -4,7 +4,8 @@ import { app } from '@azure/functions';
 import { EventHubProducerClient } from '@azure/event-hubs';
 import { CosmosClient } from '@azure/cosmos';
 import { makeInfoHandler } from './adapters/azure/functions/info';
-import { makePostSubscriptionHandler } from './adapters/azure/functions/subscriptions';
+import { makePostSubscriptionHandler } from './adapters/azure/functions/insert-subscription';
+import { makeGetSubscriptionHandler } from './adapters/azure/functions/get-subscription';
 import { makeSubscriptionCosmosContainer } from './adapters/azure/cosmosdb/subscription';
 import { makeSubscriptionRequestEventHubProducer } from './adapters/azure/eventhubs/subscription-request';
 import { parseConfig } from './config';
@@ -57,4 +58,10 @@ app.http('createSubscription', {
   authLevel: 'function',
   handler: makePostSubscriptionHandler(env),
   route: '/trials/{trialId}/subscriptions',
+});
+app.http('getSubscription', {
+  methods: ['GET'],
+  authLevel: 'function',
+  handler: makeGetSubscriptionHandler(env),
+  route: '/trials/{trialId}/subscriptions/{userId}',
 });
