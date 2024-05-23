@@ -38,7 +38,8 @@ export const parseConfig = (
         },
         subscriptionRequest: {
           eventhub: {
-            namespace: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE,
+            namespace:
+              envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE,
             name: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAME,
           },
         },

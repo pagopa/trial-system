@@ -23,7 +23,9 @@ const config = pipe(
   }),
 );
 
-const cosmosDB = new CosmosClient(config.cosmosdb.connectionString);
+const cosmosDB = new CosmosClient({
+  endpoint: config.cosmosdb.connectionString
+});
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
   config.subscriptionRequest.eventhub.namespace,
