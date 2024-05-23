@@ -24,7 +24,8 @@ const config = pipe(
 );
 
 const cosmosDB = new CosmosClient({
-  endpoint: config.cosmosdb.connectionString
+  endpoint: config.cosmosdb.endpoint,
+  aadCredentials: new DefaultAzureCredential(),
 });
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
