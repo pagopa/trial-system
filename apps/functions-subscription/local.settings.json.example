@@ -3,9 +3,11 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "NODE_ENV": "development",
-    "COSMOSDB_CONNECTION_STRING": "",
-    "COSMOSDB_DATABASE_NAME": "",
-    "SUBSCRIPTION_REQUEST_EVENTHUB_CONNECTION_STRING": "",
-    "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": ""
+    "COSMOSDB_CONNECTION_STRING": "<put-here-connection-string-to-cosmos-database>",
+    "COSMOSDB_DATABASE_NAME": "<put-here-the-name-of-cosmos-database>",
+    "SUBSCRIPTION_REQUEST_EVENTHUB_CONNECTION_STRING": "<put-here-connection-string-to-event-hub>",
+    "SUBSCRIPTION_REQUEST_EVENTHUB_NAME":  "<put-here-the-name-of-the-event-hub>",
+    "SubscriptionRequestEventHubConnectionString": "<put-here-connection-string-to-event-hub>",
+    "AzureWebJobsStorage": "<put-here-connection-string-to-a-storage>"
   }
 }
