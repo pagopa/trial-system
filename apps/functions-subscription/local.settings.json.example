@@ -3,7 +3,7 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "NODE_ENV": "development",
-    "COSMOSDB_ENDPOINT": "<put-here-the-the-cosmos-database-endpoint>",
+    "COSMOSDB_CONNECTION_STRING": "<put-here-the-the-cosmos-database-connection-string>",
     "COSMOSDB_DATABASE_NAME": "<put-here-the-name-of-cosmos-database>",
     "SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE": "<put-here-the-the-event-hub-namespace>",
     "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>"

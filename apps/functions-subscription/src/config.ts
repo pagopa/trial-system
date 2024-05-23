@@ -12,13 +12,13 @@ export interface Config {
     };
   };
   readonly cosmosdb: {
-    readonly endpoint: string;
+    readonly connectionString: string;
     readonly databaseName: string;
   };
 }
 
 const EnvsCodec = t.strict({
-  COSMOSDB_ENDPOINT: NonEmptyString,
+  COSMOSDB_CONNECTION_STRING: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
@@ -33,12 +33,13 @@ export const parseConfig = (
       (errors) => PR.failure(errors).join('\n'),
       (envs) => ({
         cosmosdb: {
-          endpoint: envs.COSMOSDB_ENDPOINT,
+          connectionString: envs.COSMOSDB_CONNECTION_STRING,
           databaseName: envs.COSMOSDB_DATABASE_NAME,
         },
         subscriptionRequest: {
           eventhub: {
-            namespace: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE,
+            namespace:
+              envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE,
             name: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAME,
           },
         },
