@@ -22,7 +22,7 @@ describe('makeSubscriptionRequestConsumerHandler', () => {
     expect(actual).toStrictEqual([aSubscriptionRequest]);
   });
 
-  it('should return error if failed', async () => {
+  it('should return an error in case of failure', async () => {
     const env = makeTestSystemEnv();
     const context = makeFunctionContext();
     const messages = [aSubscriptionRequest];
