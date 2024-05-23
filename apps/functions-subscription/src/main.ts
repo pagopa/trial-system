@@ -3,7 +3,7 @@ import * as E from 'fp-ts/lib/Either';
 import { app } from '@azure/functions';
 import { EventHubProducerClient } from '@azure/event-hubs';
 import { CosmosClient } from '@azure/cosmos';
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential } from '@azure/identity';
 import { makeInfoHandler } from './adapters/azure/functions/info';
 import { makePostSubscriptionHandler } from './adapters/azure/functions/insert-subscription';
 import { makeGetSubscriptionHandler } from './adapters/azure/functions/get-subscription';
@@ -25,7 +25,7 @@ const config = pipe(
 
 const cosmosDB = new CosmosClient({
   endpoint: config.cosmosdb.endpoint,
-  aadCredentials: new DefaultAzureCredential()
+  aadCredentials: new DefaultAzureCredential(),
 });
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
