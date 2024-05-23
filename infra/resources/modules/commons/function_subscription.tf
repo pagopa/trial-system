@@ -16,6 +16,8 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
+    COSMOSDB_CONNECTION_STRING = format("AccountEndpoint=%s;AccountKey=%s;", module.cosmosdb_account.endpoint, module.cosmosdb_account.primary_key)
+    COSMOSDB_DATABASE_NAME     = module.cosmosdb_sql_database_trial.name
   }
 }
 
