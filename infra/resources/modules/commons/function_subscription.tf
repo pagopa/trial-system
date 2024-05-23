@@ -105,6 +105,8 @@ module "subscription_fn" {
   }
   subnet_id = module.subscription_snet.id
 
+  system_identity_enabled = true
+
   # Action groups for alerts
   action = [
     {
@@ -114,6 +116,13 @@ module "subscription_fn" {
   ]
 
   tags = var.tags
+}
+
+
+resource "azurerm_role_assignment" "evh_subs_publisher" {
+  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = module.subscription_fn.system_identity_principal
 }
 
 module "subscription_fn_staging_slot" {
@@ -146,7 +155,15 @@ module "subscription_fn_staging_slot" {
     module.subscription_snet.id
   ]
 
+  system_identity_enabled = true
+
   tags = var.tags
+}
+
+resource "azurerm_role_assignment" "evh_subs_publisher_staging" {
+  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = module.subscription_fn_staging_slot.system_identity_principal
 }
 
 resource "azurerm_monitor_autoscale_setting" "function_subscription" {
