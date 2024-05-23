@@ -11,7 +11,7 @@ module "event_hub" {
     {
       name              = "${local.domain}-subscription-requests"
       partitions        = 1
-      message_retention = 90 # 90 days, set to the max value
+      message_retention = 7
       consumers         = []
       keys              = []
     },
