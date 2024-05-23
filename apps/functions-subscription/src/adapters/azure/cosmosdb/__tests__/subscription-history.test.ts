@@ -13,9 +13,7 @@ describe('makeSubscriptionHistoryCosmosContainer', () => {
 
     mockDB
       .container('')
-      .items.create.mockReturnValueOnce(
-        Promise.resolve({ body: aSubscriptionHistory }),
-      );
+      .items.create.mockResolvedValueOnce({ body: aSubscriptionHistory });
 
     const actual =
       await makeSubscriptionHistoryCosmosContainer(testDB).insert(
