@@ -29,7 +29,7 @@ jobs:
     secrets: inherit
     with:
       workspace_name: ${{ inputs.workspace_name }}
-      environment: ${{ inputs.environment }}
+      environment: app-${{ inputs.environment }}
       resource_group_name: ${{ inputs.resource_group_name }}
       function_app_name: ${{ inputs.function_app_name }}
       health_check_path: "/info"
