@@ -6,7 +6,7 @@
   "description": "The Azure function that let users to subscribe to a trial and to provide information about the subscriptions.",
   "scripts": {
     "clean": "rimraf ./dist ./src/generated/definitions/internal",
-    "build": "tsc",
+    "build": "npm run generate && tsc",
     "typecheck": "npm run generate && tsc --noEmit",
     "lint": "eslint --fix",
     "lint:check": "eslint",

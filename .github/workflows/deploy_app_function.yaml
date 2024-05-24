@@ -12,6 +12,7 @@ on:
       workspace_name:
         description: The name of the workspace to create the artifact for.
         required: true
+        type: choice
         options:
           - functions-subscription
       environment:
@@ -24,7 +25,7 @@ on:
 jobs:
   deploy:
     name: Deploy
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@f2c7b99b6340760a3fe6727f0f3fd0fe96d65618
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@05c0ed3d57ae1ea1320afa3d9c7820f94b2b4289
     secrets: inherit
     with:
       workspace_name: ${{ inputs.workspace_name }}
