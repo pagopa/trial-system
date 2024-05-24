@@ -3,8 +3,10 @@ import * as E from 'fp-ts/lib/Either';
 import { app } from '@azure/functions';
 import { EventHubProducerClient } from '@azure/event-hubs';
 import { CosmosClient } from '@azure/cosmos';
+import { DefaultAzureCredential } from '@azure/identity';
 import { makeInfoHandler } from './adapters/azure/functions/info';
-import { makePostSubscriptionHandler } from './adapters/azure/functions/subscriptions';
+import { makePostSubscriptionHandler } from './adapters/azure/functions/insert-subscription';
+import { makeGetSubscriptionHandler } from './adapters/azure/functions/get-subscription';
 import { makeSubscriptionCosmosContainer } from './adapters/azure/cosmosdb/subscription';
 import { makeSubscriptionRequestEventHubProducer } from './adapters/azure/eventhubs/subscription-request';
 import { parseConfig } from './config';
@@ -23,11 +25,15 @@ const config = pipe(
   }),
 );
 
-const cosmosDB = new CosmosClient(config.cosmosdb.connectionString);
+const cosmosDB = new CosmosClient({
+  endpoint: config.cosmosdb.endpoint,
+  aadCredentials: new DefaultAzureCredential(),
+});
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
-  config.subscriptionRequest.eventhub.connectionString,
-  config.subscriptionRequest.eventhub.name,
+  config.eventhubs.namespace,
+  config.eventhubs.names.subscriptionRequest,
+  new DefaultAzureCredential(),
 );
 
 const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
@@ -65,6 +71,13 @@ app.http('createSubscription', {
   authLevel: 'function',
   handler: makePostSubscriptionHandler(env),
   route: '/trials/{trialId}/subscriptions',
+});
+
+app.http('getSubscription', {
+  methods: ['GET'],
+  authLevel: 'function',
+  handler: makeGetSubscriptionHandler(env),
+  route: '/trials/{trialId}/subscriptions/{userId}',
 });
 
 app.eventHub('subscriptionRequestConsumer', {

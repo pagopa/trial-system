@@ -1,24 +1,16 @@
 import * as H from '@pagopa/handler-kit';
-import { pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
 import { CreateSubscription } from '../../../generated/definitions/internal/CreateSubscription';
-import { UserId, TrialId, Subscription } from '../../../domain/subscription';
-import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
+import { UserId, TrialId } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
-import { ItemAlreadyExists } from '../../../domain/errors';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
 import { parsePathParameter, parseRequestBody } from './middleware';
-
-const makeSubscriptionResp = (subscription: Subscription): SubscriptionAPI => ({
-  trialId: subscription.trialId,
-  userId: subscription.userId,
-  state: SubscriptionStateEnum[subscription.state],
-  createdAt: subscription.createdAt,
-  updatedAt: subscription.updatedAt,
-});
+import { toHttpProblemJson } from './errors';
+import { toSubscriptionAPI } from './codec';
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
@@ -56,20 +48,14 @@ const makeHandlerKitHandler: H.Handler<
     RTE.map((result) => {
       if (result.kind === 'Subscription') {
         // Subscription created, return 201
-        return pipe(result, makeSubscriptionResp, H.createdJson);
+        return pipe(result, toSubscriptionAPI, H.createdJson);
       } else {
         // Subscription queued, but not yet persisted.
         // Return 202
         return pipe({}, H.successJson, H.withStatusCode(202));
       }
     }),
-    RTE.mapLeft((err) => {
-      if (err instanceof ItemAlreadyExists) {
-        return pipe(err, H.toProblemJson, H.problemJson, H.withStatusCode(409));
-      } else {
-        return pipe(err, H.toProblemJson, H.problemJson);
-      }
-    }),
+    RTE.mapLeft(toHttpProblemJson),
     RTE.orElseW(RTE.of),
   );
 });

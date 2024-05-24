@@ -3,12 +3,12 @@ import * as TE from 'fp-ts/TaskEither';
 import { HttpRequest } from '@azure/functions';
 import { makeAValidCreateSubscriptionRequest } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
-import { makePostSubscriptionHandler } from '../subscriptions';
 import { SubscriptionStoreError } from '../../../../use-cases/errors';
 import { aSubscription } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
+import { makePostSubscriptionHandler } from '../insert-subscription';
 
-describe('subscriptions azure function', () => {
+describe('makePostSubscriptionHandler', () => {
   it('should return 201 with the created subscription', async () => {
     const env = makeTestSystemEnv();
     env.insertSubscription.mockReturnValueOnce(TE.right(aSubscription));
@@ -48,25 +48,31 @@ describe('subscriptions azure function', () => {
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(400);
+    expect(await actual.json()).toMatchObject({
+      status: 400,
+      detail: 'Missing or invalid body',
+    });
   });
 
   it('should return 409 when the subscription already exists', async () => {
     const env = makeTestSystemEnv();
-    env.insertSubscription.mockReturnValueOnce(
-      TE.left(new ItemAlreadyExists('Already exists')),
-    );
+    const error = new ItemAlreadyExists('Already exists');
+    env.insertSubscription.mockReturnValueOnce(TE.left(error));
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(),
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(409);
+    expect(await actual.json()).toMatchObject({
+      status: 409,
+      detail: error.message,
+    });
   });
 
   it('should return 500 when the use case returned an error', async () => {
     const env = makeTestSystemEnv();
-    env.insertSubscription.mockReturnValueOnce(
-      TE.left(new Error('Something went wrong')),
-    );
+    const error = new Error('Something went wrong');
+    env.insertSubscription.mockReturnValueOnce(TE.left(error));
 
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(),
@@ -74,5 +80,9 @@ describe('subscriptions azure function', () => {
     );
 
     expect(actual.status).toStrictEqual(500);
+    expect(await actual.json()).toMatchObject({
+      status: 500,
+      detail: error.message,
+    });
   });
 });
