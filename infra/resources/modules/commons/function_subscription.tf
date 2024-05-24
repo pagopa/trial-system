@@ -16,6 +16,10 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
+    COSMOSDB_ENDPOINT                  = module.cosmosdb_account.endpoint,
+    COSMOSDB_DATABASE_NAME             = module.cosmosdb_sql_database_trial.name,
+    EVENTHUB_NAMESPACE                 = "${module.event_hub.name}.servicebus.windows.net",
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
   }
 }
 
@@ -105,6 +109,8 @@ module "subscription_fn" {
   }
   subnet_id = module.subscription_snet.id
 
+  system_identity_enabled = true
+
   # Action groups for alerts
   action = [
     {
@@ -114,6 +120,21 @@ module "subscription_fn" {
   ]
 
   tags = var.tags
+}
+
+resource "azurerm_role_assignment" "evh_subs_publisher" {
+  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = module.subscription_fn.system_identity_principal
+}
+
+# Enables the subs_fn to read and write to cosmosdb
+resource "azurerm_cosmosdb_sql_role_assignment" "subs_fn_to_cosmos_db" {
+  scope               = "${module.cosmosdb_account.id}/dbs/${module.cosmosdb_sql_database_trial.name}"
+  resource_group_name = azurerm_resource_group.data_rg.name
+  account_name        = module.cosmosdb_account.name
+  role_definition_id  = "${module.cosmosdb_account.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
+  principal_id        = module.subscription_fn.system_identity_principal
 }
 
 module "subscription_fn_staging_slot" {
@@ -146,7 +167,24 @@ module "subscription_fn_staging_slot" {
     module.subscription_snet.id
   ]
 
+  system_identity_enabled = true
+
   tags = var.tags
+}
+
+resource "azurerm_role_assignment" "evh_subs_publisher_staging" {
+  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = module.subscription_fn_staging_slot.system_identity_principal
+}
+
+# Enables the subs_fn_staging to read and write to cosmosdb
+resource "azurerm_cosmosdb_sql_role_assignment" "subs_fn_staging_to_cosmos_db" {
+  scope               = "${module.cosmosdb_account.id}/dbs/${module.cosmosdb_sql_database_trial.name}"
+  resource_group_name = azurerm_resource_group.data_rg.name
+  account_name        = module.cosmosdb_account.name
+  role_definition_id  = "${module.cosmosdb_account.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
+  principal_id        = module.subscription_fn_staging_slot.system_identity_principal
 }
 
 resource "azurerm_monitor_autoscale_setting" "function_subscription" {

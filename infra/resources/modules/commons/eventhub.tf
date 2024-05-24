@@ -17,7 +17,15 @@ module "event_hub" {
     },
   ]
 
-  private_endpoint_created = false
-  virtual_network_ids      = [azurerm_virtual_network.vnet.id]
-  tags                     = var.tags
+  private_endpoint_created             = true
+  private_endpoint_resource_group_name = azurerm_resource_group.net_rg.name
+  private_endpoint_subnet_id           = module.pendpoints_snet.id
+  private_dns_zones = {
+    id                  = [azurerm_private_dns_zone.privatelink_servicebus.id]
+    name                = [azurerm_private_dns_zone.privatelink_servicebus.name]
+    resource_group_name = azurerm_private_dns_zone.privatelink_servicebus.resource_group_name
+  }
+
+  virtual_network_ids = [azurerm_virtual_network.vnet.id]
+  tags                = var.tags
 }
