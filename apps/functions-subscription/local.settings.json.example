@@ -5,7 +5,7 @@
     "NODE_ENV": "development",
     "COSMOSDB_ENDPOINT": "<put-here-the-the-cosmos-database-endpoint>",
     "COSMOSDB_DATABASE_NAME": "<put-here-the-name-of-cosmos-database>",
-    "SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE": "<put-here-the-the-event-hub-namespace>",
+    "EVENTHUB_NAMESPACE": "<put-here-the-the-event-hub-namespace>",
     "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>"
   }
 }

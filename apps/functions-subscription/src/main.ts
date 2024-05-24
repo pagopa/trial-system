@@ -29,8 +29,8 @@ const cosmosDB = new CosmosClient({
 });
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
-  config.subscriptionRequest.eventhub.namespace,
-  config.subscriptionRequest.eventhub.name,
+  config.eventhubs.namespace,
+  config.eventhubs.names.subscriptionRequest,
   new DefaultAzureCredential(),
 );
 

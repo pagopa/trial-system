@@ -5,10 +5,10 @@ import * as E from 'fp-ts/lib/Either';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 export interface Config {
-  readonly subscriptionRequest: {
-    readonly eventhub: {
-      readonly namespace: string;
-      readonly name: string;
+  readonly eventhubs: {
+    readonly namespace: string;
+    readonly names: {
+      readonly subscriptionRequest: string;
     };
   };
   readonly cosmosdb: {
@@ -20,7 +20,7 @@ export interface Config {
 const EnvsCodec = t.strict({
   COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
-  SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE: NonEmptyString,
+  EVENTHUB_NAMESPACE: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
 });
 
@@ -32,15 +32,15 @@ export const parseConfig = (
     E.bimap(
       (errors) => PR.failure(errors).join('\n'),
       (envs) => ({
+        eventhubs: {
+          namespace: envs.EVENTHUB_NAMESPACE,
+          names: {
+            subscriptionRequest: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAME,
+          },
+        },
         cosmosdb: {
           endpoint: envs.COSMOSDB_ENDPOINT,
           databaseName: envs.COSMOSDB_DATABASE_NAME,
-        },
-        subscriptionRequest: {
-          eventhub: {
-            namespace: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE,
-            name: envs.SUBSCRIPTION_REQUEST_EVENTHUB_NAME,
-          },
         },
       }),
     ),
