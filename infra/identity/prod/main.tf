@@ -46,6 +46,21 @@ module "federated_identities" {
   depends_on = [azurerm_resource_group.identity]
 }
 
+module "app_federated_identities" {
+  source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
+
+  prefix       = local.prefix
+  env_short    = local.env_short
+  env          = "app-prod"
+  domain       = "${local.domain}-app"
+  repositories = [local.repo_name]
+  tags         = local.tags
+
+  continuos_integration = { enable = false }
+
+  depends_on = [azurerm_resource_group.identity]
+}
+
 resource "azurerm_role_assignment" "ci" {
   provider             = azurerm.prodio
   scope                = data.azurerm_subscription.prodio.id
@@ -57,5 +72,12 @@ resource "azurerm_role_assignment" "cd" {
   provider             = azurerm.prodio
   scope                = data.azurerm_subscription.prodio.id
   principal_id         = module.federated_identities.federated_cd_identity.id
+  role_definition_name = "Reader"
+}
+
+resource "azurerm_role_assignment" "app_cd" {
+  provider             = azurerm.prodio
+  scope                = data.azurerm_subscription.prodio.id
+  principal_id         = module.app_federated_identities.federated_cd_identity.id
   role_definition_name = "Reader"
 }
