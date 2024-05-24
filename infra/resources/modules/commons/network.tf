@@ -89,15 +89,16 @@ module "pendpoints_snet" {
 
 }
 
-resource "azurerm_private_dns_zone" "privatelink_azure_websites" {
+data "azurerm_private_dns_zone" "privatelink_azure_websites" {
+  provider            = azurerm.prodio
   name                = "privatelink.azurewebsites.net"
-  resource_group_name = azurerm_resource_group.net_rg.name
+  resource_group_name = var.vnet_common.resource_group_name
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "websites_link" {
   name                  = azurerm_virtual_network.vnet.name
   resource_group_name   = azurerm_resource_group.net_rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.privatelink_azure_websites.name
+  private_dns_zone_name = data.azurerm_private_dns_zone.privatelink_azure_websites.name
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
@@ -129,7 +130,7 @@ resource "azurerm_private_endpoint" "subscription_fn" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
@@ -150,7 +151,7 @@ resource "azurerm_private_endpoint" "subscription_fn_staging" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
