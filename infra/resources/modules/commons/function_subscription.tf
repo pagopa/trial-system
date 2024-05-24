@@ -18,7 +18,7 @@ locals {
 
     COSMOSDB_ENDPOINT                       = module.cosmosdb_account.endpoint,
     COSMOSDB_DATABASE_NAME                  = module.cosmosdb_sql_database_trial.name,
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE = module.event_hub.namespace_id,
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAMESPACE = "${module.event_hub.name}.servicebus.windows.net",
     SUBSCRIPTION_REQUEST_EVENTHUB_NAME      = "${local.domain}-subscription-requests"
   }
 }
