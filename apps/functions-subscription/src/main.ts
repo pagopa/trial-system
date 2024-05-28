@@ -81,7 +81,7 @@ app.http('getSubscription', {
 });
 
 app.eventHub('subscriptionRequestConsumer', {
-  connection: 'SubscriptionRequestEventHubConnectionString',
+  connection: 'SubscriptionRequestEventHubConnection',
   eventHubName: config.eventhubs.names.subscriptionRequest,
   cardinality: 'many',
   handler: makeSubscriptionRequestConsumerHandler(env),
