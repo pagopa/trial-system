@@ -36,7 +36,7 @@ resource "github_actions_environment_secret" "env_prod_cd_secrets" {
 }
 
 resource "github_actions_environment_secret" "env_app_prod_cd_secrets" {
-  for_each = local.cd.secrets
+  for_each = local.app_cd.secrets
 
   repository      = github_repository.this.name
   environment     = github_repository_environment.github_repository_environment_app_prod_cd.environment

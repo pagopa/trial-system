@@ -23,4 +23,10 @@ locals {
     }
     reviewers_teams = ["io-platform-contributors"]
   }
+
+  app_cd = {
+    secrets = {
+      "ARM_CLIENT_ID" = data.azurerm_user_assigned_identity.identity_app_prod_cd.client_id
+    }
+  }
 }

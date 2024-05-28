@@ -89,16 +89,23 @@ module "pendpoints_snet" {
 
 }
 
-resource "azurerm_private_dns_zone" "privatelink_azure_websites" {
-  name                = "privatelink.azurewebsites.net"
+resource "azurerm_private_endpoint" "sql" {
+  name                = format("%s-private-endpoint-sql-01", local.project)
+  location            = var.location
   resource_group_name = azurerm_resource_group.net_rg.name
-}
+  subnet_id           = module.pendpoints_snet.id
 
-resource "azurerm_private_dns_zone_virtual_network_link" "websites_link" {
-  name                  = azurerm_virtual_network.vnet.name
-  resource_group_name   = azurerm_resource_group.net_rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.privatelink_azure_websites.name
-  virtual_network_id    = azurerm_virtual_network.vnet.id
+  private_service_connection {
+    name                           = format("%s-private-endpoint-sql", local.project)
+    private_connection_resource_id = module.cosmosdb_account.id
+    is_manual_connection           = false
+    subresource_names              = ["Sql"]
+  }
+
+  private_dns_zone_group {
+    name                 = "private-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_documents.id]
+  }
 }
 
 resource "azurerm_private_dns_zone" "privatelink_servicebus" {
@@ -111,6 +118,20 @@ resource "azurerm_private_dns_zone_virtual_network_link" "evh_link" {
   name                  = azurerm_virtual_network.vnet.name
   resource_group_name   = azurerm_resource_group.net_rg.name
   private_dns_zone_name = azurerm_private_dns_zone.privatelink_servicebus.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+}
+
+data "azurerm_private_dns_zone" "privatelink_azure_websites" {
+  provider            = azurerm.prodio
+  name                = "privatelink.azurewebsites.net"
+  resource_group_name = var.vnet_common.resource_group_name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "websites_link" {
+  provider              = azurerm.prodio
+  name                  = azurerm_virtual_network.vnet.name
+  resource_group_name   = var.vnet_common.resource_group_name
+  private_dns_zone_name = data.azurerm_private_dns_zone.privatelink_azure_websites.name
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
@@ -129,7 +150,7 @@ resource "azurerm_private_endpoint" "subscription_fn" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
@@ -150,7 +171,7 @@ resource "azurerm_private_endpoint" "subscription_fn_staging" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_azure_websites.id]
+    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
   }
 
   tags = var.tags
