@@ -170,7 +170,7 @@ module "subscription_async_fn_staging_slot" {
 }
 
 # Enables the subscription_async_fn_staging to read from the event-hub
-resource "azurerm_role_assignment" "subs_asyn_receive_from_evh" {
+resource "azurerm_role_assignment" "subs_asyn_staging_receive_from_evh" {
   scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = module.subscription_async_fn_staging_slot.system_identity_principal
