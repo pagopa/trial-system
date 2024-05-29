@@ -19,9 +19,8 @@ export const makeSubscriptionRequestConsumerHandler =
       TE.fromEither(t.array(SubscriptionRequestCodec).decode(messages)),
       TE.chainW(TE.traverseArray(env.processSubscriptionRequest)),
       TE.getOrElse((error) => {
-        // eslint-disable-next-line functional/no-promise-reject
-        return () => Promise.reject(error);
+        // if an error occurs, the retry policy will be applied if it is defined
+        // eslint-disable-next-line functional/no-throw-statements
+        throw error;
       }),
-      // run the task returning a promise
-      (task) => task(),
-    );
+    )();
