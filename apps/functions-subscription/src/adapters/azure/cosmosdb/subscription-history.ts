@@ -16,8 +16,7 @@ export const makeSubscriptionHistoryCosmosContainer = (
           () => container.items.create(subscriptionHistory),
           E.toError,
         ),
-        TE.map(() => subscriptionHistory),
-        TE.mapLeft(cosmosErrorToDomainError),
+        TE.mapBoth(cosmosErrorToDomainError, () => subscriptionHistory),
       ),
   };
 };
