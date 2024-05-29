@@ -30,15 +30,15 @@ export const processSubscriptionRequest = ({
     RTE.bindW('subscriptionHistory', ({ subscription }) =>
       makeSubscriptionHistory(subscription),
     ),
-    RTE.flatMapTaskEither((env) =>
+    RTE.flatMapTaskEither(({ subscription, subscriptionHistory, ...env }) =>
       pipe(
-        env.subscriptionWriter.insert(env.subscription),
-        TE.orElse(recoverItemAlreadyExists(env.subscription)),
+        env.subscriptionWriter.insert(subscription),
+        TE.orElse(recoverItemAlreadyExists(subscription)),
         TE.chain(() =>
-          env.subscriptionHistoryWriter.insert(env.subscriptionHistory),
+          env.subscriptionHistoryWriter.insert(subscriptionHistory),
         ),
         TE.map(() => ({ trialId, userId })),
-        TE.orElse(recoverItemAlreadyExists(env.subscription)),
+        TE.orElse(recoverItemAlreadyExists(subscription)),
       ),
     ),
   );
