@@ -5,7 +5,7 @@ import { makeSubscriptionRequestConsumerHandler } from '../process-subscription-
 import { aSubscriptionRequest } from '../../../../domain/__tests__/data';
 
 describe('makeSubscriptionRequestConsumerHandler', () => {
-  it('should process subscription-requests wihtout error', async () => {
+  it('should process subscription-requests without error', async () => {
     const env = makeTestSystemEnv();
     const context = makeFunctionContext();
     const messages = [aSubscriptionRequest];
