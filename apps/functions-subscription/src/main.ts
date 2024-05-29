@@ -80,9 +80,10 @@ app.http('getSubscription', {
   route: '/trials/{trialId}/subscriptions/{userId}',
 });
 
-app.eventHub('subscriptionRequestConsumer', {
-  connection: 'SubscriptionRequestEventHubConnection',
-  eventHubName: config.eventhubs.names.subscriptionRequest,
-  cardinality: 'many',
-  handler: makeSubscriptionRequestConsumerHandler(env),
-});
+if (config.subscriptionRequest.consumer === 'on')
+  app.eventHub('subscriptionRequestConsumer', {
+    connection: 'SubscriptionRequestEventHubConnection',
+    eventHubName: config.eventhubs.names.subscriptionRequest,
+    cardinality: 'many',
+    handler: makeSubscriptionRequestConsumerHandler(env),
+  });

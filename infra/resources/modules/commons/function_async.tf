@@ -15,6 +15,14 @@ locals {
     FETCH_KEEPALIVE_MAX_FREE_SOCKETS    = "10"
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
+
+    COSMOSDB_ENDPOINT                  = module.cosmosdb_account.endpoint
+    COSMOSDB_DATABASE_NAME             = module.cosmosdb_sql_database_trial.name
+    EVENTHUB_NAMESPACE                 = "${module.event_hub.name}.servicebus.windows.net"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
+    SUBSCRIPTION_REQUEST_CONSUMER      = "on"
+
+    SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
   }
 }
 
@@ -104,6 +112,8 @@ module "subscription_async_fn" {
   }
   subnet_id = module.subscription_async_snet.id
 
+  system_identity_enabled = true
+
   allowed_subnets = [
     module.subscription_async_snet.id
   ]
@@ -117,6 +127,13 @@ module "subscription_async_fn" {
   ]
 
   tags = var.tags
+}
+
+# Enables the subscription_async_fn to read from the event-hub
+resource "azurerm_role_assignment" "subs_asyn_receive_from_evh" {
+  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  role_definition_name = "Azure Event Hubs Data Receiver"
+  principal_id         = module.subscription_async_fn.system_identity_principal
 }
 
 module "subscription_async_fn_staging_slot" {
@@ -150,6 +167,13 @@ module "subscription_async_fn_staging_slot" {
   ]
 
   tags = var.tags
+}
+
+# Enables the subscription_async_fn_staging to read from the event-hub
+resource "azurerm_role_assignment" "subs_asyn_receive_from_evh" {
+  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  role_definition_name = "Azure Event Hubs Data Receiver"
+  principal_id         = module.subscription_async_fn_staging_slot.system_identity_principal
 }
 
 resource "azurerm_monitor_autoscale_setting" "function_async" {
