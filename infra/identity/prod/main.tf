@@ -43,6 +43,21 @@ module "federated_identities" {
   repositories = [local.repo_name]
   tags         = local.tags
 
+  continuos_delivery = {
+    enable = true
+    roles = {
+      subscription = ["Contributor"]
+      resource_groups = {
+        terraform-state-rg = [
+          "Storage Blob Data Contributor"
+        ],
+        ts-p-itn-data-rg-01 = [
+          "Role Based Access Control Administrator"
+        ]
+      }
+    }
+  }
+
   depends_on = [azurerm_resource_group.identity]
 }
 
