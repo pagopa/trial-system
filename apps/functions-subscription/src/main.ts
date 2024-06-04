@@ -80,11 +80,11 @@ app.http('getSubscription', {
 
 if (config.activations.job === 'on') {
   app.cosmosDB('activationJob', {
-    containerName: 'activations',
     connection: 'ActivationJobCosmosDBConnection',
     databaseName: config.cosmosdb.databaseName,
-    handler: makeActivationCosmosDBHandler(),
-    createLeaseContainerIfNotExists: true,
+    containerName: 'activations',
+    leaseContainerName: config.cosmosdb.leasesContainerName,
     leaseContainerPrefix: 'activations',
+    handler: makeActivationCosmosDBHandler(),
   });
 }
