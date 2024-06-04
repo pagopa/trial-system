@@ -14,6 +14,8 @@ import { Capabilities } from './domain/capabilities';
 import { makeSystemEnv } from './system-env';
 import { clock } from './adapters/date/clock';
 import { hashFn } from './adapters/crypto/hash';
+import { makeActivationCosmosDBHandler } from './adapters/azure/cosmosdb/activation-job';
+import { makeActivationCosmosContainer } from './adapters/azure/cosmosdb/activation';
 
 const config = pipe(
   parseConfig(process.env),
@@ -42,10 +44,15 @@ const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
 
+const activationService = makeActivationCosmosContainer(
+  cosmosDB.database(config.cosmosdb.databaseName),
+);
+
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
   subscriptionRequestWriter,
+  activationService,
   hashFn,
   clock,
 };
@@ -69,4 +76,13 @@ app.http('getSubscription', {
   authLevel: 'function',
   handler: makeGetSubscriptionHandler(env),
   route: '/trials/{trialId}/subscriptions/{userId}',
+});
+
+app.cosmosDB('activationJob', {
+  containerName: 'activations',
+  connection: 'ActivationJobCosmosDBConnection',
+  databaseName: config.cosmosdb.databaseName,
+  handler: makeActivationCosmosDBHandler(),
+  createLeaseContainerIfNotExists: true,
+  leaseContainerPrefix: 'activations',
 });
