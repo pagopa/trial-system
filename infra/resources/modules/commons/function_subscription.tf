@@ -20,6 +20,7 @@ locals {
     COSMOSDB_DATABASE_NAME             = module.cosmosdb_sql_database_trial.name,
     EVENTHUB_NAMESPACE                 = "${module.event_hub.name}.servicebus.windows.net",
     SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
+    LEASES_CONTAINER_NAME              = azurerm_cosmosdb_sql_container.leases.name
   }
 }
 
