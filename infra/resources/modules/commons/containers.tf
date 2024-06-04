@@ -45,3 +45,16 @@ resource "azurerm_cosmosdb_sql_container" "subscription_history" {
     }
   }
 }
+
+resource "azurerm_cosmosdb_sql_container" "leases" {
+  name                  = "leases"
+  resource_group_name   = azurerm_resource_group.data_rg.name
+  account_name          = module.cosmosdb_account.name
+  database_name         = module.cosmosdb_sql_database_trial.name
+  partition_key_path    = "/id"
+  partition_key_version = 2
+
+  autoscale_settings {
+    max_throughput = 1000
+  }
+}
