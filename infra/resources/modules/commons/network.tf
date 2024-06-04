@@ -175,27 +175,6 @@ resource "azurerm_private_endpoint" "subscription_fn_staging" {
   tags = var.tags
 }
 
-resource "azurerm_private_endpoint" "subscription_async_fn" {
-  name                = "${local.project}-subscription-async-fn-endpoint"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.net_rg.name
-  subnet_id           = module.pendpoints_snet.id
-
-  private_service_connection {
-    name                           = "${local.project}-subscription-async-fn-endpoint"
-    private_connection_resource_id = module.subscription_async_fn.id
-    is_manual_connection           = false
-    subresource_names              = ["sites"]
-  }
-
-  private_dns_zone_group {
-    name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
-  }
-
-  tags = var.tags
-}
-
 resource "azurerm_private_endpoint" "subscription_async_fn_staging" {
   name                = "${local.project}-subscription-async-fn-staging-endpoint"
   location            = var.location
