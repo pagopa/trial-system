@@ -5,6 +5,9 @@ import * as E from 'fp-ts/lib/Either';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 export interface Config {
+  readonly activations: {
+    readonly job: 'on' | 'off';
+  };
   readonly eventhubs: {
     readonly namespace: string;
     readonly names: {
@@ -22,6 +25,10 @@ const EnvsCodec = t.strict({
   COSMOSDB_DATABASE_NAME: NonEmptyString,
   EVENTHUB_NAMESPACE: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
+  ACTIVATION_JOB_TRIGGER: t.keyof({
+    on: null,
+    off: null,
+  }),
 });
 
 export const parseConfig = (
@@ -32,6 +39,9 @@ export const parseConfig = (
     E.bimap(
       (errors) => PR.failure(errors).join('\n'),
       (envs) => ({
+        activations: {
+          job: envs.ACTIVATION_JOB_TRIGGER,
+        },
         eventhubs: {
           namespace: envs.EVENTHUB_NAMESPACE,
           names: {
