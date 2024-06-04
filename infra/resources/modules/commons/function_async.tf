@@ -132,6 +132,15 @@ resource "azurerm_role_assignment" "subs_asyn_receive_from_evh" {
   principal_id         = module.subscription_async_fn.system_identity_principal
 }
 
+# Enables the subs_fn to read and write to cosmosdb
+resource "azurerm_cosmosdb_sql_role_assignment" "subs_async_fn_to_cosmos_db" {
+  scope               = "${module.cosmosdb_account.id}/dbs/${module.cosmosdb_sql_database_trial.name}"
+  resource_group_name = azurerm_resource_group.data_rg.name
+  account_name        = module.cosmosdb_account.name
+  role_definition_id  = "${module.cosmosdb_account.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
+  principal_id        = module.subscription_async_fn.system_identity_principal
+}
+
 module "subscription_async_fn_staging_slot" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v8.9.0"
 
@@ -168,6 +177,15 @@ resource "azurerm_role_assignment" "subs_asyn_staging_receive_from_evh" {
   scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = module.subscription_async_fn_staging_slot.system_identity_principal
+}
+
+# Enables the subs_fn to read and write to cosmosdb
+resource "azurerm_cosmosdb_sql_role_assignment" "subs_async_fn_staging_to_cosmos_db" {
+  scope               = "${module.cosmosdb_account.id}/dbs/${module.cosmosdb_sql_database_trial.name}"
+  resource_group_name = azurerm_resource_group.data_rg.name
+  account_name        = module.cosmosdb_account.name
+  role_definition_id  = "${module.cosmosdb_account.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
+  principal_id        = module.subscription_async_fn_staging_slot.system_identity_principal
 }
 
 resource "azurerm_monitor_autoscale_setting" "function_async" {
