@@ -78,11 +78,13 @@ app.http('getSubscription', {
   route: '/trials/{trialId}/subscriptions/{userId}',
 });
 
-app.cosmosDB('activationJob', {
-  containerName: 'activations',
-  connection: 'ActivationJobCosmosDBConnection',
-  databaseName: config.cosmosdb.databaseName,
-  handler: makeActivationCosmosDBHandler(),
-  createLeaseContainerIfNotExists: true,
-  leaseContainerPrefix: 'activations',
-});
+if (config.activations.job === 'on') {
+  app.cosmosDB('activationJob', {
+    containerName: 'activations',
+    connection: 'ActivationJobCosmosDBConnection',
+    databaseName: config.cosmosdb.databaseName,
+    handler: makeActivationCosmosDBHandler(),
+    createLeaseContainerIfNotExists: true,
+    leaseContainerPrefix: 'activations',
+  });
+}
