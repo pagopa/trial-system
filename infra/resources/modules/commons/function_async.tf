@@ -136,6 +136,13 @@ module "subscription_async_fn" {
   tags = var.tags
 }
 
+# Enables the subscription_async_fn to write on service-bus topic
+resource "azurerm_role_assignment" "subs_asyn_write_to_sbt" {
+  scope                = azurerm_servicebus_topic.events.id
+  role_definition_name = "Azure Service Bus Data Sender"
+  principal_id         = module.subscription_async_fn.system_identity_principal
+}
+
 # Enables the subscription_async_fn to read from the event-hub
 resource "azurerm_role_assignment" "subs_asyn_receive_from_evh" {
   scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
@@ -185,6 +192,13 @@ module "subscription_async_fn_staging_slot" {
   system_identity_enabled = true
 
   tags = var.tags
+}
+
+# Enables the subscription_async_fn_staging to write on service-bus topic
+resource "azurerm_role_assignment" "subs_asyn_staging_write_to_sbt" {
+  scope                = azurerm_servicebus_topic.events.id
+  role_definition_name = "Azure Service Bus Data Sender"
+  principal_id         = module.subscription_async_fn.system_identity_principal
 }
 
 # Enables the subscription_async_fn_staging to read from the event-hub

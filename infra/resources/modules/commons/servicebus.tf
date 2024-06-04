@@ -15,6 +15,4 @@ resource "azurerm_servicebus_topic" "events" {
   namespace_id = azurerm_servicebus_namespace.main.id
 
   enable_partitioning = true
-
-  tags = var.tags
 }
