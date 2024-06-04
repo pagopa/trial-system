@@ -17,12 +17,14 @@ export interface Config {
   readonly cosmosdb: {
     readonly endpoint: string;
     readonly databaseName: string;
+    readonly leasesContainerName: string;
   };
 }
 
 const EnvsCodec = t.strict({
   COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
+  COSMOSDB_LEASES_CONTAINER_NAME: NonEmptyString,
   EVENTHUB_NAMESPACE: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
   ACTIVATION_JOB_TRIGGER: t.keyof({
@@ -51,6 +53,7 @@ export const parseConfig = (
         cosmosdb: {
           endpoint: envs.COSMOSDB_ENDPOINT,
           databaseName: envs.COSMOSDB_DATABASE_NAME,
+          leasesContainerName: envs.COSMOSDB_LEASES_CONTAINER_NAME,
         },
       }),
     ),
