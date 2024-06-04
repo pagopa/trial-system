@@ -17,3 +17,12 @@ export const aSubscriptionRequest = {
   userId: aUserId,
   trialId: aTrialId,
 };
+
+export const anActivationRequest = {
+  id: 'anId',
+  userId: aUserId,
+  trialId: aTrialId,
+  createdAt: new Date(),
+  type: 'request' as const,
+  isActive: false,
+};

@@ -14,7 +14,7 @@ import { Capabilities } from './domain/capabilities';
 import { makeSystemEnv } from './system-env';
 import { clock } from './adapters/date/clock';
 import { hashFn } from './adapters/crypto/hash';
-import { makeActivationCosmosDBHandler } from './adapters/azure/cosmosdb/activation-job';
+import { makeActivationJobCosmosHandler } from './adapters/azure/cosmosdb/activation-job';
 import { makeActivationCosmosContainer } from './adapters/azure/cosmosdb/activation';
 
 const config = pipe(
@@ -85,6 +85,6 @@ if (config.activations.job === 'on') {
     containerName: 'activations',
     leaseContainerName: config.cosmosdb.leasesContainerName,
     leaseContainerPrefix: 'activations',
-    handler: makeActivationCosmosDBHandler(),
+    handler: makeActivationJobCosmosHandler(env),
   });
 }

@@ -27,20 +27,18 @@ export const ActivationCodec = t.union([
   ActivationRequestCodec,
   ActivationJobCodec,
 ]);
-export type Activation = t.TypeOf<typeof ActivationCodec>;
 
-interface ActivationFilter {
+export interface ActivationJobRequest {
   readonly usersToActivate: ActivationJob['usersToActivate'];
   readonly trialId: ActivationJob['trialId'];
-  readonly isActive: boolean;
 }
 
 export interface ActivationService {
   readonly fetchActivationRequests: (
-    filter: ActivationFilter,
+    filter: ActivationJobRequest,
   ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
 
-  readonly activateSubscription: (
-    activationRequest: ActivationRequest,
-  ) => TE.TaskEither<Error, ActivationRequest>;
+  readonly activateSubscriptions: (
+    activationRequests: readonly ActivationRequest[],
+  ) => TE.TaskEither<Error, 'ok' | 'ko'>; // FIXME: Create a Result object
 }
