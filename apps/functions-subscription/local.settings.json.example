@@ -7,6 +7,6 @@
     "COSMOSDB_DATABASE_NAME": "<put-here-the-name-of-cosmos-database>",
     "EVENTHUB_NAMESPACE": "<put-here-the-the-event-hub-namespace>",
     "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
-    "LEASES_CONTAINER_NAME": "leases"
+    "COSMOSDB_LEASES_CONTAINER_NAME": "leases"
   }
 }
