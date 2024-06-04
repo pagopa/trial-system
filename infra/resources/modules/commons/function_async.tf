@@ -114,10 +114,6 @@ module "subscription_async_fn" {
 
   system_identity_enabled = true
 
-  allowed_subnets = [
-    module.subscription_async_snet.id
-  ]
-
   # Action groups for alerts
   action = [
     {
@@ -163,10 +159,6 @@ module "subscription_async_fn_staging_slot" {
   subnet_id = module.subscription_async_snet.id
 
   system_identity_enabled = true
-
-  allowed_subnets = [
-    module.subscription_async_snet.id
-  ]
 
   tags = var.tags
 }
