@@ -60,7 +60,7 @@ module "subscription_async_fn" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.9.0"
 
   resource_group_name = azurerm_resource_group.async_rg.name
-  name                = format("%s-subscription-async-fn-01", local.project)
+  name                = format("%s-sub-async-fn-01", local.project)
   location            = var.location
   domain              = local.domain
   health_check_path   = "/info"
