@@ -2,7 +2,7 @@ import * as t from 'io-ts';
 import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
-import { pipe } from 'fp-ts/lib/function';
+import { flow, pipe } from 'fp-ts/lib/function';
 import { InvocationContext } from '@azure/functions';
 import { ActivationCodec } from '../../../domain/activation';
 import { SystemEnv } from '../../../system-env';
@@ -19,13 +19,19 @@ export const makeActivationJobCosmosHandler =
       // decode the documents with the ActivationCodec
       TE.fromEither(t.array(ActivationCodec).decode(documents)),
       // Keep only job documents
-      TE.map(
-        RA.filterMap((job) => (job.type === 'job' ? O.some(job) : O.none)),
+      TE.flatMap(
+        flow(
+          RA.filterMap((doc) => (doc.type === 'job' ? O.some(doc) : O.none)),
+          TE.of,
+        ),
       ),
-      TE.chain(([job, ...tail]) => {
+      TE.flatMap(([job]) => {
         // Call the method to activate users
-        // return env.processActivationJob({usersToActivate: job.usersToActivate, trialId: job.trialId})
-        return TE.of([job, ...tail]);
+        return env.processActivationJob({
+          usersToActivate: job.usersToActivate,
+          usersActivated: job.usersActivated,
+          trialId: job.trialId,
+        });
       }),
       TE.getOrElse((error) => {
         // if an error occurs, the retry policy will be applied if it is defined
