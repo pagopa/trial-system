@@ -34,11 +34,23 @@ export interface ActivationJobRequest {
 }
 
 export interface ActivationService {
-  readonly fetchActivationRequests: (
+  /**
+   * This function returns a list of activation requests that are going to be
+   * activated.
+   * The input is an object representing the trialId of the requests to enable and
+   * the number of activation requests to activate.
+   */
+  readonly fetchActivationRequestsToActivate: (
     filter: ActivationJobRequest,
   ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
 
-  readonly activateSubscriptions: (
+  /**
+   * This function is responsible to activate the activation requests.
+   * The input is a list of activation requests that are going to be activated.
+   * If any of the activation request cannot be activated, then none of them
+   * are activated.
+   */
+  readonly activateActivationRequests: (
     activationRequests: readonly ActivationRequest[],
   ) => TE.TaskEither<Error, 'ok' | 'ko'>; // FIXME: Create a Result object
 }
