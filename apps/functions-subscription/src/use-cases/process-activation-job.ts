@@ -3,25 +3,22 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from '../domain/capabilities';
-import { ActivationJobRequest } from '../domain/activation';
+import { ActivationJob } from '../domain/activation';
 
 type Env = Pick<Capabilities, 'activationService'>;
 
-export const processActivationJob = (activationRequest: ActivationJobRequest) =>
+export const processActivationJob = (job: ActivationJob) =>
   pipe(
     RTE.ask<Env>(),
     RTE.flatMapTaskEither(({ activationService }) =>
       pipe(
-        activationService.fetchActivationRequestsToActivate({
-          usersToActivate: activationRequest.usersToActivate,
-          usersActivated: activationRequest.usersActivated,
-          trialId: activationRequest.trialId,
-        }),
+        activationService.fetchActivationRequestsToActivate(job),
         // Create chunk of users
-        TE.map(RA.chunksOf(99)), // FIXME: Remove magic number here
+        // FIXME: Remove magic number here
+        TE.map(RA.chunksOf(99)),
         // Activate chunk of users
         TE.flatMap(
-          TE.traverseArray(activationService.activateActivationRequests),
+          TE.traverseArray(activationService.activateActivationRequests(job)),
         ),
       ),
     ),

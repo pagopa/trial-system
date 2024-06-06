@@ -27,11 +27,7 @@ export const makeActivationJobCosmosHandler =
       ),
       TE.flatMap(([job]) => {
         // Call the method to activate users
-        return env.processActivationJob({
-          usersToActivate: job.usersToActivate,
-          usersActivated: job.usersActivated,
-          trialId: job.trialId,
-        });
+        return env.processActivationJob(job);
       }),
       TE.getOrElse((error) => {
         // if an error occurs, the retry policy will be applied if it is defined
