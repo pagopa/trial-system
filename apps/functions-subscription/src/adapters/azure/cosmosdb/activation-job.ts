@@ -19,10 +19,9 @@ export const makeActivationJobCosmosHandler =
       // decode the documents with the ActivationCodec
       TE.fromEither(t.array(ActivationCodec).decode(documents)),
       // Keep only job documents
-      TE.flatMap(
+      TE.map(
         flow(
           RA.filterMap((doc) => (doc.type === 'job' ? O.some(doc) : O.none)),
-          TE.of,
         ),
       ),
       TE.flatMap(([job]) => {
