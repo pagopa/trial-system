@@ -7,8 +7,8 @@
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check",
     "code-review": "turbo run typecheck lint:check test",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
     "prepare": "husky",
     "version": "changeset version",
     "release": "changeset tag"
