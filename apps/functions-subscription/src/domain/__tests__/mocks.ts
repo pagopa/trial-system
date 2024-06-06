@@ -10,6 +10,9 @@ export const makeTestEnv = () => {
   const subscriptionRequestWriterMock = {
     insert: vi.fn(),
   };
+  const subscriptionHistoryWriterMock = {
+    insert: vi.fn(),
+  };
   const hashFnMock = vi.fn();
   const clockMock = {
     now: vi.fn(),
@@ -19,6 +22,7 @@ export const makeTestEnv = () => {
     subscriptionReader: subscriptionReaderMock,
     subscriptionWriter: subscriptionWriterMock,
     subscriptionRequestWriter: subscriptionRequestWriterMock,
+    subscriptionHistoryWriter: subscriptionHistoryWriterMock,
     hashFn: hashFnMock,
     clock: clockMock,
   };
