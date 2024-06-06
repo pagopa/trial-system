@@ -27,7 +27,7 @@ export interface Config {
 const EnvsCodec = t.strict({
   COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
-  COSMOSDB_LEASES_CONTAINER_NAME: NonEmptyString,
+  LEASES_COSMOSDB_CONTAINER_NAME: NonEmptyString,
   EVENTHUB_NAMESPACE: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
   SUBSCRIPTION_REQUEST_CONSUMER: t.keyof({
@@ -63,7 +63,7 @@ export const parseConfig = (
         cosmosdb: {
           endpoint: envs.COSMOSDB_ENDPOINT,
           databaseName: envs.COSMOSDB_DATABASE_NAME,
-          leasesContainerName: envs.COSMOSDB_LEASES_CONTAINER_NAME,
+          leasesContainerName: envs.LEASES_COSMOSDB_CONTAINER_NAME,
         },
       }),
     ),

@@ -12,5 +12,6 @@
     "AzureWebJobsStorage": "<put-here-the-connection-string-to-a-storage>",
     "ACTIVATION_JOB_TRIGGER": "off",
     "ActivationJobCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
+    "LEASES_COSMOSDB_CONTAINER_NAME": "<put-here-the-name-of-leases-container>"
   }
 }
