@@ -85,7 +85,7 @@ resource "azurerm_cosmosdb_sql_container" "activations" {
 
       index {
         path  = "/id"
-        order = "Descending"
+        order = "Ascending"
       }
     }
 
