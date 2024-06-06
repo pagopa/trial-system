@@ -10,7 +10,7 @@ export const ActivationRequestCodec = t.strict({
   trialId: TrialIdCodec,
   createdAt: IsoDateFromString,
   type: t.literal('request'),
-  isActive: t.boolean,
+  activated: t.boolean,
 });
 type ActivationRequest = t.TypeOf<typeof ActivationRequestCodec>;
 
