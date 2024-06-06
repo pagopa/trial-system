@@ -21,7 +21,6 @@ locals {
     EVENTHUB_NAMESPACE                 = "${module.event_hub.name}.servicebus.windows.net"
     SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
     SUBSCRIPTION_REQUEST_CONSUMER      = "off"
-    COSMOSDB_LEASES_CONTAINER_NAME     = azurerm_cosmosdb_sql_container.leases.name
   }
 }
 
