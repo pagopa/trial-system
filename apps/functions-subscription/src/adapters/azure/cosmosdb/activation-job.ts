@@ -15,6 +15,8 @@ export const makeActivationJobCosmosHandler =
     context: InvocationContext,
   ): Promise<unknown> =>
     pipe(
+      // documents is an array of documents of the activations container
+      // decode the documents with the ActivationCodec
       TE.fromEither(t.array(ActivationCodec).decode(documents)),
       // Keep only job documents
       TE.map(
