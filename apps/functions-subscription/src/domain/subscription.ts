@@ -7,6 +7,7 @@ import { Capabilities } from './capabilities';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { ItemAlreadyExists } from './errors';
+import { nowDate } from './clock';
 
 // a unique brand for subscriptionId
 interface SubscriptionIdBrand {
@@ -45,9 +46,10 @@ export const TrialIdCodec = t.brand(
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
-export const SubscriptionCodec = t.intersection([
+// this codec is useful to minimize the code duplication,
+// it is used by SubscriptionCodec and SubscriptionHistoryCodec
+export const SubscriptionWithoutIdCodec = t.intersection([
   t.strict({
-    id: SubscriptionIdCodec,
     userId: UserIdCodec,
     trialId: TrialIdCodec,
     createdAt: IsoDateFromString,
@@ -63,10 +65,17 @@ export const SubscriptionCodec = t.intersection([
     activatedAt: IsoDateFromString,
   }),
 ]);
+
+export const SubscriptionCodec = t.intersection([
+  t.strict({
+    id: SubscriptionIdCodec,
+  }),
+  SubscriptionWithoutIdCodec,
+]);
 export type Subscription = t.TypeOf<typeof SubscriptionCodec>;
 
 /**
- * This type represents the capability do get a subscription.
+ * This type represents the capability to get a subscription.
  */
 export interface SubscriptionReader {
   readonly get: (
@@ -75,7 +84,7 @@ export interface SubscriptionReader {
 }
 
 /**
- * This type represents the capability do write a subscription.
+ * This type represents the capability to write a subscription.
  */
 export interface SubscriptionWriter {
   readonly insert: (
@@ -91,4 +100,17 @@ export const makeSubscriptionId = (trialId: TrialId, userId: UserId) =>
     RTE.ask<Pick<Capabilities, 'hashFn'>>(),
     RTE.map(({ hashFn }) => hashFn(`${trialId}${userId}`)),
     RTE.map(({ value }) => value as SubscriptionId),
+  );
+
+export const makeSubscription = (trialId: TrialId, userId: UserId) =>
+  pipe(
+    RTE.Do,
+    RTE.apSW('id', makeSubscriptionId(trialId, userId)),
+    RTE.apSW('date', nowDate()),
+    RTE.map(({ date, id }) => {
+      const createdAt = date;
+      const updatedAt = date;
+      const state = 'SUBSCRIBED' as const;
+      return { id, userId, trialId, createdAt, updatedAt, state };
+    }),
   );

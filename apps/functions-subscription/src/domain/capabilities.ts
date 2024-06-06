@@ -4,6 +4,7 @@
 import { Clock } from './clock';
 import { HashFn } from './hash';
 import { SubscriptionReader, SubscriptionWriter } from './subscription';
+import { SubscriptionHistoryWriter } from './subscription-history';
 import { SubscriptionRequestWriter } from './subscription-request';
 
 /**
@@ -16,6 +17,7 @@ export interface Capabilities {
   readonly subscriptionReader: SubscriptionReader;
   readonly subscriptionWriter: SubscriptionWriter;
   readonly subscriptionRequestWriter: SubscriptionRequestWriter;
+  readonly subscriptionHistoryWriter: SubscriptionHistoryWriter;
   readonly hashFn: HashFn;
   readonly clock: Clock;
 }
