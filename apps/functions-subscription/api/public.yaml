@@ -6,6 +6,8 @@ info:
     Endpoint of Trial System.
 servers:
   - url: https://<not-yet-defined>.com
+security:
+  - ApiKeyAuth: []
 paths:
   /trials/{trialId}/subscriptions/{userId}:
     get:
@@ -36,6 +38,11 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
 
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
   parameters:
     pathTrialId:
       name: trialId
