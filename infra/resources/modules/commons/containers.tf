@@ -57,4 +57,14 @@ resource "azurerm_cosmosdb_sql_container" "leases" {
   autoscale_settings {
     max_throughput = 1000
   }
+
+  indexing_policy {
+    included_path {
+      path = "/*"
+    }
+
+    excluded_path {
+      path = "/\"_etag\"/?"
+    }
+  }
 }
