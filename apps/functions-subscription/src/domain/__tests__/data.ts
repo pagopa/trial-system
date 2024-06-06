@@ -37,11 +37,13 @@ export const aSubscriptionHistory = {
 };
 
 export const anActivationJob = {
+  id: 'anId',
   trialId: aTrialId,
   createdAt: new Date(),
   usersToActivate: 100 as NonNegativeNumber,
   usersActivated: 0 as NonNegativeNumber,
   type: 'job' as const,
+  _etag: 'anEtag',
 };
 
 export const anActivationRequest = {
@@ -51,4 +53,5 @@ export const anActivationRequest = {
   createdAt: new Date(),
   type: 'request' as const,
   isActive: false,
+  _etag: 'anEtag',
 };
