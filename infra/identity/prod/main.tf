@@ -52,7 +52,11 @@ module "federated_identities" {
           "Storage Blob Data Contributor"
         ],
         ts-p-itn-data-rg-01 = [
-          "Role Based Access Control Administrator"
+          "Role Based Access Control Administrator",
+          "Private DNS Zone Contributor"
+        ],
+        io-p-rg-common = [
+          "Private DNS Zone Contributor"
         ]
       }
     }
