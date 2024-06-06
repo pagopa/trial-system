@@ -30,6 +30,7 @@ export const ActivationCodec = t.union([
 
 export interface ActivationJobRequest {
   readonly usersToActivate: ActivationJob['usersToActivate'];
+  readonly usersActivated: ActivationJob['usersActivated'];
   readonly trialId: ActivationJob['trialId'];
 }
 
