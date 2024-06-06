@@ -4,35 +4,39 @@ import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { TrialIdCodec, UserIdCodec } from './subscription';
 import { NonNegativeNumber } from '@pagopa/ts-commons/lib/numbers';
 
-export const ActivationRequestCodec = t.strict({
+export const BaseCosmosDbDocument = t.strict({
   id: t.string,
-  userId: UserIdCodec,
   trialId: TrialIdCodec,
-  createdAt: IsoDateFromString,
-  type: t.literal('request'),
-  activated: t.boolean,
+  _etag: t.string,
 });
-type ActivationRequest = t.TypeOf<typeof ActivationRequestCodec>;
+export type BaseCosmosDbDocument = t.TypeOf<typeof BaseCosmosDbDocument>;
 
-const ActivationJobCodec = t.strict({
-  trialId: TrialIdCodec,
-  createdAt: IsoDateFromString,
-  usersToActivate: NonNegativeNumber,
-  usersActivated: NonNegativeNumber,
-  type: t.literal('job'),
-});
-type ActivationJob = t.TypeOf<typeof ActivationJobCodec>;
+export const ActivationRequestCodec = t.intersection([
+  BaseCosmosDbDocument,
+  t.strict({
+    userId: UserIdCodec,
+    createdAt: IsoDateFromString,
+    type: t.literal('request'),
+    activated: t.boolean,
+  }),
+]);
+export type ActivationRequest = t.TypeOf<typeof ActivationRequestCodec>;
+
+const ActivationJobCodec = t.intersection([
+  BaseCosmosDbDocument,
+  t.strict({
+    createdAt: IsoDateFromString,
+    usersToActivate: NonNegativeNumber,
+    usersActivated: NonNegativeNumber,
+    type: t.literal('job'),
+  }),
+]);
+export type ActivationJob = t.TypeOf<typeof ActivationJobCodec>;
 
 export const ActivationCodec = t.union([
   ActivationRequestCodec,
   ActivationJobCodec,
 ]);
-
-export interface ActivationJobRequest {
-  readonly usersToActivate: ActivationJob['usersToActivate'];
-  readonly usersActivated: ActivationJob['usersActivated'];
-  readonly trialId: ActivationJob['trialId'];
-}
 
 type ActivationResult =
   | {
@@ -52,7 +56,7 @@ export interface ActivationService {
    * the number of activation requests to activate.
    */
   readonly fetchActivationRequestsToActivate: (
-    filter: ActivationJobRequest,
+    filter: ActivationJob,
   ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
 
   /**
@@ -62,6 +66,8 @@ export interface ActivationService {
    * are activated.
    */
   readonly activateActivationRequests: (
+    activationJob: ActivationJob,
+  ) => (
     activationRequests: readonly ActivationRequest[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }
