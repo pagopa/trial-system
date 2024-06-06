@@ -79,7 +79,7 @@ resource "azurerm_cosmosdb_sql_container" "activations" {
       }
 
       index {
-        path  = "/isActive"
+        path  = "/activated"
         order = "Ascending"
       }
 
