@@ -34,6 +34,16 @@ export interface ActivationJobRequest {
   readonly trialId: ActivationJob['trialId'];
 }
 
+type ActivationResult =
+  | {
+      readonly status: 'ok';
+      readonly activated: number;
+    }
+  | {
+      readonly status: 'ko';
+      readonly activated: 0;
+    };
+
 export interface ActivationService {
   /**
    * This function returns a list of activation requests that are going to be
@@ -53,5 +63,5 @@ export interface ActivationService {
    */
   readonly activateActivationRequests: (
     activationRequests: readonly ActivationRequest[],
-  ) => TE.TaskEither<Error, 'ok' | 'ko'>; // FIXME: Create a Result object
+  ) => TE.TaskEither<Error, ActivationResult>;
 }

@@ -18,12 +18,11 @@ export const processActivationJob = (activationRequest: ActivationJobRequest) =>
           trialId: activationRequest.trialId,
         }),
         // Create chunk of users
-        TE.map((users) => RA.chunksOf(99)(users)), // FIXME: Remove magic number here
+        TE.map(RA.chunksOf(99)), // FIXME: Remove magic number here
         // Activate chunk of users
         TE.flatMap(
           TE.traverseArray(activationService.activateActivationRequests),
         ),
       ),
     ),
-    RTE.flatMapTaskEither(() => TE.right('Not Yet Implemented')),
   );

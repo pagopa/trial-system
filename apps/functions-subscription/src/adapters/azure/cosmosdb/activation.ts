@@ -10,6 +10,7 @@ export const makeActivationCosmosContainer = (
   const container = db.container('activations');
   return {
     fetchActivationRequestsToActivate: () => TE.of([]),
-    activateActivationRequests: (activationRequests) => TE.right('ok'),
+    activateActivationRequests: (activationRequests) =>
+      TE.right({ activated: 0, status: 'ok' }),
   };
 };
