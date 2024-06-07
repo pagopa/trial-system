@@ -24,10 +24,10 @@ locals {
 
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
 
-    LEASES_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.leases.name
-    ACTIVATION_CONSUMER                              = "on"
-    ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD        = "50" // We can increase it up to 99
-    ActivationJobCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
+    LEASES_COSMOSDB_CONTAINER_NAME                        = azurerm_cosmosdb_sql_container.leases.name
+    ACTIVATION_CONSUMER                                   = "on"
+    ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD             = "50" // We can increase it up to 99
+    ActivationConsumerCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
   }
 }
 

@@ -96,8 +96,8 @@ if (config.subscriptionRequest.consumer === 'on')
   });
 
 if (config.activations.consumer === 'on') {
-  app.cosmosDB('activationJob', {
-    connection: 'ActivationJobCosmosDBConnection',
+  app.cosmosDB('activationConsumer', {
+    connection: 'ActivationConsumerCosmosDBConnection',
     databaseName: config.cosmosdb.databaseName,
     containerName: 'activations',
     leaseContainerName: config.cosmosdb.leasesContainerName,

@@ -11,7 +11,7 @@
     "SubscriptionRequestEventHubConnection__fullyQualifiedNamespace": "<put-here-the-the-event-hub-namespace>",
     "AzureWebJobsStorage": "<put-here-the-connection-string-to-a-storage>",
     "ACTIVATION_CONSUMER": "off",
-    "ActivationJobCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
+    "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
     "LEASES_COSMOSDB_CONTAINER_NAME": "<put-here-the-name-of-leases-container>",
     "ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD": "50"
   }
