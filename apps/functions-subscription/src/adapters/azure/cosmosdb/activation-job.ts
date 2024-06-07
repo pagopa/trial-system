@@ -24,10 +24,10 @@ export const makeActivationJobCosmosHandler =
           RA.filterMap((doc) => (doc.type === 'job' ? O.some(doc) : O.none)),
         ),
       ),
-      TE.flatMap(([job]) => {
+      TE.flatMap(([job]) =>
         // Call the method to activate users
-        return env.processActivationJob(job);
-      }),
+        env.processActivationJob(job),
+      ),
       TE.getOrElse((error) => {
         // if an error occurs, the retry policy will be applied if it is defined
         // eslint-disable-next-line functional/no-throw-statements
