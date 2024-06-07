@@ -175,4 +175,52 @@ describe('makeActivationCosmosContainer', () => {
       );
     });
   });
+
+  describe('fetchActivationRequestItemsToActivate', () => {
+    it('should return list of activation requests', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const activationRequests = [anActivationRequestItem];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: activationRequests }),
+      });
+
+      const actual = await makeActivationCosmosContainer(
+        mockDB as unknown as Database,
+      ).fetchActivationRequestItemsToActivate(anActivationJobItem)();
+
+      expect(actual).toStrictEqual(E.right(activationRequests));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+    it('should return an empty array when no items match the query', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: [] }),
+      });
+
+      const actual = await makeActivationCosmosContainer(
+        mockDB as unknown as Database,
+      ).fetchActivationRequestItemsToActivate(anActivationJobItem)();
+
+      expect(actual).toStrictEqual(E.right([]));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+    it('should return an error when query fail', async () => {
+      const mockDB = makeDatabaseMock();
+      const error = new Error('Something went wrong');
+      mockDB.container('').items.query.mockReturnValueOnce({
+        // eslint-disable-next-line functional/no-promise-reject
+        fetchAll: () => Promise.reject(error),
+      });
+
+      const actual = await makeActivationCosmosContainer(
+        mockDB as unknown as Database,
+      ).fetchActivationRequestItemsToActivate(anActivationJobItem)();
+
+      expect(actual).toStrictEqual(E.left(error));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+  });
 });
