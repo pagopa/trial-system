@@ -63,23 +63,11 @@ export const makeActivationCosmosContainer = (
             container.items
               .query({
                 query:
-                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = @type AND c.activated = @activated OFFSET @offset LIMIT @limit',
+                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.activated = false OFFSET 0 LIMIT @limit',
                 parameters: [
                   {
                     name: '@trialId',
                     value: job.trialId,
-                  },
-                  {
-                    name: '@type',
-                    value: 'request',
-                  },
-                  {
-                    name: '@activated',
-                    value: false,
-                  },
-                  {
-                    name: '@offset',
-                    value: job.usersActivated,
                   },
                   {
                     name: '@limit',
