@@ -3,8 +3,8 @@ import * as E from 'fp-ts/lib/Either';
 import { Database } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
 import {
-  anActivationJob,
-  anActivationRequest,
+  anActivationJobItem,
+  anActivationRequestItem,
 } from '../../../../domain/__tests__/data';
 import { makeActivationCosmosContainer } from '../activation';
 
@@ -12,36 +12,36 @@ describe('makeActivationCosmosContainer', () => {
   describe('activateActivationRequests', () => {
     it('should not perform the update when there are no elements to update', async () => {
       const mockDB = makeDatabaseMock();
-      const result = {
-        activated: 0,
-        status: 'ok',
-      };
+      const result = 'not-executed' as const;
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateActivationRequests(anActivationJob)([])();
+      ).activateActivationRequests(anActivationJobItem)([])();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(0);
     });
-    it('should return the counter of the updated elements', async () => {
+    it('should succeed when all the elements have been updated', async () => {
       const mockDB = makeDatabaseMock();
-      const result = {
-        activated: 1,
-        status: 'ok',
-      };
-      const activationRequests = [anActivationRequest];
-      mockDB.container('').items.batch.mockResolvedValueOnce({});
+      const result = 'success' as const;
+      const activationRequests = [anActivationRequestItem];
+      // Construct success response for every item in activationRequests
+      const mockBatchResponse = [...activationRequests].map(() => ({
+        statusCode: 200,
+      }));
+      mockDB
+        .container('')
+        .items.batch.mockResolvedValueOnce({ result: mockBatchResponse });
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateActivationRequests(anActivationJob)(activationRequests)();
+      ).activateActivationRequests(anActivationJobItem)(activationRequests)();
 
       const operations = [
         {
           operationType: 'Patch',
-          id: anActivationRequest.id,
-          ifMatch: anActivationRequest._etag,
+          id: anActivationRequestItem.id,
+          ifMatch: anActivationRequestItem._etag,
           resourceBody: {
             operations: [
               {
@@ -54,7 +54,7 @@ describe('makeActivationCosmosContainer', () => {
         },
         {
           operationType: 'Patch',
-          id: anActivationJob.id,
+          id: anActivationJobItem.id,
           resourceBody: {
             operations: [
               {
@@ -71,29 +71,24 @@ describe('makeActivationCosmosContainer', () => {
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
         operations,
-        anActivationJob.trialId,
+        anActivationJobItem.trialId,
       );
     });
-    it('should return ko when the update failed', async () => {
+    it('should fail when the update failed', async () => {
       const mockDB = makeDatabaseMock();
-      const result = {
-        activated: 0,
-        status: 'ko',
-      };
-      const activationRequests = [anActivationRequest];
-      mockDB
-        .container('')
-        .items.batch.mockRejectedValueOnce(new Error('Something went wrong'));
+      const activationRequests = [anActivationRequestItem];
+      const error = new Error('Something went wrong');
+      mockDB.container('').items.batch.mockRejectedValueOnce(error);
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateActivationRequests(anActivationJob)(activationRequests)();
+      ).activateActivationRequests(anActivationJobItem)(activationRequests)();
 
       const operations = [
         {
           operationType: 'Patch',
-          id: anActivationRequest.id,
-          ifMatch: anActivationRequest._etag,
+          id: anActivationRequestItem.id,
+          ifMatch: anActivationRequestItem._etag,
           resourceBody: {
             operations: [
               {
@@ -106,7 +101,7 @@ describe('makeActivationCosmosContainer', () => {
         },
         {
           operationType: 'Patch',
-          id: anActivationJob.id,
+          id: anActivationJobItem.id,
           resourceBody: {
             operations: [
               {
@@ -119,11 +114,64 @@ describe('makeActivationCosmosContainer', () => {
         },
       ];
 
-      expect(actual).toStrictEqual(E.left(result));
+      expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
         operations,
-        anActivationJob.trialId,
+        anActivationJobItem.trialId,
+      );
+    });
+    it('should return fail when there was not possible to perform the update', async () => {
+      const mockDB = makeDatabaseMock();
+      const result = 'fail' as const;
+      const activationRequests = [anActivationRequestItem];
+      // Construct success response for every item in activationRequests
+      const mockBatchResponse = [...activationRequests].map(() => ({
+        statusCode: 429,
+      }));
+      mockDB
+        .container('')
+        .items.batch.mockResolvedValueOnce({ result: mockBatchResponse });
+
+      const actual = await makeActivationCosmosContainer(
+        mockDB as unknown as Database,
+      ).activateActivationRequests(anActivationJobItem)(activationRequests)();
+
+      const operations = [
+        {
+          operationType: 'Patch',
+          id: anActivationRequestItem.id,
+          ifMatch: anActivationRequestItem._etag,
+          resourceBody: {
+            operations: [
+              {
+                op: 'replace',
+                path: '/activated',
+                value: true,
+              },
+            ],
+          },
+        },
+        {
+          operationType: 'Patch',
+          id: anActivationJobItem.id,
+          resourceBody: {
+            operations: [
+              {
+                op: 'incr',
+                path: '/usersActivated',
+                value: 1,
+              },
+            ],
+          },
+        },
+      ];
+
+      expect(actual).toStrictEqual(E.right(result));
+      expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
+        1,
+        operations,
+        anActivationJobItem.trialId,
       );
     });
   });

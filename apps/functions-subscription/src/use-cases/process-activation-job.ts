@@ -16,12 +16,22 @@ export const processActivationJob = (
     RTE.flatMapTaskEither(({ activationService }) =>
       pipe(
         activationService.fetchActivationRequestsToActivate(job),
-        // Create chunk of users
-        TE.map(RA.chunksOf(maxChunkSize)),
-        // Activate chunk of users
-        TE.flatMap(
-          TE.traverseArray(activationService.activateActivationRequests(job)),
-        ),
+        TE.flatMap((activationRequests) => {
+          if (RA.isEmpty(activationRequests)) {
+            // Early return if no elements are fetched
+            return TE.right([]);
+          } else {
+            return pipe(
+              activationRequests,
+              // Split in chunks
+              RA.chunksOf(maxChunkSize),
+              // Process every chunk
+              TE.traverseArray(
+                activationService.activateActivationRequests(job),
+              ),
+            );
+          }
+        }),
       ),
     ),
   );

@@ -2,14 +2,19 @@ import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
 import * as t from 'io-ts';
 import { pipe } from 'fp-ts/lib/function';
-import { BulkOperationType, Database, OperationInput } from '@azure/cosmos';
+import {
+  BulkOperationType,
+  Database,
+  OperationInput,
+  OperationResponse,
+} from '@azure/cosmos';
 import {
   ActivationRequestItem,
   ActivationRequestItemCodec,
+  ActivationResult,
   ActivationService,
   BaseActivationItemCodec,
 } from '../../../domain/activation';
-import { cosmosErrorToDomainError } from './errors';
 
 const makeActivationJobPatchOperation = <T extends BaseActivationItemCodec>(
   obj: T,
@@ -107,17 +112,22 @@ export const makeActivationCosmosContainer = (
             ];
       // If array is empty, just return ok; otherwise try the batch operation
       return batchOperations.length === 0
-        ? TE.of({ activated: 0, status: 'ok' })
+        ? TE.of('not-executed')
         : pipe(
             TE.tryCatch(
               () => container.items.batch(batchOperations, job.trialId),
               E.toError,
             ),
-            TE.mapBoth(cosmosErrorToDomainError, () => ({
-              status: 'ok' as const,
-              activated: activationRequests.length,
-            })),
+            TE.map(({ result }) => makeActivationResult(result)),
           );
     },
   };
+};
+
+const makeActivationResult = (
+  arr: readonly OperationResponse[] | undefined,
+): ActivationResult => {
+  return arr && arr.every(({ statusCode }) => statusCode === 200)
+    ? 'success'
+    : 'fail';
 };

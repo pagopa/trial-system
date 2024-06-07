@@ -34,15 +34,7 @@ export const ActivationJobItemCodec = t.intersection([
 ]);
 export type ActivationJobItem = t.TypeOf<typeof ActivationJobItemCodec>;
 
-type ActivationResult =
-  | {
-      readonly status: 'ok';
-      readonly activated: number;
-    }
-  | {
-      readonly status: 'ko';
-      readonly activated: 0;
-    };
+export type ActivationResult = 'success' | 'fail' | 'not-executed';
 
 export interface ActivationService {
   /**

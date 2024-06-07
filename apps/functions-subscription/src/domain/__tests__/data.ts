@@ -36,7 +36,7 @@ export const aSubscriptionHistory = {
   version: 0 as NonNegativeInteger,
 };
 
-export const anActivationJob = {
+export const anActivationJobItem = {
   id: 'anId',
   trialId: aTrialId,
   createdAt: new Date(),
@@ -46,7 +46,7 @@ export const anActivationJob = {
   _etag: 'anEtag',
 };
 
-export const anActivationRequest = {
+export const anActivationRequestItem = {
   id: 'anId',
   userId: aUserId,
   trialId: aTrialId,
