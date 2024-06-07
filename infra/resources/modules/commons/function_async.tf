@@ -60,7 +60,7 @@ module "subscription_async_fn" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.9.0"
 
   resource_group_name = azurerm_resource_group.async_rg.name
-  name                = format("%s-sub-async-fn-01", local.project)
+  name                = format("%s-subscription-async-fn-01", local.project)
   location            = var.location
   domain              = local.domain
   health_check_path   = "/info"
@@ -162,7 +162,11 @@ module "subscription_async_fn_staging_slot" {
 
   app_settings = merge(
     local.async_app_settings,
-    {},
+    {
+      # Avoiding host ID collisions
+      # https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations?tabs=azure-cli#avoiding-host-id-collisions
+      AzureFunctionsWebHost__hostid = "subscription-async-fn-01-staging"
+    },
   )
 
   subnet_id = module.subscription_async_snet.id
