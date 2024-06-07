@@ -19,8 +19,8 @@ export const makeTestEnv = () => {
   };
 
   const activationServiceMock = {
-    fetchActivationRequestsToActivate: vi.fn(),
-    activateActivationRequests: vi.fn(),
+    fetchActivationRequestItemsToActivate: vi.fn(),
+    activateRequestItems: vi.fn(),
   };
 
   return {
@@ -28,7 +28,7 @@ export const makeTestEnv = () => {
     subscriptionWriter: subscriptionWriterMock,
     subscriptionRequestWriter: subscriptionRequestWriterMock,
     subscriptionHistoryWriter: subscriptionHistoryWriterMock,
-    activationService: activationServiceMock,
+    activationConsumer: activationServiceMock,
     hashFn: hashFnMock,
     clock: clockMock,
   };

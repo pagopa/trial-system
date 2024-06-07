@@ -12,7 +12,7 @@ import { processActivationJob } from '../process-activation-job';
 
 describe('processActivationJob', () => {
   const chunkSize = 1;
-  it.skip('should activate when there are many chunk of activation requests ', async () => {
+  it('should activate when there are many chunk of activation requests ', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -24,53 +24,78 @@ describe('processActivationJob', () => {
 
     const chunks = RA.chunksOf(chunkSize)(activationRequests);
 
-    mockEnv.activationService.fetchActivationRequestsToActivate.mockReturnValueOnce(
+    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationService.activateActivationRequests.mockReturnValue(
-      TE.right('ok'),
+    mockEnv.activationConsumer.activateRequestItems.mockReturnValue(
+      TE.right('success' as const),
     );
 
     const actual = await processActivationJob(
       anActivationJobItem,
       chunkSize,
     )(testEnv)();
-    // TODO: Change the expected value
-    const expected = E.right('ok');
-
-    // expect(actual).toStrictEqual(expected);
-    expect(
-      mockEnv.activationService.activateActivationRequests,
-    ).toHaveBeenCalledTimes(chunks.length);
-  });
-  it('should activate when there is at least an activation request ', async () => {
-    const mockEnv = makeTestEnv();
-    const testEnv = mockEnv as unknown as Capabilities;
-
-    mockEnv.activationService.fetchActivationRequestsToActivate.mockReturnValueOnce(
-      TE.right([anActivationRequestItem]),
-    );
-    mockEnv.activationService.activateActivationRequests.mockReturnValue(
-      TE.right({ activated: 1, status: 'ok' }),
-    );
-
-    const actual = await processActivationJob(
-      anActivationJobItem,
-      chunkSize,
-    )(testEnv)();
-    // TODO: Change the expected value
-    const expected = E.right('ok');
+    const expected = E.right(['success']);
 
     expect(actual).toStrictEqual(expected);
     expect(
-      mockEnv.activationService.activateActivationRequests,
-    ).toHaveBeenNthCalledWith(1, [anActivationRequestItem]);
+      mockEnv.activationConsumer.activateRequestItems,
+    ).toHaveBeenCalledTimes(chunks.length);
   });
-  it('should not activate when there are no activation requests ', async () => {
+  it('should activate when there is at least an activation request', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.activationService.fetchActivationRequestsToActivate.mockReturnValueOnce(
+    const activationRequests = [anActivationRequestItem];
+    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockImplementationOnce(
+      TE.right(activationRequests),
+    );
+    mockEnv.activationConsumer.activateRequestItems.mockReturnValue(
+      TE.right('success' as const),
+    );
+
+    const actual = await processActivationJob(
+      anActivationJobItem,
+      chunkSize,
+    )(testEnv)();
+    const expected = E.right(['success']);
+
+    expect(actual).toStrictEqual(expected);
+    expect(
+      mockEnv.activationConsumer.activateRequestItems,
+    ).toHaveBeenNthCalledWith(1, activationRequests);
+  });
+  it('should activate just one batch when one succeed and one fail', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    const activationRequests = [
+      anActivationRequestItem,
+      anActivationRequestItem,
+    ];
+    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
+      TE.right(activationRequests),
+    );
+    mockEnv.activationConsumer.activateRequestItems
+      .mockReturnValueOnce(TE.right('success' as const))
+      .mockReturnValueOnce(TE.right('fail' as const));
+
+    const actual = await processActivationJob(
+      anActivationJobItem,
+      chunkSize,
+    )(testEnv)();
+    const expected = E.right(['success', 'fail']);
+
+    expect(actual).toStrictEqual(expected);
+    expect(
+      mockEnv.activationConsumer.activateRequestItems,
+    ).toHaveBeenNthCalledWith(2, activationRequests);
+  });
+  it('should not activate when there are no activation requests', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
       TE.right([]),
     );
 
@@ -82,7 +107,7 @@ describe('processActivationJob', () => {
 
     expect(actual).toStrictEqual(expected);
     expect(
-      mockEnv.activationService.activateActivationRequests,
+      mockEnv.activationConsumer.activateRequestItems,
     ).toHaveBeenCalledTimes(0);
   });
   it('should return an error when the fetch fail', async () => {
@@ -90,7 +115,7 @@ describe('processActivationJob', () => {
     const testEnv = mockEnv as unknown as Capabilities;
     const unexpectedError = new Error('Unexpected error');
 
-    mockEnv.activationService.fetchActivationRequestsToActivate.mockReturnValueOnce(
+    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
       TE.left(unexpectedError),
     );
 
@@ -102,7 +127,7 @@ describe('processActivationJob', () => {
 
     expect(actual).toStrictEqual(expected);
     expect(
-      mockEnv.activationService.activateActivationRequests,
+      mockEnv.activationConsumer.activateRequestItems,
     ).toHaveBeenCalledTimes(0);
   });
 });
