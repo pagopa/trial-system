@@ -80,7 +80,7 @@ export const makeActivationCosmosContainer = (
         ),
         TE.flatMapEither(decodeFromList(ActivationRequestItemCodec)),
       ),
-    activateRequestItems: (job) => (activationRequests) => {
+    activateRequestItems: (job, activationRequests) => {
       const batchOperations =
         activationRequests.length === 0 // If array is empty, no operations
           ? []
