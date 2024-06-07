@@ -36,11 +36,11 @@ const EnvsCodec = t.strict({
     on: null,
     off: null,
   }),
-  ACTIVATION_JOB_TRIGGER: t.keyof({
+  ACTIVATION_CONSUMER: t.keyof({
     on: null,
     off: null,
   }),
-  ACTIVATION_JOB_CONCURRENCY_THRESHOLD: NumberFromString,
+  ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD: NumberFromString,
 });
 
 export const parseConfig = (
@@ -55,8 +55,8 @@ export const parseConfig = (
           consumer: envs.SUBSCRIPTION_REQUEST_CONSUMER,
         },
         activations: {
-          consumer: envs.ACTIVATION_JOB_TRIGGER,
-          concurrencyThreshold: envs.ACTIVATION_JOB_CONCURRENCY_THRESHOLD,
+          consumer: envs.ACTIVATION_CONSUMER,
+          concurrencyThreshold: envs.ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD,
         },
         eventhubs: {
           namespace: envs.EVENTHUB_NAMESPACE,

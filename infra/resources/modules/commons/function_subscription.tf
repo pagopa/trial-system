@@ -23,7 +23,7 @@ locals {
     SUBSCRIPTION_REQUEST_CONSUMER      = "off"
 
     LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
-    ACTIVATION_JOB_TRIGGER         = "off"
+    ACTIVATION_CONSUMER            = "off"
   }
 }
 
