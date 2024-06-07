@@ -24,7 +24,9 @@ locals {
 
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
 
-    LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
+    LEASES_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.leases.name
+    ACTIVATION_JOB_TRIGGER                           = "on"
+    ActivationJobCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
   }
 }
 
