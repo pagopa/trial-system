@@ -4,11 +4,15 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { flow, pipe } from 'fp-ts/lib/function';
 import { InvocationContext } from '@azure/functions';
-import { ActivationCodec } from '../../../domain/activation';
+import {
+  ActivationJobItemCodec,
+  ActivationRequestItemCodec,
+} from '../../../domain/activation';
 import { SystemEnv } from '../../../system-env';
+import { Config } from '../../../config';
 
 export const makeActivationJobCosmosHandler =
-  (env: SystemEnv) =>
+  (env: SystemEnv, { activations }: Config) =>
   (
     documents: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,8 +20,11 @@ export const makeActivationJobCosmosHandler =
   ): Promise<unknown> =>
     pipe(
       // documents is an array of documents of the activations container
-      // decode the documents with the ActivationCodec
-      TE.fromEither(t.array(ActivationCodec).decode(documents)),
+      TE.fromEither(
+        t
+          .array(t.union([ActivationRequestItemCodec, ActivationJobItemCodec]))
+          .decode(documents),
+      ),
       // Keep only job documents
       TE.map(
         flow(
@@ -26,7 +33,7 @@ export const makeActivationJobCosmosHandler =
       ),
       TE.flatMap(([job]) =>
         // Call the method to activate users
-        env.processActivationJob(job),
+        env.processActivationJob(job, activations.concurrencyThreshold),
       ),
       TE.getOrElse((error) => {
         // if an error occurs, the retry policy will be applied if it is defined

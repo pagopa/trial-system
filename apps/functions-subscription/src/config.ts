@@ -10,7 +10,7 @@ export interface Config {
     readonly consumer: 'on' | 'off';
   };
   readonly activations: {
-    readonly job: 'on' | 'off';
+    readonly consumer: 'on' | 'off';
     readonly concurrencyThreshold: number;
   };
   readonly eventhubs: {
@@ -55,7 +55,7 @@ export const parseConfig = (
           consumer: envs.SUBSCRIPTION_REQUEST_CONSUMER,
         },
         activations: {
-          job: envs.ACTIVATION_JOB_TRIGGER,
+          consumer: envs.ACTIVATION_JOB_TRIGGER,
           concurrencyThreshold: envs.ACTIVATION_JOB_CONCURRENCY_THRESHOLD,
         },
         eventhubs: {

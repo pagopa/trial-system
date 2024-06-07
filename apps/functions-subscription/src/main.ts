@@ -64,7 +64,7 @@ const capabilities: Capabilities = {
   clock,
 };
 
-const env = makeSystemEnv(capabilities, config);
+const env = makeSystemEnv(capabilities);
 
 app.http('info', {
   methods: ['GET'],
@@ -95,13 +95,13 @@ if (config.subscriptionRequest.consumer === 'on')
     handler: makeSubscriptionRequestConsumerHandler(env),
   });
 
-if (config.activations.job === 'on') {
+if (config.activations.consumer === 'on') {
   app.cosmosDB('activationJob', {
     connection: 'ActivationJobCosmosDBConnection',
     databaseName: config.cosmosdb.databaseName,
     containerName: 'activations',
     leaseContainerName: config.cosmosdb.leasesContainerName,
     leaseContainerPrefix: 'activations',
-    handler: makeActivationJobCosmosHandler(env),
+    handler: makeActivationJobCosmosHandler(env, config),
   });
 }

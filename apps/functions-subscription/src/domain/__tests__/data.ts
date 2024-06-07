@@ -51,13 +51,8 @@ export const anActivationRequest = {
   userId: aUserId,
   trialId: aTrialId,
   createdAt: new Date(),
+  activated: false,
   type: 'request' as const,
   isActive: false,
   _etag: 'anEtag',
-};
-
-export const aTestConfig = {
-  activations: {
-    concurrencyThresholdLimit: 2,
-  },
 };

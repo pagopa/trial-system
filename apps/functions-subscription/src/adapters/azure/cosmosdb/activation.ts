@@ -1,24 +1,22 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import * as RA from 'fp-ts/ReadonlyArray';
 import * as t from 'io-ts';
+import { pipe } from 'fp-ts/lib/function';
 import { BulkOperationType, Database, OperationInput } from '@azure/cosmos';
 import {
-  ActivationRequest,
-  ActivationRequestCodec,
+  ActivationRequestItem,
+  ActivationRequestItemCodec,
   ActivationService,
-  BaseCosmosDbDocument,
+  BaseActivationItemCodec,
 } from '../../../domain/activation';
-import { pipe } from 'fp-ts/lib/function';
 import { cosmosErrorToDomainError } from './errors';
 
-const makeActivationJobPatchOperation = <T extends BaseCosmosDbDocument>(
+const makeActivationJobPatchOperation = <T extends BaseActivationItemCodec>(
   obj: T,
-  requests: readonly ActivationRequest[],
+  requests: readonly ActivationRequestItem[],
   propertyToUpdate: keyof T,
 ): OperationInput => ({
   id: obj.id,
-  ifMatch: obj._etag,
   operationType: BulkOperationType.Patch,
   resourceBody: {
     operations: [
@@ -32,7 +30,7 @@ const makeActivationJobPatchOperation = <T extends BaseCosmosDbDocument>(
 });
 
 const makeActivationRequestPatchOperation =
-  <T extends BaseCosmosDbDocument>(propertyToUpdate: keyof T) =>
+  <T extends BaseActivationItemCodec>(propertyToUpdate: keyof T) =>
   (obj: T): OperationInput => ({
     id: obj.id,
     ifMatch: obj._etag,
@@ -88,31 +86,38 @@ export const makeActivationCosmosContainer = (
           E.toError,
         ),
         TE.map(({ resources }) => resources),
-        TE.flatMapEither(t.array(ActivationRequestCodec).decode),
+        TE.flatMapEither(t.array(ActivationRequestItemCodec).decode),
         TE.mapLeft(E.toError),
       ),
-    activateActivationRequests: (job) => (activationRequests) =>
-      pipe(
-        activationRequests,
-        RA.map(makeActivationRequestPatchOperation('activated')),
-        RA.append(
-          makeActivationJobPatchOperation(
-            job,
-            activationRequests,
-            'usersActivated',
-          ),
-        ),
-        TE.of,
-        TE.flatMap((batchOperations) => {
-          return TE.tryCatch(
-            () => container.items.batch([...batchOperations], job.trialId),
-            E.toError,
+    activateActivationRequests: (job) => (activationRequests) => {
+      const batchOperations =
+        activationRequests.length === 0 // If array is empty, no operations
+          ? []
+          : [
+              // Convert activation request to the patch operation to update the activated field
+              ...activationRequests.map(
+                makeActivationRequestPatchOperation('activated'),
+              ),
+              // Convert job to the patch operation to update the counter
+              makeActivationJobPatchOperation(
+                job,
+                activationRequests,
+                'usersActivated',
+              ),
+            ];
+      // If array is empty, just return ok; otherwise try the batch operation
+      return batchOperations.length === 0
+        ? TE.of({ activated: 0, status: 'ok' })
+        : pipe(
+            TE.tryCatch(
+              () => container.items.batch(batchOperations, job.trialId),
+              E.toError,
+            ),
+            TE.mapBoth(cosmosErrorToDomainError, () => ({
+              status: 'ok' as const,
+              activated: activationRequests.length,
+            })),
           );
-        }),
-        TE.mapBoth(cosmosErrorToDomainError, () => ({
-          status: 'ok' as const,
-          activated: activationRequests.length,
-        })),
-      ),
+    },
   };
 };
