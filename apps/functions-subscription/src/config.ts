@@ -27,7 +27,7 @@ export interface Config {
 const EnvsCodec = t.strict({
   COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
-  LEASES_COSMOSDB_CONTAINER_NAME: NonEmptyString, // TODO: Add env to Terraform
+  LEASES_COSMOSDB_CONTAINER_NAME: NonEmptyString,
   EVENTHUB_NAMESPACE: NonEmptyString,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
   SUBSCRIPTION_REQUEST_CONSUMER: t.keyof({

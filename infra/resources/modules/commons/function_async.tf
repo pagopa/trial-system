@@ -23,6 +23,8 @@ locals {
     SUBSCRIPTION_REQUEST_CONSUMER      = "on"
 
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
+
+    LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
   }
 }
 
