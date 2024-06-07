@@ -26,7 +26,12 @@ export const processActivationJob = (
               // Split in chunks
               RA.chunksOf(maxChunkSize),
               // Process every chunk
-              TE.traverseArray(activationConsumer.activateRequestItems(job)),
+              TE.traverseArray((activationRequests) =>
+                activationConsumer.activateRequestItems(
+                  job,
+                  activationRequests,
+                ),
+              ),
             );
           }
         }),

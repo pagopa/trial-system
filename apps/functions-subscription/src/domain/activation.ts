@@ -54,7 +54,6 @@ export interface ActivationConsumer {
    */
   readonly activateRequestItems: (
     activationJob: ActivationJobItem,
-  ) => (
     activationRequests: readonly ActivationRequestItem[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }
