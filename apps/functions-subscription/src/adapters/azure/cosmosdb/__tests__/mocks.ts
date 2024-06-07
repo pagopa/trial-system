@@ -6,6 +6,7 @@ export const makeDatabaseMock = () => {
     items: {
       create: vi.fn(),
       batch: vi.fn(),
+      query: vi.fn(),
     },
   };
   return {

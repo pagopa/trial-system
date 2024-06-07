@@ -1,6 +1,5 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import * as t from 'io-ts';
 import { pipe } from 'fp-ts/lib/function';
 import {
   BulkOperationType,
@@ -15,6 +14,7 @@ import {
   ActivationService,
   BaseActivationItemCodec,
 } from '../../../domain/activation';
+import { decodeFromList } from './decode';
 
 const makeActivationJobPatchOperation = <T extends BaseActivationItemCodec>(
   obj: T,
@@ -90,9 +90,7 @@ export const makeActivationCosmosContainer = (
               .fetchAll(),
           E.toError,
         ),
-        TE.map(({ resources }) => resources),
-        TE.flatMapEither(t.array(ActivationRequestItemCodec).decode),
-        TE.mapLeft(E.toError),
+        TE.flatMapEither(decodeFromList(ActivationRequestItemCodec)),
       ),
     activateActivationRequests: (job) => (activationRequests) => {
       const batchOperations =
