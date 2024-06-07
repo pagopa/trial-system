@@ -3,7 +3,10 @@ import * as PR from 'io-ts/PathReporter';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
-import { NumberFromString } from '@pagopa/ts-commons/lib/numbers';
+import {
+  NumberFromString,
+  WithinRangeInteger,
+} from '@pagopa/ts-commons/lib/numbers';
 
 export interface Config {
   readonly subscriptionRequest: {
@@ -40,7 +43,9 @@ const EnvsCodec = t.strict({
     on: null,
     off: null,
   }),
-  ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD: NumberFromString,
+  ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD: NumberFromString.pipe(
+    WithinRangeInteger(1, 99),
+  ),
 });
 
 export const parseConfig = (
