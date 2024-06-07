@@ -52,11 +52,7 @@ module "federated_identities" {
           "Storage Blob Data Contributor"
         ],
         ts-p-itn-data-rg-01 = [
-          "Role Based Access Control Administrator",
-          "Private DNS Zone Contributor"
-        ],
-        io-p-rg-common = [
-          "Private DNS Zone Contributor"
+          "Role Based Access Control Administrator"
         ]
       }
     }
@@ -88,10 +84,11 @@ resource "azurerm_role_assignment" "ci" {
 }
 
 resource "azurerm_role_assignment" "cd" {
+  for_each             = toset(["Reader", "Private DNS Zone Contributor"])
   provider             = azurerm.prodio
   scope                = data.azurerm_subscription.prodio.id
   principal_id         = module.federated_identities.federated_cd_identity.id
-  role_definition_name = "Reader"
+  role_definition_name = each.value
 }
 
 resource "azurerm_role_assignment" "app_cd" {
