@@ -11,7 +11,6 @@ const BaseActivationItemCodec = t.strict({
 });
 export type BaseActivationItemCodec = t.TypeOf<typeof BaseActivationItemCodec>;
 
-// NOTE: Maybe we can split the codec in two files
 export const ActivationRequestItemCodec = t.intersection([
   BaseActivationItemCodec,
   t.strict({
@@ -36,14 +35,14 @@ export type ActivationJobItem = t.TypeOf<typeof ActivationJobItemCodec>;
 
 export type ActivationResult = 'success' | 'fail' | 'not-executed';
 
-export interface ActivationService {
+export interface ActivationConsumer {
   /**
    * This function returns a list of activation requests that are going to be
    * activated.
    * The input is an object representing the trialId of the requests to enable and
    * the number of activation requests to activate.
    */
-  readonly fetchActivationRequestsToActivate: (
+  readonly fetchActivationRequestItemsToActivate: (
     filter: ActivationJobItem,
   ) => TE.TaskEither<Error, readonly ActivationRequestItem[]>;
 
@@ -53,7 +52,7 @@ export interface ActivationService {
    * If any of the activation request cannot be activated, then none of them
    * are activated.
    */
-  readonly activateActivationRequests: (
+  readonly activateRequestItems: (
     activationJob: ActivationJobItem,
   ) => (
     activationRequests: readonly ActivationRequestItem[],

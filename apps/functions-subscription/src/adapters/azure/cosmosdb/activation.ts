@@ -11,7 +11,7 @@ import {
   ActivationRequestItem,
   ActivationRequestItemCodec,
   ActivationResult,
-  ActivationService,
+  ActivationConsumer,
   BaseActivationItemCodec,
 } from '../../../domain/activation';
 import { decodeFromList } from './decode';
@@ -53,10 +53,10 @@ const makeActivationRequestPatchOperation =
 
 export const makeActivationCosmosContainer = (
   db: Database,
-): ActivationService => {
+): ActivationConsumer => {
   const container = db.container('activations');
   return {
-    fetchActivationRequestsToActivate: (job) =>
+    fetchActivationRequestItemsToActivate: (job) =>
       pipe(
         TE.tryCatch(
           () =>
@@ -92,7 +92,7 @@ export const makeActivationCosmosContainer = (
         ),
         TE.flatMapEither(decodeFromList(ActivationRequestItemCodec)),
       ),
-    activateActivationRequests: (job) => (activationRequests) => {
+    activateRequestItems: (job) => (activationRequests) => {
       const batchOperations =
         activationRequests.length === 0 // If array is empty, no operations
           ? []

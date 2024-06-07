@@ -50,7 +50,7 @@ const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
 
-const activationService = makeActivationCosmosContainer(
+const activationConsumer = makeActivationCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
@@ -59,7 +59,7 @@ const capabilities: Capabilities = {
   subscriptionWriter: subscriptionReaderWriter,
   subscriptionRequestWriter,
   subscriptionHistoryWriter,
-  activationService,
+  activationConsumer,
   hashFn,
   clock,
 };

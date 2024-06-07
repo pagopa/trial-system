@@ -5,7 +5,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from '../domain/capabilities';
 import { ActivationJobItem } from '../domain/activation';
 
-type Env = Pick<Capabilities, 'activationService'>;
+type Env = Pick<Capabilities, 'activationConsumer'>;
 
 export const processActivationJob = (
   job: ActivationJobItem,
@@ -13,9 +13,9 @@ export const processActivationJob = (
 ) =>
   pipe(
     RTE.ask<Env>(),
-    RTE.flatMapTaskEither(({ activationService }) =>
+    RTE.flatMapTaskEither(({ activationConsumer }) =>
       pipe(
-        activationService.fetchActivationRequestsToActivate(job),
+        activationConsumer.fetchActivationRequestItemsToActivate(job),
         TE.flatMap((activationRequests) => {
           if (RA.isEmpty(activationRequests)) {
             // Early return if no elements are fetched
@@ -26,9 +26,7 @@ export const processActivationJob = (
               // Split in chunks
               RA.chunksOf(maxChunkSize),
               // Process every chunk
-              TE.traverseArray(
-                activationService.activateActivationRequests(job),
-              ),
+              TE.traverseArray(activationConsumer.activateRequestItems(job)),
             );
           }
         }),

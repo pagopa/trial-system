@@ -6,7 +6,7 @@ import { HashFn } from './hash';
 import { SubscriptionReader, SubscriptionWriter } from './subscription';
 import { SubscriptionHistoryWriter } from './subscription-history';
 import { SubscriptionRequestWriter } from './subscription-request';
-import { ActivationService } from './activation';
+import { ActivationConsumer } from './activation';
 
 /**
  * Maps the capabilities to a given property name. Pick the capability using the
@@ -19,7 +19,7 @@ export interface Capabilities {
   readonly subscriptionWriter: SubscriptionWriter;
   readonly subscriptionRequestWriter: SubscriptionRequestWriter;
   readonly subscriptionHistoryWriter: SubscriptionHistoryWriter;
-  readonly activationService: ActivationService;
+  readonly activationConsumer: ActivationConsumer;
   readonly hashFn: HashFn;
   readonly clock: Clock;
 }
