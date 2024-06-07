@@ -3,6 +3,7 @@ import * as PR from 'io-ts/PathReporter';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import { NumberFromString } from '@pagopa/ts-commons/lib/numbers';
 
 export interface Config {
   readonly subscriptionRequest: {
@@ -10,6 +11,7 @@ export interface Config {
   };
   readonly activations: {
     readonly job: 'on' | 'off';
+    readonly concurrencyThreshold: number;
   };
   readonly eventhubs: {
     readonly namespace: string;
@@ -38,6 +40,7 @@ const EnvsCodec = t.strict({
     on: null,
     off: null,
   }),
+  ACTIVATION_JOB_CONCURRENCY_THRESHOLD: NumberFromString,
 });
 
 export const parseConfig = (
@@ -53,6 +56,7 @@ export const parseConfig = (
         },
         activations: {
           job: envs.ACTIVATION_JOB_TRIGGER,
+          concurrencyThreshold: envs.ACTIVATION_JOB_CONCURRENCY_THRESHOLD,
         },
         eventhubs: {
           namespace: envs.EVENTHUB_NAMESPACE,

@@ -55,3 +55,9 @@ export const anActivationRequest = {
   isActive: false,
   _etag: 'anEtag',
 };
+
+export const aTestConfig = {
+  activations: {
+    concurrencyThresholdLimit: 2,
+  },
+};

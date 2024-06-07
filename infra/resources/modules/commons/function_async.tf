@@ -26,6 +26,7 @@ locals {
 
     LEASES_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.leases.name
     ACTIVATION_JOB_TRIGGER                           = "on"
+    ACTIVATION_JOB_CONCURRENCY_THRESHOLD             = "50" // We can increase it up to 99
     ActivationJobCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
   }
 }

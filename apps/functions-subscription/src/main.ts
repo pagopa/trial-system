@@ -64,7 +64,7 @@ const capabilities: Capabilities = {
   clock,
 };
 
-const env = makeSystemEnv(capabilities);
+const env = makeSystemEnv(capabilities, config);
 
 app.http('info', {
   methods: ['GET'],

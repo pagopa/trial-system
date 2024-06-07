@@ -5,18 +5,19 @@ import * as RA from 'fp-ts/lib/ReadonlyArray';
 import {
   anActivationJob,
   anActivationRequest,
+  aTestConfig,
 } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
 import { processActivationJob } from '../process-activation-job';
+import { Config } from '../../config';
 
 describe('processActivationJob', () => {
   it('should activate when there are many chunk of activation requests ', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    // TODO: Get the magic number from somewhere else
-    const chunkSize = 99;
+    const { concurrencyThresholdLimit: chunkSize } = aTestConfig.activations;
 
     // Creating an array of many requests
     const activationRequests = Array.from(
@@ -33,7 +34,9 @@ describe('processActivationJob', () => {
       TE.right('ok'),
     );
 
-    const actual = await processActivationJob(anActivationJob)(testEnv)();
+    const actual = await processActivationJob(aTestConfig as unknown as Config)(
+      anActivationJob,
+    )(testEnv)();
     // TODO: Change the expected value
     const expected = E.right('ok');
 
@@ -53,7 +56,9 @@ describe('processActivationJob', () => {
       TE.right('ok'),
     );
 
-    const actual = await processActivationJob(anActivationJob)(testEnv)();
+    const actual = await processActivationJob(aTestConfig as unknown as Config)(
+      anActivationJob,
+    )(testEnv)();
     // TODO: Change the expected value
     const expected = E.right('ok');
 
@@ -70,7 +75,9 @@ describe('processActivationJob', () => {
       TE.right([]),
     );
 
-    const actual = await processActivationJob(anActivationJob)(testEnv)();
+    const actual = await processActivationJob(aTestConfig as unknown as Config)(
+      anActivationJob,
+    )(testEnv)();
     const expected = E.right([]);
 
     expect(actual).toStrictEqual(expected);
@@ -87,7 +94,9 @@ describe('processActivationJob', () => {
       TE.left(unexpectedError),
     );
 
-    const actual = await processActivationJob(anActivationJob)(testEnv)();
+    const actual = await processActivationJob(aTestConfig as unknown as Config)(
+      anActivationJob,
+    )(testEnv)();
     const expected = E.left(unexpectedError);
 
     expect(actual).toStrictEqual(expected);
