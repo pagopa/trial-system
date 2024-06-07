@@ -162,7 +162,11 @@ module "subscription_async_fn_staging_slot" {
 
   app_settings = merge(
     local.async_app_settings,
-    {},
+    {
+      # Avoiding host ID collisions
+      # https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations?tabs=azure-cli#avoiding-host-id-collisions
+      AzureFunctionsWebHost__hostid = "subscription-async-fn-01-staging"
+    },
   )
 
   subnet_id = module.subscription_async_snet.id
