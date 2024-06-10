@@ -35,7 +35,8 @@ export const makeActivationJobCosmosHandler =
         // Call the method to activate users only if the updated document is a job
         job
           ? env.processActivationJob(job, activations.concurrencyThreshold)
-          : TE.right(['success' as const]),
+          : // Return not-executed state
+            TE.right(['not-executed' as const]),
       ),
       TE.getOrElse((error) => {
         // if an error occurs, the retry policy will be applied if it is defined
