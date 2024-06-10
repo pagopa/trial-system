@@ -13,14 +13,14 @@ import {
   ActivationRequestItemCodec,
   ActivationResult,
   ActivationConsumer,
-  BaseActivationItemCodec,
+  ActivationJobItem,
 } from '../../../domain/activation';
 import { decodeFromFeed } from './decode';
 
-const makeActivationJobPatchOperation = <T extends BaseActivationItemCodec>(
-  obj: T,
+const makeActivationJobPatchOperation = (
+  obj: ActivationJobItem,
   requests: readonly ActivationRequestItem[],
-  propertyToUpdate: keyof T,
+  propertyToUpdate: keyof ActivationJobItem,
 ): OperationInput => ({
   id: obj.id,
   operationType: BulkOperationType.Patch,
@@ -36,8 +36,8 @@ const makeActivationJobPatchOperation = <T extends BaseActivationItemCodec>(
 });
 
 const makeActivationRequestPatchOperation =
-  <T extends BaseActivationItemCodec>(propertyToUpdate: keyof T) =>
-  (obj: T): OperationInput => ({
+  (propertyToUpdate: keyof ActivationRequestItem) =>
+  (obj: ActivationRequestItem): OperationInput => ({
     id: obj.id,
     ifMatch: obj._etag,
     operationType: BulkOperationType.Patch,
