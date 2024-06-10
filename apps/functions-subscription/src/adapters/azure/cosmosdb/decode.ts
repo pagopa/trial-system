@@ -20,7 +20,7 @@ export const decodeFromItem =
       ),
     );
 
-export const decodeFromList =
+export const decodeFromFeed =
   <A, O, T extends FeedResponse<unknown>>(codec: t.Type<A, O>) =>
   (list: T) =>
     pipe(

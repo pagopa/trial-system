@@ -15,7 +15,7 @@ import {
   ActivationConsumer,
   BaseActivationItemCodec,
 } from '../../../domain/activation';
-import { decodeFromList } from './decode';
+import { decodeFromFeed } from './decode';
 
 const makeActivationJobPatchOperation = <T extends BaseActivationItemCodec>(
   obj: T,
@@ -83,7 +83,7 @@ export const makeActivationCosmosContainer = (
               .fetchAll(),
           E.toError,
         ),
-        TE.flatMapEither(decodeFromList(ActivationRequestItemCodec)),
+        TE.flatMapEither(decodeFromFeed(ActivationRequestItemCodec)),
       ),
     activateRequestItems: (job, activationRequests) => {
       const batchOperations =
