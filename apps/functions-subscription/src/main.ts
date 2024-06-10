@@ -101,7 +101,7 @@ if (config.activations.consumer === 'on') {
     databaseName: config.cosmosdb.databaseName,
     containerName: 'activations',
     leaseContainerName: config.cosmosdb.leasesContainerName,
-    leaseContainerPrefix: 'activations',
+    leaseContainerPrefix: 'activations-',
     handler: makeActivationJobCosmosHandler(env, config),
   });
 }
