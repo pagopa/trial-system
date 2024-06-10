@@ -99,12 +99,15 @@ if (config.activations.consumer === 'on') {
   app.cosmosDB('activationConsumer', {
     connection: 'ActivationConsumerCosmosDBConnection',
     databaseName: config.cosmosdb.databaseName,
+    // TODO: Move the container name to the configuration
+    // We are going to do this in a separate PR, waiting to merge an existing PR
+    // to reuse a structure done there.
     containerName: 'activations',
     leaseContainerName: config.cosmosdb.leasesContainerName,
     leaseContainerPrefix: 'activations-',
     handler: makeActivationJobCosmosHandler(
       env,
-      config.activations.concurrencyThreshold,
+      config.activations.maxFetchSize,
     ),
   });
 }

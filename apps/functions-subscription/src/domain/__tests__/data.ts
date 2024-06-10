@@ -4,12 +4,15 @@ import {
 } from '@pagopa/ts-commons/lib/numbers';
 import { SubscriptionId, TrialId, UserId } from '../subscription';
 import { SubscriptionHistoryId } from '../subscription-history';
+import { ActivationJobId, ActivationRequestId } from '../activation';
 
 const aSubscriptionHistoryId =
   'aSubscriptionHistoryId' as SubscriptionHistoryId;
 const aSubscriptionId = 'aSubscriptionId' as SubscriptionId;
 const aUserId = 'aUserId' as UserId;
 const aTrialId = 'aTrialId' as TrialId;
+const anActivationJobId = 'anActivationJobId' as ActivationJobId;
+const anActivationRequestId = 'anActivationRequestId' as ActivationRequestId;
 
 export const aSubscription = {
   id: aSubscriptionId,
@@ -37,7 +40,7 @@ export const aSubscriptionHistory = {
 };
 
 export const anActivationJob = {
-  id: 'anId',
+  id: anActivationJobId,
   trialId: aTrialId,
   createdAt: new Date(),
   usersToActivate: 100 as NonNegativeNumber,
@@ -47,7 +50,7 @@ export const anActivationJob = {
 };
 
 export const anActivationRequest = {
-  id: 'anId',
+  id: anActivationRequestId,
   userId: aUserId,
   trialId: aTrialId,
   createdAt: new Date(),
