@@ -3,8 +3,8 @@ import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import {
-  anActivationJobItem,
-  anActivationRequestItem,
+  anActivationJob,
+  anActivationRequest,
 } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
@@ -19,7 +19,7 @@ describe('processActivationJob', () => {
     // Creating an array of many requests; every element has a different id
     const activationRequests = Array.from(
       { length: chunkSize + 1 },
-      (_, i) => ({ ...anActivationRequestItem, id: `${i}` }),
+      (_, i) => ({ ...anActivationRequest, id: `${i}` }),
     );
 
     const chunks = RA.chunksOf(chunkSize)(activationRequests);
@@ -32,7 +32,7 @@ describe('processActivationJob', () => {
     );
 
     const actual = await processActivationJob(
-      anActivationJobItem,
+      anActivationJob,
       chunkSize,
     )(testEnv)();
     const expected = E.right(['success', 'success']);
@@ -43,16 +43,16 @@ describe('processActivationJob', () => {
     ).toHaveBeenCalledTimes(chunks.length);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJobItem, chunks[0]);
+    ).toHaveBeenCalledWith(anActivationJob, chunks[0]);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJobItem, chunks[1]);
+    ).toHaveBeenCalledWith(anActivationJob, chunks[1]);
   });
   it('should activate when there is at least an activation request', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    const activationRequests = [anActivationRequestItem];
+    const activationRequests = [anActivationRequest];
     mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
       TE.right(activationRequests),
     );
@@ -61,7 +61,7 @@ describe('processActivationJob', () => {
     );
 
     const actual = await processActivationJob(
-      anActivationJobItem,
+      anActivationJob,
       chunkSize,
     )(testEnv)();
     const expected = E.right(['success']);
@@ -69,18 +69,18 @@ describe('processActivationJob', () => {
     expect(actual).toStrictEqual(expected);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenNthCalledWith(1, anActivationJobItem, activationRequests);
+    ).toHaveBeenNthCalledWith(1, anActivationJob, activationRequests);
   });
   it('should activate just one batch when one succeed and one fail', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
     const requests = Array.from({ length: chunkSize }, (_, i) => ({
-      ...anActivationRequestItem,
+      ...anActivationRequest,
       id: `${i}`,
     }));
     const activationRequests = RA.append({
-      ...anActivationRequestItem,
+      ...anActivationRequest,
       id: 'anotherId',
     })(requests);
     const chunks = RA.chunksOf(chunkSize)(activationRequests);
@@ -92,7 +92,7 @@ describe('processActivationJob', () => {
       .mockReturnValueOnce(TE.right('fail' as const));
 
     const actual = await processActivationJob(
-      anActivationJobItem,
+      anActivationJob,
       chunkSize,
     )(testEnv)();
     const expected = E.right(['success', 'fail']);
@@ -103,10 +103,10 @@ describe('processActivationJob', () => {
     ).toHaveBeenCalledTimes(2);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJobItem, chunks[0]);
+    ).toHaveBeenCalledWith(anActivationJob, chunks[0]);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJobItem, chunks[1]);
+    ).toHaveBeenCalledWith(anActivationJob, chunks[1]);
   });
   it('should not activate when there are no activation requests', async () => {
     const mockEnv = makeTestEnv();
@@ -117,7 +117,7 @@ describe('processActivationJob', () => {
     );
 
     const actual = await processActivationJob(
-      anActivationJobItem,
+      anActivationJob,
       chunkSize,
     )(testEnv)();
     const expected = E.right([]);
@@ -137,7 +137,7 @@ describe('processActivationJob', () => {
     );
 
     const actual = await processActivationJob(
-      anActivationJobItem,
+      anActivationJob,
       chunkSize,
     )(testEnv)();
     const expected = E.left(unexpectedError);

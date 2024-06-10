@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  anActivationJobItem,
-  anActivationRequestItem,
+  anActivationJob,
+  anActivationRequest,
 } from '../../../../domain/__tests__/data';
 import {
   makeFunctionContext,
@@ -19,7 +19,7 @@ describe('makeActivationJobCosmosHandler', () => {
   it('should process activation job document without error', async () => {
     const env = makeTestSystemEnv();
     const context = makeFunctionContext();
-    const messages = [anActivationJobItem];
+    const messages = [anActivationJob];
 
     env.processActivationJob.mockReturnValueOnce(TE.right(['success']));
 
@@ -29,8 +29,8 @@ describe('makeActivationJobCosmosHandler', () => {
     );
     expect(actual).toStrictEqual(['success']);
     const expectedArgument = {
-      ...ActivationJobItemCodec.encode(anActivationJobItem),
-      createdAt: anActivationJobItem.createdAt,
+      ...ActivationJobItemCodec.encode(anActivationJob),
+      createdAt: anActivationJob.createdAt,
     };
 
     expect(env.processActivationJob).toHaveBeenCalledWith(
@@ -41,7 +41,7 @@ describe('makeActivationJobCosmosHandler', () => {
   it('should return not-executed when updating a request item', async () => {
     const env = makeTestSystemEnv();
     const context = makeFunctionContext();
-    const messages = [anActivationRequestItem];
+    const messages = [anActivationRequest];
 
     const actual = await makeActivationJobCosmosHandler(env, config)(
       messages,
@@ -54,7 +54,7 @@ describe('makeActivationJobCosmosHandler', () => {
   it('should return an error when the use case fails', async () => {
     const env = makeTestSystemEnv();
     const context = makeFunctionContext();
-    const messages = [anActivationJobItem];
+    const messages = [anActivationJob];
     const unexpectedError = new Error('Unexpected Error');
 
     env.processActivationJob.mockReturnValueOnce(TE.left(unexpectedError));

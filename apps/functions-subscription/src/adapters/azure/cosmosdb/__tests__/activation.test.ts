@@ -3,8 +3,8 @@ import * as E from 'fp-ts/lib/Either';
 import { Database } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
 import {
-  anActivationJobItem,
-  anActivationRequestItem,
+  anActivationJob,
+  anActivationRequest,
 } from '../../../../domain/__tests__/data';
 import { makeActivationCosmosContainer } from '../activation';
 
@@ -13,8 +13,8 @@ describe('makeActivationCosmosContainer', () => {
     const operations = [
       {
         operationType: 'Patch',
-        id: anActivationRequestItem.id,
-        ifMatch: anActivationRequestItem._etag,
+        id: anActivationRequest.id,
+        ifMatch: anActivationRequest._etag,
         resourceBody: {
           operations: [
             {
@@ -27,7 +27,7 @@ describe('makeActivationCosmosContainer', () => {
       },
       {
         operationType: 'Patch',
-        id: anActivationJobItem.id,
+        id: anActivationJob.id,
         resourceBody: {
           operations: [
             {
@@ -45,7 +45,7 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJobItem, [])();
+      ).activateRequestItems(anActivationJob, [])();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(0);
@@ -53,7 +53,7 @@ describe('makeActivationCosmosContainer', () => {
     it('should succeed when all the elements have been updated', async () => {
       const mockDB = makeDatabaseMock();
       const result = 'success' as const;
-      const activationRequests = [anActivationRequestItem];
+      const activationRequests = [anActivationRequest];
       // Construct success response for every item in activationRequests
       const mockBatchResponse = [...activationRequests].map(() => ({
         statusCode: 200,
@@ -64,36 +64,36 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJobItem, activationRequests)();
+      ).activateRequestItems(anActivationJob, activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
         operations,
-        anActivationJobItem.trialId,
+        anActivationJob.trialId,
       );
     });
     it('should fail when the update failed', async () => {
       const mockDB = makeDatabaseMock();
-      const activationRequests = [anActivationRequestItem];
+      const activationRequests = [anActivationRequest];
       const error = new Error('Something went wrong');
       mockDB.container('').items.batch.mockRejectedValueOnce(error);
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJobItem, activationRequests)();
+      ).activateRequestItems(anActivationJob, activationRequests)();
 
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
         operations,
-        anActivationJobItem.trialId,
+        anActivationJob.trialId,
       );
     });
     it('should return fail when there was not possible to perform the update', async () => {
       const mockDB = makeDatabaseMock();
       const result = 'fail' as const;
-      const activationRequests = [anActivationRequestItem];
+      const activationRequests = [anActivationRequest];
       // Construct success response for every item in activationRequests
       const mockBatchResponse = [...activationRequests].map(() => ({
         statusCode: 429,
@@ -104,13 +104,13 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJobItem, activationRequests)();
+      ).activateRequestItems(anActivationJob, activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
         operations,
-        anActivationJobItem.trialId,
+        anActivationJob.trialId,
       );
     });
   });
@@ -119,7 +119,7 @@ describe('makeActivationCosmosContainer', () => {
     it('should return list of activation requests', async () => {
       const mockDB = makeDatabaseMock();
 
-      const activationRequests = [anActivationRequestItem];
+      const activationRequests = [anActivationRequest];
 
       mockDB.container('').items.query.mockReturnValueOnce({
         fetchAll: () => Promise.resolve({ resources: activationRequests }),
@@ -127,7 +127,7 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).fetchActivationRequestItemsToActivate(anActivationJobItem)();
+      ).fetchActivationRequestItemsToActivate(anActivationJob)();
 
       expect(actual).toStrictEqual(E.right(activationRequests));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
@@ -141,7 +141,7 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).fetchActivationRequestItemsToActivate(anActivationJobItem)();
+      ).fetchActivationRequestItemsToActivate(anActivationJob)();
 
       expect(actual).toStrictEqual(E.right([]));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
@@ -156,7 +156,7 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).fetchActivationRequestItemsToActivate(anActivationJobItem)();
+      ).fetchActivationRequestItemsToActivate(anActivationJob)();
 
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
