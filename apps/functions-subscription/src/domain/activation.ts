@@ -9,7 +9,6 @@ const BaseActivationItemCodec = t.strict({
   trialId: TrialIdCodec,
   _etag: t.string,
 });
-export type BaseActivationItemCodec = t.TypeOf<typeof BaseActivationItemCodec>;
 
 export const ActivationRequestItemCodec = t.intersection([
   BaseActivationItemCodec,
@@ -54,7 +53,8 @@ export interface ActivationConsumer {
    * are activated.
    */
   readonly activateRequestItems: (
-    activationJob: ActivationJobItem,
+    jobId: string,
+    trialId: TrialId,
     activationRequests: readonly ActivationRequestItem[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }

@@ -44,10 +44,18 @@ describe('processActivationJob', () => {
     ).toHaveBeenCalledTimes(chunks.length);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJob, chunks[0]);
+    ).toHaveBeenCalledWith(
+      anActivationJob.id,
+      anActivationJob.trialId,
+      chunks[0],
+    );
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJob, chunks[1]);
+    ).toHaveBeenCalledWith(
+      anActivationJob.id,
+      anActivationJob.trialId,
+      chunks[1],
+    );
   });
   it('should activate when there is at least an activation request', async () => {
     const mockEnv = makeTestEnv();
@@ -70,7 +78,12 @@ describe('processActivationJob', () => {
     expect(actual).toStrictEqual(expected);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenNthCalledWith(1, anActivationJob, activationRequests);
+    ).toHaveBeenNthCalledWith(
+      1,
+      anActivationJob.id,
+      anActivationJob.trialId,
+      activationRequests,
+    );
   });
   it('should activate just one batch when one succeed and one fail', async () => {
     const mockEnv = makeTestEnv();
@@ -104,10 +117,18 @@ describe('processActivationJob', () => {
     ).toHaveBeenCalledTimes(2);
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJob, chunks[0]);
+    ).toHaveBeenCalledWith(
+      anActivationJob.id,
+      anActivationJob.trialId,
+      chunks[0],
+    );
     expect(
       mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(anActivationJob, chunks[1]);
+    ).toHaveBeenCalledWith(
+      anActivationJob.id,
+      anActivationJob.trialId,
+      chunks[1],
+    );
   });
   it('should not activate when there are no activation requests', async () => {
     const mockEnv = makeTestEnv();

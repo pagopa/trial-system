@@ -35,7 +35,8 @@ export const processActivationJob = (
               // Process every chunk
               TE.traverseArray((activationRequests) =>
                 activationConsumer.activateRequestItems(
-                  job,
+                  job.id,
+                  job.trialId,
                   activationRequests,
                 ),
               ),

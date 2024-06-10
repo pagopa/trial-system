@@ -45,7 +45,7 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJob, [])();
+      ).activateRequestItems(anActivationJob.id, anActivationJob.trialId, [])();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(0);
@@ -64,7 +64,11 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJob, activationRequests)();
+      ).activateRequestItems(
+        anActivationJob.id,
+        anActivationJob.trialId,
+        activationRequests,
+      )();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
@@ -81,7 +85,11 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJob, activationRequests)();
+      ).activateRequestItems(
+        anActivationJob.id,
+        anActivationJob.trialId,
+        activationRequests,
+      )();
 
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
@@ -104,7 +112,11 @@ describe('makeActivationCosmosContainer', () => {
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJob, activationRequests)();
+      ).activateRequestItems(
+        anActivationJob.id,
+        anActivationJob.trialId,
+        activationRequests,
+      )();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(

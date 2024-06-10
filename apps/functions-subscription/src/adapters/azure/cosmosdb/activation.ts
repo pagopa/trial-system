@@ -45,7 +45,7 @@ export const makeActivationCosmosContainer = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestItemCodec)),
       ),
-    activateRequestItems: (job, activationRequests) => {
+    activateRequestItems: (jobId, trialId, activationRequests) => {
       if (activationRequests.length > 0) {
         const batchOperations: readonly OperationInput[] = pipe(
           activationRequests,
@@ -64,7 +64,7 @@ export const makeActivationCosmosContainer = (
             },
           })),
           RA.appendW({
-            id: job.id,
+            id: jobId,
             operationType: BulkOperationType.Patch,
             resourceBody: {
               operations: [
@@ -79,7 +79,7 @@ export const makeActivationCosmosContainer = (
         );
         return pipe(
           TE.tryCatch(
-            () => container.items.batch([...batchOperations], job.trialId),
+            () => container.items.batch([...batchOperations], trialId),
             E.toError,
           ),
           TE.map(({ result }) => makeActivationResult(result)),
