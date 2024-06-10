@@ -102,6 +102,9 @@ if (config.activations.consumer === 'on') {
     containerName: 'activations',
     leaseContainerName: config.cosmosdb.leasesContainerName,
     leaseContainerPrefix: 'activations-',
-    handler: makeActivationJobCosmosHandler(env, config),
+    handler: makeActivationJobCosmosHandler(
+      env,
+      config.activations.concurrencyThreshold,
+    ),
   });
 }

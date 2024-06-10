@@ -9,13 +9,10 @@ import {
 } from '../../functions/__tests__/mocks';
 import * as TE from 'fp-ts/TaskEither';
 import { makeActivationJobCosmosHandler } from '../activation-job';
-import { Config } from '../../../../config';
 import { ActivationJobItemCodec } from '../../../../domain/activation';
 
 describe('makeActivationJobCosmosHandler', () => {
-  const config = {
-    activations: { concurrencyThreshold: 1, consumer: 'on' },
-  } as Config;
+  const maxConcurrencyThreshold = 1;
   it('should process activation job document without error', async () => {
     const env = makeTestSystemEnv();
     const context = makeFunctionContext();
@@ -23,10 +20,10 @@ describe('makeActivationJobCosmosHandler', () => {
 
     env.processActivationJob.mockReturnValueOnce(TE.right(['success']));
 
-    const actual = await makeActivationJobCosmosHandler(env, config)(
-      messages,
-      context,
-    );
+    const actual = await makeActivationJobCosmosHandler(
+      env,
+      maxConcurrencyThreshold,
+    )(messages, context);
     expect(actual).toStrictEqual(['success']);
     const expectedArgument = {
       ...ActivationJobItemCodec.encode(anActivationJob),
@@ -35,7 +32,7 @@ describe('makeActivationJobCosmosHandler', () => {
 
     expect(env.processActivationJob).toHaveBeenCalledWith(
       expectedArgument,
-      config.activations.concurrencyThreshold,
+      maxConcurrencyThreshold,
     );
   });
   it('should return not-executed when updating a request item', async () => {
@@ -43,10 +40,10 @@ describe('makeActivationJobCosmosHandler', () => {
     const context = makeFunctionContext();
     const messages = [anActivationRequest];
 
-    const actual = await makeActivationJobCosmosHandler(env, config)(
-      messages,
-      context,
-    );
+    const actual = await makeActivationJobCosmosHandler(
+      env,
+      maxConcurrencyThreshold,
+    )(messages, context);
     expect(actual).toStrictEqual(['not-executed']);
 
     expect(env.processActivationJob).toHaveBeenCalledTimes(0);
@@ -59,7 +56,7 @@ describe('makeActivationJobCosmosHandler', () => {
 
     env.processActivationJob.mockReturnValueOnce(TE.left(unexpectedError));
 
-    const actual = makeActivationJobCosmosHandler(env, config)(
+    const actual = makeActivationJobCosmosHandler(env, maxConcurrencyThreshold)(
       messages,
       context,
     );

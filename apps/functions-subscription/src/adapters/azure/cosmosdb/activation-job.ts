@@ -9,10 +9,12 @@ import {
   ActivationRequestItemCodec,
 } from '../../../domain/activation';
 import { SystemEnv } from '../../../system-env';
-import { Config } from '../../../config';
 
 export const makeActivationJobCosmosHandler =
-  (env: Pick<SystemEnv, 'processActivationJob'>, { activations }: Config) =>
+  (
+    env: Pick<SystemEnv, 'processActivationJob'>,
+    maxConcurrencyThreshold: number,
+  ) =>
   (
     documents: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,7 +36,7 @@ export const makeActivationJobCosmosHandler =
       TE.flatMap(([job]) =>
         // Call the method to activate users only if the updated document is a job
         job
-          ? env.processActivationJob(job, activations.concurrencyThreshold)
+          ? env.processActivationJob(job, maxConcurrencyThreshold)
           : // Return not-executed state
             TE.right(['not-executed' as const]),
       ),
