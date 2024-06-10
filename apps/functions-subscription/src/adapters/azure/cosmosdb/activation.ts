@@ -1,5 +1,6 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
+import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { pipe } from 'fp-ts/lib/function';
 import {
   BulkOperationType,
@@ -9,48 +10,11 @@ import {
   PatchOperationType,
 } from '@azure/cosmos';
 import {
-  ActivationRequestItem,
   ActivationRequestItemCodec,
   ActivationResult,
   ActivationConsumer,
-  ActivationJobItem,
 } from '../../../domain/activation';
 import { decodeFromFeed } from './decode';
-
-const makeActivationJobPatchOperation = (
-  obj: ActivationJobItem,
-  requests: readonly ActivationRequestItem[],
-  propertyToUpdate: keyof ActivationJobItem,
-): OperationInput => ({
-  id: obj.id,
-  operationType: BulkOperationType.Patch,
-  resourceBody: {
-    operations: [
-      {
-        op: PatchOperationType.incr,
-        path: `/${propertyToUpdate.toString()}`,
-        value: requests.length,
-      },
-    ],
-  },
-});
-
-const makeActivationRequestPatchOperation =
-  (propertyToUpdate: keyof ActivationRequestItem) =>
-  (obj: ActivationRequestItem): OperationInput => ({
-    id: obj.id,
-    ifMatch: obj._etag,
-    operationType: BulkOperationType.Patch,
-    resourceBody: {
-      operations: [
-        {
-          op: PatchOperationType.replace,
-          path: `/${propertyToUpdate.toString()}`,
-          value: true,
-        },
-      ],
-    },
-  });
 
 export const makeActivationCosmosContainer = (
   db: Database,
@@ -86,31 +50,48 @@ export const makeActivationCosmosContainer = (
         TE.flatMapEither(decodeFromFeed(ActivationRequestItemCodec)),
       ),
     activateRequestItems: (job, activationRequests) => {
-      const batchOperations =
-        activationRequests.length === 0 // If array is empty, no operations
-          ? []
-          : [
-              // Convert activation request to the patch operation to update the activated field
-              ...activationRequests.map(
-                makeActivationRequestPatchOperation('activated'),
-              ),
-              // Convert job to the patch operation to update the counter
-              makeActivationJobPatchOperation(
-                job,
-                activationRequests,
-                'usersActivated',
-              ),
-            ];
-      // If array is empty, just return ok; otherwise try the batch operation
-      return batchOperations.length === 0
-        ? TE.of('not-executed')
-        : pipe(
-            TE.tryCatch(
-              () => container.items.batch(batchOperations, job.trialId),
-              E.toError,
-            ),
-            TE.map(({ result }) => makeActivationResult(result)),
-          );
+      if (activationRequests.length > 0) {
+        const batchOperations: readonly OperationInput[] = pipe(
+          activationRequests,
+          RA.map(({ id, _etag }) => ({
+            id,
+            ifMatch: _etag,
+            operationType: BulkOperationType.Patch,
+            resourceBody: {
+              operations: [
+                {
+                  op: PatchOperationType.replace,
+                  path: `/activated`,
+                  value: true,
+                },
+              ],
+            },
+          })),
+          RA.appendW({
+            id: job.id,
+            operationType: BulkOperationType.Patch,
+            resourceBody: {
+              operations: [
+                {
+                  op: PatchOperationType.incr,
+                  path: `/usersActivated`,
+                  value: activationRequests.length,
+                },
+              ],
+            },
+          }),
+        );
+        return pipe(
+          TE.tryCatch(
+            () => container.items.batch([...batchOperations], job.trialId),
+            E.toError,
+          ),
+          TE.map(({ result }) => makeActivationResult(result)),
+        );
+      } else {
+        // NOTE: Maybe this can be a success
+        return TE.of('not-executed');
+      }
     },
   };
 };
