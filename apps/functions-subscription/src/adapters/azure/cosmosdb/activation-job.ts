@@ -12,7 +12,7 @@ import { SystemEnv } from '../../../system-env';
 import { Config } from '../../../config';
 
 export const makeActivationJobCosmosHandler =
-  (env: SystemEnv, { activations }: Config) =>
+  (env: Pick<SystemEnv, 'processActivationJob'>, { activations }: Config) =>
   (
     documents: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
