@@ -8,6 +8,7 @@ import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { ItemAlreadyExists } from './errors';
 import { nowDate } from './clock';
+import { SubscriptionHistory } from './subscription-history';
 
 // a unique brand for subscriptionId
 interface SubscriptionIdBrand {
@@ -90,6 +91,8 @@ export interface SubscriptionWriter {
   readonly insert: (
     subscription: Subscription,
   ) => TE.TaskEither<Error | ItemAlreadyExists, Subscription>;
+
+  readonly upsert: (subscription: Subscription) => TE.TaskEither<Error, void>;
 }
 
 /**
@@ -114,3 +117,14 @@ export const makeSubscription = (trialId: TrialId, userId: UserId) =>
       return { id, userId, trialId, createdAt, updatedAt, state };
     }),
   );
+
+export const makeSubscriptionFromHistory = (
+  subscriptionHistory: SubscriptionHistory,
+): Subscription => ({
+  id: subscriptionHistory.subscriptionId,
+  userId: subscriptionHistory.userId,
+  trialId: subscriptionHistory.trialId,
+  createdAt: subscriptionHistory.createdAt,
+  updatedAt: subscriptionHistory.updatedAt,
+  state: subscriptionHistory.state,
+});
