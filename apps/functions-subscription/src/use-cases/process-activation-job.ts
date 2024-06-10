@@ -19,7 +19,7 @@ export const processActivationJob = (
         TE.flatMap((activationRequests) => {
           if (RA.isEmpty(activationRequests)) {
             // Early return if no elements are fetched
-            return TE.right([]);
+            return TE.right(activationRequests);
           } else {
             return pipe(
               activationRequests,

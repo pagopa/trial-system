@@ -6,6 +6,7 @@ import {
   Database,
   OperationInput,
   OperationResponse,
+  PatchOperationType,
 } from '@azure/cosmos';
 import {
   ActivationRequestItem,
@@ -26,7 +27,7 @@ const makeActivationJobPatchOperation = <T extends BaseActivationItemCodec>(
   resourceBody: {
     operations: [
       {
-        op: 'incr',
+        op: PatchOperationType.incr,
         path: `/${propertyToUpdate.toString()}`,
         value: requests.length,
       },
@@ -43,7 +44,7 @@ const makeActivationRequestPatchOperation =
     resourceBody: {
       operations: [
         {
-          op: 'replace',
+          op: PatchOperationType.replace,
           path: `/${propertyToUpdate.toString()}`,
           value: true,
         },
@@ -56,7 +57,11 @@ export const makeActivationCosmosContainer = (
 ): ActivationConsumer => {
   const container = db.container('activations');
   return {
-    fetchActivationRequestItemsToActivate: (job) =>
+    fetchActivationRequestItemsToActivate: ({
+      trialId,
+      usersToActivate,
+      usersActivated,
+    }) =>
       pipe(
         TE.tryCatch(
           () =>
@@ -67,11 +72,11 @@ export const makeActivationCosmosContainer = (
                 parameters: [
                   {
                     name: '@trialId',
-                    value: job.trialId,
+                    value: trialId,
                   },
                   {
                     name: '@limit',
-                    value: job.usersToActivate - job.usersActivated,
+                    value: usersToActivate - usersActivated,
                   },
                 ],
               })
