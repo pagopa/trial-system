@@ -26,7 +26,7 @@ locals {
 
     LEASES_COSMOSDB_CONTAINER_NAME                        = azurerm_cosmosdb_sql_container.leases.name
     ACTIVATION_CONSUMER                                   = "on"
-    ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD             = "50" // We can increase it up to 99
+    ACTIVATION_MAX_FETCH_SIZE                             = "1000"
     ActivationConsumerCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
   }
 }

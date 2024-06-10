@@ -13,6 +13,6 @@
     "ACTIVATION_CONSUMER": "off",
     "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
     "LEASES_COSMOSDB_CONTAINER_NAME": "<put-here-the-name-of-leases-container>",
-    "ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD": "50"
+    "ACTIVATION_MAX_FETCH_SIZE": "50"
   }
 }

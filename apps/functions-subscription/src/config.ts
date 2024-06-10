@@ -14,7 +14,7 @@ export interface Config {
   };
   readonly activations: {
     readonly consumer: 'on' | 'off';
-    readonly concurrencyThreshold: number;
+    readonly maxFetchSize: number;
   };
   readonly eventhubs: {
     readonly namespace: string;
@@ -43,9 +43,7 @@ const EnvsCodec = t.strict({
     on: null,
     off: null,
   }),
-  ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD: NumberFromString.pipe(
-    WithinRangeInteger(1, 99),
-  ),
+  ACTIVATION_MAX_FETCH_SIZE: NumberFromString.pipe(WithinRangeInteger(1, 1000)),
 });
 
 export const parseConfig = (
@@ -61,7 +59,7 @@ export const parseConfig = (
         },
         activations: {
           consumer: envs.ACTIVATION_CONSUMER,
-          concurrencyThreshold: envs.ACTIVATION_CONSUMER_CONCURRENCY_THRESHOLD,
+          maxFetchSize: envs.ACTIVATION_MAX_FETCH_SIZE,
         },
         eventhubs: {
           namespace: envs.EVENTHUB_NAMESPACE,
