@@ -11,7 +11,7 @@ import { Capabilities } from '../../domain/capabilities';
 import { processActivationJob } from '../process-activation-job';
 
 describe('processActivationJob', () => {
-  const chunkSize = 1;
+  const chunkSize = 10;
   it('should activate when there are many chunk of activation requests', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
@@ -75,10 +75,14 @@ describe('processActivationJob', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    const activationRequests = [
-      anActivationRequestItem,
-      { ...anActivationRequestItem, id: 'anotherId' },
-    ];
+    const requests = Array.from({ length: chunkSize }, (_, i) => ({
+      ...anActivationRequestItem,
+      id: `${i}`,
+    }));
+    const activationRequests = RA.append({
+      ...anActivationRequestItem,
+      id: 'anotherId',
+    })(requests);
     const chunks = RA.chunksOf(chunkSize)(activationRequests);
     mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
       TE.right(activationRequests),
