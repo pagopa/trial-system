@@ -11,16 +11,17 @@ import { Capabilities } from '../../domain/capabilities';
 import { processActivationJob } from '../process-activation-job';
 
 describe('processActivationJob', () => {
-  const chunkSize = 10;
+  const chunkSize = 99;
+  const fetchSize = 100;
   it('should activate when there are many chunk of activation requests', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
     // Creating an array of many requests; every element has a different id
-    const activationRequests = Array.from(
-      { length: chunkSize + 1 },
-      (_, i) => ({ ...anActivationRequest, id: `${i}` }),
-    );
+    const activationRequests = Array.from({ length: fetchSize }, (_, i) => ({
+      ...anActivationRequest,
+      id: `${i}`,
+    }));
 
     const chunks = RA.chunksOf(chunkSize)(activationRequests);
 
@@ -75,7 +76,7 @@ describe('processActivationJob', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    const requests = Array.from({ length: chunkSize }, (_, i) => ({
+    const requests = Array.from({ length: fetchSize }, (_, i) => ({
       ...anActivationRequest,
       id: `${i}`,
     }));

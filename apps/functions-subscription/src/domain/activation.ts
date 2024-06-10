@@ -2,7 +2,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as t from 'io-ts';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonNegativeNumber } from '@pagopa/ts-commons/lib/numbers';
-import { TrialIdCodec, UserIdCodec } from './subscription';
+import { TrialId, TrialIdCodec, UserIdCodec } from './subscription';
 
 const BaseActivationItemCodec = t.strict({
   id: t.string,
@@ -43,7 +43,8 @@ export interface ActivationConsumer {
    * the number of activation requests to activate.
    */
   readonly fetchActivationRequestItemsToActivate: (
-    filter: ActivationJobItem,
+    trialId: TrialId,
+    elementsToFetch: number,
   ) => TE.TaskEither<Error, readonly ActivationRequestItem[]>;
 
   /**

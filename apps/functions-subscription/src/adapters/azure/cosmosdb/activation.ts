@@ -21,11 +21,7 @@ export const makeActivationCosmosContainer = (
 ): ActivationConsumer => {
   const container = db.container('activations');
   return {
-    fetchActivationRequestItemsToActivate: ({
-      trialId,
-      usersToActivate,
-      usersActivated,
-    }) =>
+    fetchActivationRequestItemsToActivate: (trialId, elementsToFetch) =>
       pipe(
         TE.tryCatch(
           () =>
@@ -40,7 +36,7 @@ export const makeActivationCosmosContainer = (
                   },
                   {
                     name: '@limit',
-                    value: usersToActivate - usersActivated,
+                    value: elementsToFetch,
                   },
                 ],
               })
