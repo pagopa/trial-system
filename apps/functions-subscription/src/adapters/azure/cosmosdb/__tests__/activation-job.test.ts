@@ -35,7 +35,7 @@ describe('makeActivationJobCosmosHandler', () => {
       maxConcurrencyThreshold,
     );
   });
-  it('should return not-executed when updating a request item', async () => {
+  it('should return success when updating a request item', async () => {
     const env = makeTestSystemEnv();
     const context = makeFunctionContext();
     const messages = [anActivationRequest];
@@ -44,7 +44,7 @@ describe('makeActivationJobCosmosHandler', () => {
       env,
       maxConcurrencyThreshold,
     )(messages, context);
-    expect(actual).toStrictEqual(['not-executed']);
+    expect(actual).toStrictEqual(['success']);
 
     expect(env.processActivationJob).toHaveBeenCalledTimes(0);
   });

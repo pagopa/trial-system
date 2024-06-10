@@ -41,7 +41,7 @@ describe('makeActivationCosmosContainer', () => {
     ];
     it('should not perform the update when there are no elements to update', async () => {
       const mockDB = makeDatabaseMock();
-      const result = 'not-executed' as const;
+      const result = 'success' as const;
 
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,

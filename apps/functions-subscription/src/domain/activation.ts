@@ -54,7 +54,7 @@ export const ActivationRequestItemCodec = t.strict({
 });
 export type ActivationRequestItem = t.TypeOf<typeof ActivationRequestItemCodec>;
 
-export type ActivationResult = 'success' | 'fail' | 'not-executed';
+export type ActivationResult = 'success' | 'fail';
 
 export interface ActivationConsumer {
   /**

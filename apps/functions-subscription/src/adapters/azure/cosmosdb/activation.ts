@@ -85,8 +85,7 @@ export const makeActivationCosmosContainer = (
           TE.map(({ result }) => makeActivationResult(result)),
         );
       } else {
-        // NOTE: Maybe this can be a success
-        return TE.of('not-executed');
+        return TE.of('success');
       }
     },
   };
