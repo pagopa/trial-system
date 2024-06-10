@@ -10,6 +10,35 @@ import { makeActivationCosmosContainer } from '../activation';
 
 describe('makeActivationCosmosContainer', () => {
   describe('activateActivationRequests', () => {
+    const operations = [
+      {
+        operationType: 'Patch',
+        id: anActivationRequestItem.id,
+        ifMatch: anActivationRequestItem._etag,
+        resourceBody: {
+          operations: [
+            {
+              op: 'replace',
+              path: '/activated',
+              value: true,
+            },
+          ],
+        },
+      },
+      {
+        operationType: 'Patch',
+        id: anActivationJobItem.id,
+        resourceBody: {
+          operations: [
+            {
+              op: 'incr',
+              path: '/usersActivated',
+              value: 1,
+            },
+          ],
+        },
+      },
+    ];
     it('should not perform the update when there are no elements to update', async () => {
       const mockDB = makeDatabaseMock();
       const result = 'not-executed' as const;
@@ -37,36 +66,6 @@ describe('makeActivationCosmosContainer', () => {
         mockDB as unknown as Database,
       ).activateRequestItems(anActivationJobItem, activationRequests)();
 
-      const operations = [
-        {
-          operationType: 'Patch',
-          id: anActivationRequestItem.id,
-          ifMatch: anActivationRequestItem._etag,
-          resourceBody: {
-            operations: [
-              {
-                op: 'replace',
-                path: '/activated',
-                value: true,
-              },
-            ],
-          },
-        },
-        {
-          operationType: 'Patch',
-          id: anActivationJobItem.id,
-          resourceBody: {
-            operations: [
-              {
-                op: 'incr',
-                path: '/usersActivated',
-                value: 1,
-              },
-            ],
-          },
-        },
-      ];
-
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
@@ -83,36 +82,6 @@ describe('makeActivationCosmosContainer', () => {
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
       ).activateRequestItems(anActivationJobItem, activationRequests)();
-
-      const operations = [
-        {
-          operationType: 'Patch',
-          id: anActivationRequestItem.id,
-          ifMatch: anActivationRequestItem._etag,
-          resourceBody: {
-            operations: [
-              {
-                op: 'replace',
-                path: '/activated',
-                value: true,
-              },
-            ],
-          },
-        },
-        {
-          operationType: 'Patch',
-          id: anActivationJobItem.id,
-          resourceBody: {
-            operations: [
-              {
-                op: 'incr',
-                path: '/usersActivated',
-                value: 1,
-              },
-            ],
-          },
-        },
-      ];
 
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
@@ -136,36 +105,6 @@ describe('makeActivationCosmosContainer', () => {
       const actual = await makeActivationCosmosContainer(
         mockDB as unknown as Database,
       ).activateRequestItems(anActivationJobItem, activationRequests)();
-
-      const operations = [
-        {
-          operationType: 'Patch',
-          id: anActivationRequestItem.id,
-          ifMatch: anActivationRequestItem._etag,
-          resourceBody: {
-            operations: [
-              {
-                op: 'replace',
-                path: '/activated',
-                value: true,
-              },
-            ],
-          },
-        },
-        {
-          operationType: 'Patch',
-          id: anActivationJobItem.id,
-          resourceBody: {
-            operations: [
-              {
-                op: 'incr',
-                path: '/usersActivated',
-                value: 1,
-              },
-            ],
-          },
-        },
-      ];
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
