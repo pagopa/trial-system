@@ -10,11 +10,13 @@ import {
   PatchOperationType,
 } from '@azure/cosmos';
 import {
+  ActivationRequest,
   ActivationRequestCodec,
-  ActivationResult,
   ActivationRequestRepository,
+  ActivationResult,
 } from '../../../domain/activation-request';
 import { decodeFromFeed } from './decode';
+import { ActivationJobId } from '../../../domain/activation-job';
 
 export const makeActivationRequestRepository = (
   db: Database,
@@ -47,42 +49,27 @@ export const makeActivationRequestRepository = (
       ),
     activate: ({ id: jobId }, trialId, activationRequests) => {
       if (activationRequests.length > 0) {
-        const batchOperations: readonly OperationInput[] = pipe(
-          activationRequests,
-          RA.map(({ id, _etag }) => ({
-            id,
-            ifMatch: _etag,
-            operationType: BulkOperationType.Patch,
-            resourceBody: {
-              operations: [
-                {
-                  op: PatchOperationType.replace,
-                  path: `/activated`,
-                  value: true,
-                },
-              ],
-            },
-          })),
-          RA.appendW({
-            id: jobId,
-            operationType: BulkOperationType.Patch,
-            resourceBody: {
-              operations: [
-                {
-                  op: PatchOperationType.incr,
-                  path: `/usersActivated`,
-                  value: activationRequests.length,
-                },
-              ],
-            },
-          }),
-        );
         return pipe(
-          TE.tryCatch(
-            () => container.items.batch([...batchOperations], trialId),
-            E.toError,
+          activationRequests,
+          // Split in chunks
+          // Transactional batch can handle only 100 items per batch.
+          // Since one item must be the update of the job, we can handle
+          // batches of 99 items.
+          // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
+          RA.chunksOf(99),
+          RA.map(makeBatchOperations(jobId)),
+          TE.traverseArray((chunk) =>
+            pipe(
+              TE.tryCatch(
+                () => container.items.batch([...chunk], trialId),
+                E.toError,
+              ),
+              TE.map(({ result }) => makeActivationResult(result)),
+            ),
           ),
-          TE.map(({ result }) => makeActivationResult(result)),
+          TE.map((results) =>
+            RA.every((res) => res === 'success')(results) ? 'success' : 'fail',
+          ),
         );
       } else {
         return TE.of('success');
@@ -98,3 +85,37 @@ const makeActivationResult = (
     ? 'success'
     : 'fail';
 };
+
+const makeBatchOperations =
+  (jobId: ActivationJobId) =>
+  (requests: readonly ActivationRequest[]): readonly OperationInput[] =>
+    pipe(
+      requests,
+      RA.map(({ id, _etag }) => ({
+        id,
+        ifMatch: _etag,
+        operationType: BulkOperationType.Patch,
+        resourceBody: {
+          operations: [
+            {
+              op: PatchOperationType.replace,
+              path: `/activated`,
+              value: true,
+            },
+          ],
+        },
+      })),
+      RA.appendW({
+        id: jobId,
+        operationType: BulkOperationType.Patch,
+        resourceBody: {
+          operations: [
+            {
+              op: PatchOperationType.incr,
+              path: `/usersActivated`,
+              value: requests.length,
+            },
+          ],
+        },
+      }),
+    );

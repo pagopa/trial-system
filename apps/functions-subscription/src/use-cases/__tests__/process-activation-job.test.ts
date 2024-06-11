@@ -11,7 +11,6 @@ import { Capabilities } from '../../domain/capabilities';
 import { processActivationJob } from '../process-activation-job';
 
 describe('processActivationJob', () => {
-  const chunkSize = 99;
   const fetchSize = 100;
   it('should activate when there are many chunk of activation requests', async () => {
     const mockEnv = makeTestEnv();
@@ -23,8 +22,6 @@ describe('processActivationJob', () => {
       id: `${i}`,
     }));
 
-    const chunks = RA.chunksOf(chunkSize)(activationRequests);
-
     mockEnv.activationRequestRepository.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
@@ -34,23 +31,15 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      chunkSize,
+      fetchSize,
     )(testEnv)();
-    const expected = E.right(['success', 'success']);
+    const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
-      chunks.length,
-    );
     expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
       anActivationJob,
       anActivationJob.trialId,
-      chunks[0],
-    );
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
-      anActivationJob,
-      anActivationJob.trialId,
-      chunks[1],
+      activationRequests,
     );
   });
   it('should activate when there is at least an activation request', async () => {
@@ -62,12 +51,12 @@ describe('processActivationJob', () => {
       TE.right(activationRequests),
     );
     mockEnv.activationRequestRepository.activate.mockReturnValue(
-      TE.right('success' as const),
+      TE.right(['success'] as const),
     );
 
     const actual = await processActivationJob(
       anActivationJob,
-      chunkSize,
+      fetchSize,
     )(testEnv)();
     const expected = E.right(['success']);
 
@@ -93,7 +82,6 @@ describe('processActivationJob', () => {
       ...anActivationRequest,
       id: 'anotherId',
     })(requests);
-    const chunks = RA.chunksOf(chunkSize)(activationRequests);
     mockEnv.activationRequestRepository.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
@@ -103,26 +91,18 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      chunkSize,
+      fetchSize,
     )(testEnv)();
-    const expected = E.right(['success', 'fail']);
+    const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
-      2,
-    );
     expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
       anActivationJob,
       anActivationJob.trialId,
-      chunks[0],
-    );
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
-      anActivationJob,
-      anActivationJob.trialId,
-      chunks[1],
+      activationRequests,
     );
   });
-  it('should not activate when there are no activation requests', async () => {
+  it('should return success when there are no activation requests', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -130,9 +110,9 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      chunkSize,
+      fetchSize,
     )(testEnv)();
-    const expected = E.right([]);
+    const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
@@ -150,7 +130,7 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      chunkSize,
+      fetchSize,
     )(testEnv)();
     const expected = E.left(unexpectedError);
 

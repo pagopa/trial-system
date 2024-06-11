@@ -19,24 +19,12 @@ export const processActivationJob = (
         TE.flatMap((activationRequests) => {
           if (RA.isEmpty(activationRequests)) {
             // Early return if no elements are fetched
-            return TE.right(activationRequests);
+            return TE.right('success');
           } else {
-            return pipe(
+            return activationRequestRepository.activate(
+              job,
+              job.trialId,
               activationRequests,
-              // Split in chunks
-              // Transactional batch can handle only 100 items per batch.
-              // Since one item must be the update of the job, we can handle
-              // batches of 99 items.
-              // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
-              RA.chunksOf(99),
-              // Process every chunk
-              TE.traverseArray((activationRequests) =>
-                activationRequestRepository.activate(
-                  job,
-                  job.trialId,
-                  activationRequests,
-                ),
-              ),
             );
           }
         }),

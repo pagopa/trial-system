@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
+import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { Database } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
 import {
@@ -7,38 +9,63 @@ import {
   anActivationRequest,
 } from '../../../../domain/__tests__/data';
 import { makeActivationRequestRepository } from '../activation-request';
+import { ActivationRequestId } from '../../../../domain/activation-request';
 
-describe('makeActivationCosmosContainer', () => {
-  describe('activateActivationRequests', () => {
-    const operations = [
-      {
-        operationType: 'Patch',
-        id: anActivationRequest.id,
-        ifMatch: anActivationRequest._etag,
-        resourceBody: {
-          operations: [
-            {
-              op: 'replace',
-              path: '/activated',
-              value: true,
-            },
-          ],
-        },
-      },
-      {
-        operationType: 'Patch',
-        id: anActivationJob.id,
-        resourceBody: {
-          operations: [
-            {
-              op: 'incr',
-              path: '/usersActivated',
-              value: 1,
-            },
-          ],
-        },
-      },
-    ];
+const makeTestData = (length: number) => {
+  // Create an array of ActivationRequest, changing the id property
+  const activationRequests = Array.from({ length }, (_, i) => ({
+    ...anActivationRequest,
+    id: `${i}` as ActivationRequestId,
+  }));
+  // Create chunks of size 99
+  const chunks = RA.chunksOf(99)(activationRequests);
+  const operationChunks = pipe(
+    chunks,
+    RA.map((chunk) =>
+      pipe(
+        chunk,
+        // Convert every element of the chunk to its Batch Operation
+        RA.map(({ id, _etag }) => ({
+          operationType: 'Patch',
+          id,
+          ifMatch: _etag,
+          resourceBody: {
+            operations: [
+              {
+                op: 'replace',
+                path: '/activated',
+                value: true,
+              },
+            ],
+          },
+        })),
+        // For every chunk, append the operation to update the job
+        RA.appendW({
+          operationType: 'Patch',
+          id: anActivationJob.id,
+          resourceBody: {
+            operations: [
+              {
+                op: 'incr',
+                path: '/usersActivated',
+                // Increment for the value of the elements in the chunk
+                value: chunk.length,
+              },
+            ],
+          },
+        }),
+      ),
+    ),
+  );
+
+  return {
+    activationRequests,
+    operationChunks,
+  };
+};
+
+describe('makeActivationRequestRepository', () => {
+  describe('activate', () => {
     it('should not perform the update when there are no elements to update', async () => {
       const mockDB = makeDatabaseMock();
       const result = 'success' as const;
@@ -53,9 +80,10 @@ describe('makeActivationCosmosContainer', () => {
     it('should succeed when all the elements have been updated', async () => {
       const mockDB = makeDatabaseMock();
       const result = 'success' as const;
-      const activationRequests = [anActivationRequest];
+      const { operationChunks, activationRequests } = makeTestData(1);
       // Construct success response for every item in activationRequests
-      const mockBatchResponse = [...activationRequests].map(() => ({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const mockBatchResponse = [...activationRequests].map((_) => ({
         statusCode: 200,
       }));
       mockDB
@@ -73,13 +101,55 @@ describe('makeActivationCosmosContainer', () => {
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
-        operations,
+        operationChunks[0],
+        anActivationJob.trialId,
+      );
+    });
+    it('should return a success and a fail when a batch fails', async () => {
+      const mockDB = makeDatabaseMock();
+      const result = 'fail' as const;
+      const { operationChunks, activationRequests } = makeTestData(100);
+
+      const mockBatchResponse = [...activationRequests].map((_) =>
+        _.id !== '99'
+          ? {
+              statusCode: 200,
+            }
+          : { statusCode: 429 },
+      );
+      const mockBatchResponseChunks = RA.chunksOf(99)(mockBatchResponse);
+
+      mockDB.container('').items.batch.mockResolvedValueOnce({
+        result: mockBatchResponseChunks[0],
+      });
+      mockDB.container('').items.batch.mockResolvedValueOnce({
+        result: mockBatchResponseChunks[1],
+      });
+
+      const actual = await makeActivationRequestRepository(
+        mockDB as unknown as Database,
+      ).activate(
+        anActivationJob,
+        anActivationJob.trialId,
+        activationRequests,
+      )();
+
+      expect(actual).toStrictEqual(E.right(result));
+      expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(
+        operationChunks.length,
+      );
+      expect(mockDB.container('').items.batch).toHaveBeenCalledWith(
+        operationChunks[0],
+        anActivationJob.trialId,
+      );
+      expect(mockDB.container('').items.batch).toHaveBeenCalledWith(
+        operationChunks[1],
         anActivationJob.trialId,
       );
     });
     it('should fail when the update failed', async () => {
       const mockDB = makeDatabaseMock();
-      const activationRequests = [anActivationRequest];
+      const { operationChunks, activationRequests } = makeTestData(1);
       const error = new Error('Something went wrong');
       mockDB.container('').items.batch.mockRejectedValueOnce(error);
 
@@ -94,14 +164,14 @@ describe('makeActivationCosmosContainer', () => {
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
-        operations,
+        operationChunks[0],
         anActivationJob.trialId,
       );
     });
     it('should return fail when there was not possible to perform the update', async () => {
       const mockDB = makeDatabaseMock();
       const result = 'fail' as const;
-      const activationRequests = [anActivationRequest];
+      const { operationChunks, activationRequests } = makeTestData(1);
       // Construct success response for every item in activationRequests
       const mockBatchResponse = [...activationRequests].map(() => ({
         statusCode: 429,
@@ -121,13 +191,13 @@ describe('makeActivationCosmosContainer', () => {
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
         1,
-        operations,
+        operationChunks[0],
         anActivationJob.trialId,
       );
     });
   });
 
-  describe('fetchActivationRequestItemsToActivate', () => {
+  describe('list', () => {
     const elementsToFetch = 10;
     it('should return list of activation requests', async () => {
       const mockDB = makeDatabaseMock();
