@@ -31,6 +31,7 @@ export interface Config {
     readonly containersNames: {
       readonly leases: string;
       readonly subscriptionHistory: string;
+      readonly activations: string;
     };
   };
 }
@@ -51,6 +52,7 @@ const EnvsCodec = t.strict({
   SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME: NonEmptyString,
   ACTIVATION_CONSUMER: OnOrOffCodec,
   ACTIVATION_MAX_FETCH_SIZE: NumberFromString.pipe(WithinRangeInteger(1, 1000)),
+  ACTIVATIONS_COSMOSDB_CONTAINER_NAME: NonEmptyString,
 });
 
 export const parseConfig = (
@@ -84,6 +86,7 @@ export const parseConfig = (
             leases: envs.LEASES_COSMOSDB_CONTAINER_NAME,
             subscriptionHistory:
               envs.SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME,
+            activations: envs.ACTIVATIONS_COSMOSDB_CONTAINER_NAME,
           },
         },
       }),

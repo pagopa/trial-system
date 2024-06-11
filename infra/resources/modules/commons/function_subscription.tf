@@ -28,7 +28,7 @@ locals {
     SUBSCRIPTION_REQUEST_CONSUMER      = "off"
     SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
 
-    ACTIVATION_CONSUMER                = "off"
+    ACTIVATION_CONSUMER = "off"
   }
 }
 
