@@ -16,6 +16,7 @@ import { clock } from './adapters/date/clock';
 import { hashFn } from './adapters/crypto/hash';
 import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosdb/subscription-history';
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
+import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
 
 const config = pipe(
   parseConfig(process.env),
@@ -86,4 +87,14 @@ if (config.subscriptionRequest.consumer === 'on')
     eventHubName: config.eventhubs.names.subscriptionRequest,
     cardinality: 'many',
     handler: makeSubscriptionRequestConsumerHandler(env),
+  });
+
+if (config.subscriptionHistory.consumer === 'on')
+  app.cosmosDB('subscriptionHistoryConsumer', {
+    connection: 'SubscriptionHistoryCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.subscriptionHistory,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'subscriptionHistoryConsumer-',
+    handler: makeSubscriptionHistoryChangesHandler(capabilities),
   });

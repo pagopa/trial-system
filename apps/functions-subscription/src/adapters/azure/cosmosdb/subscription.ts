@@ -29,5 +29,11 @@ export const makeSubscriptionCosmosContainer = (
         TE.map(() => subscription),
         TE.mapLeft(cosmosErrorToDomainError),
       ),
+    upsert: (subscription) =>
+      pipe(
+        TE.tryCatch(() => container.items.upsert(subscription), E.toError),
+        TE.map(() => void 0),
+        TE.mapLeft(cosmosErrorToDomainError),
+      ),
   };
 };
