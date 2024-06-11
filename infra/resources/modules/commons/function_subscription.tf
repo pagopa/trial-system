@@ -27,6 +27,10 @@ locals {
 
     SUBSCRIPTION_REQUEST_CONSUMER      = "off"
     SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
+
+    ACTIVATION_CONSUMER                 = "off"
+    ACTIVATION_MAX_FETCH_SIZE           = "999"
+    ACTIVATIONS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.activations.name
   }
 }
 

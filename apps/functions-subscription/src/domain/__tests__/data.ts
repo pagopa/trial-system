@@ -1,12 +1,19 @@
-import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
+import {
+  NonNegativeInteger,
+  NonNegativeNumber,
+} from '@pagopa/ts-commons/lib/numbers';
 import { SubscriptionId, TrialId, UserId } from '../subscription';
 import { SubscriptionHistoryId } from '../subscription-history';
+import { ActivationRequestId } from '../activation-request';
+import { ActivationJobId } from '../activation-job';
 
 const aSubscriptionHistoryId =
   'aSubscriptionHistoryId' as SubscriptionHistoryId;
 const aSubscriptionId = 'aSubscriptionId' as SubscriptionId;
 const aUserId = 'aUserId' as UserId;
 const aTrialId = 'aTrialId' as TrialId;
+const anActivationJobId = 'anActivationJobId' as ActivationJobId;
+const anActivationRequestId = 'anActivationRequestId' as ActivationRequestId;
 
 export const aSubscription = {
   id: aSubscriptionId,
@@ -31,4 +38,24 @@ export const aSubscriptionHistory = {
   updatedAt: new Date(),
   state: 'SUBSCRIBED' as const,
   version: 0 as NonNegativeInteger,
+};
+
+export const anActivationJob = {
+  id: anActivationJobId,
+  trialId: aTrialId,
+  createdAt: new Date(),
+  usersToActivate: 100 as NonNegativeNumber,
+  usersActivated: 0 as NonNegativeNumber,
+  type: 'job' as const,
+  _etag: 'anEtag',
+};
+
+export const anActivationRequest = {
+  id: anActivationRequestId,
+  userId: aUserId,
+  trialId: aTrialId,
+  createdAt: new Date(),
+  activated: false,
+  type: 'request' as const,
+  _etag: 'anEtag',
 };
