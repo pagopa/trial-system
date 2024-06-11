@@ -95,16 +95,16 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
   /trials/{trialId}/activations:
     post:
-      operationId: activateTrialSubscriptions
-      description: Activate subscriptions for a given trial
-      summary: Activate trial subscriptions
+      operationId: createActivationJob
+      description: Create a job to activate users for a given trial
+      summary: Create an activation job
       parameters:
         - $ref: '#/components/parameters/pathTrialId'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateActivationRequest'
+              $ref: '#/components/schemas/CreateActivationJob'
       responses:
         '202':
           description: Accepted
@@ -212,12 +212,12 @@ components:
           $ref: '#/components/schemas/CreatedAt'
         updatedAt:
           $ref: '#/components/schemas/UpdatedAt'
-    CreateActivationRequest:
+    CreateActivationJob:
       type: object
       required:
-        - subscriptionsToActivate
+        - usersToActivate
       properties:
-        subscriptionsToActivate:
+        usersToActivate:
           type: number
           minimum: 1
-          description: The total number of subscription to activate
+          description: The total number of users to activate
