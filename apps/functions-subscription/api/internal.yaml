@@ -93,7 +93,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-  /trials/{trialId}/activations:
+  /trials/{trialId}/activation-jobs:
     post:
       operationId: createActivationJob
       description: Create a job to activate users for a given trial
