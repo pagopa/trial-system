@@ -8,10 +8,10 @@ import {
   makeTestSystemEnv,
 } from '../../functions/__tests__/mocks';
 import * as TE from 'fp-ts/TaskEither';
-import { makeActivationJobCosmosHandler } from '../activation-job';
+import { makeActivationJobConsumerHandler } from '../../functions/activation-job';
 import { ActivationJobCodec } from '../../../../domain/activation-job';
 
-describe('makeActivationJobCosmosHandler', () => {
+describe('makeActivationJobConsumerHandler', () => {
   const maxConcurrencyThreshold = 1;
   it('should process activation job document without error', async () => {
     const env = makeTestSystemEnv();
@@ -20,7 +20,7 @@ describe('makeActivationJobCosmosHandler', () => {
 
     env.processActivationJob.mockReturnValueOnce(TE.right('success'));
 
-    const actual = await makeActivationJobCosmosHandler(
+    const actual = await makeActivationJobConsumerHandler(
       env,
       maxConcurrencyThreshold,
     )(messages, context);
@@ -40,7 +40,7 @@ describe('makeActivationJobCosmosHandler', () => {
     const context = makeFunctionContext();
     const messages = [anActivationRequest];
 
-    const actual = await makeActivationJobCosmosHandler(
+    const actual = await makeActivationJobConsumerHandler(
       env,
       maxConcurrencyThreshold,
     )(messages, context);
@@ -56,10 +56,10 @@ describe('makeActivationJobCosmosHandler', () => {
 
     env.processActivationJob.mockReturnValueOnce(TE.left(unexpectedError));
 
-    const actual = makeActivationJobCosmosHandler(env, maxConcurrencyThreshold)(
-      messages,
-      context,
-    );
+    const actual = makeActivationJobConsumerHandler(
+      env,
+      maxConcurrencyThreshold,
+    )(messages, context);
 
     expect(actual).rejects.toStrictEqual(unexpectedError);
   });

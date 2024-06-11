@@ -8,7 +8,7 @@ import { ActivationRequestCodec } from '../../../domain/activation-request';
 import { ActivationJobCodec } from '../../../domain/activation-job';
 import { SystemEnv } from '../../../system-env';
 
-export const makeActivationJobCosmosHandler =
+export const makeActivationJobConsumerHandler =
   (
     env: Pick<SystemEnv, 'processActivationJob'>,
     maxConcurrencyThreshold: number,

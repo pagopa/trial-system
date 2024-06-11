@@ -17,7 +17,7 @@ import { hashFn } from './adapters/crypto/hash';
 import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosdb/subscription-history';
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
 import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
-import { makeActivationJobCosmosHandler } from './adapters/azure/cosmosdb/activation-job';
+import { makeActivationJobConsumerHandler } from './adapters/azure/functions/activation-job';
 import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
 
 const config = pipe(
@@ -113,7 +113,7 @@ if (config.activations.consumer === 'on') {
     containerName: config.cosmosdb.containersNames.activations,
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: `${config.cosmosdb.containersNames.activations}-`,
-    handler: makeActivationJobCosmosHandler(
+    handler: makeActivationJobConsumerHandler(
       env,
       config.activations.maxFetchSize,
     ),
