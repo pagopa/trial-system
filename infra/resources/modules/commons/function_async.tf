@@ -16,12 +16,18 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
-    COSMOSDB_ENDPOINT                  = module.cosmosdb_account.endpoint
-    COSMOSDB_DATABASE_NAME             = module.cosmosdb_sql_database_trial.name
-    EVENTHUB_NAMESPACE                 = "${module.event_hub.name}.servicebus.windows.net"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
-    SUBSCRIPTION_REQUEST_CONSUMER      = "on"
+    COSMOSDB_ENDPOINT      = module.cosmosdb_account.endpoint
+    COSMOSDB_DATABASE_NAME = module.cosmosdb_sql_database_trial.name
+    EVENTHUB_NAMESPACE     = "${module.event_hub.name}.servicebus.windows.net"
 
+    LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
+
+    SUBSCRIPTION_HISTORY_CONSUMER                        = "on"
+    SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME         = azurerm_cosmosdb_sql_container.subscription_history.name
+    SubscriptionHistoryCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
+
+    SUBSCRIPTION_REQUEST_CONSUMER                                  = "on"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = "${local.domain}-subscription-requests"
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
 
     LEASES_COSMOSDB_CONTAINER_NAME                        = azurerm_cosmosdb_sql_container.leases.name

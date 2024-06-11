@@ -6,11 +6,21 @@
     "COSMOSDB_ENDPOINT": "<put-here-the-the-cosmos-database-endpoint>",
     "COSMOSDB_DATABASE_NAME": "<put-here-the-name-of-cosmos-database>",
     "EVENTHUB_NAMESPACE": "<put-here-the-the-event-hub-namespace>",
-    "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
-    "SUBSCRIPTION_REQUEST_CONSUMER": "on",
-    "SubscriptionRequestEventHubConnection__fullyQualifiedNamespace": "<put-here-the-the-event-hub-namespace>",
     "AzureWebJobsStorage": "<put-here-the-connection-string-to-a-storage>",
-    "LEASES_COSMOSDB_CONTAINER_NAME": "<put-here-the-name-of-leases-container>",
+
+    "LEASES_COSMOSDB_CONTAINER_NAME": "leases",
+
+    "SUBSCRIPTION_HISTORY_CONSUMER": "on",
+    "SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME": "subscription-history",
+    "SubscriptionHistoryCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
+
+    "SUBSCRIPTION_REQUEST_CONSUMER": "on",
+    "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
+    "SubscriptionRequestEventHubConnection__fullyQualifiedNamespace": "<put-here-the-the-event-hub-namespace>",
+
+    "EVENTS_PRODUCER": "on",
+    "EVENTS_SERVICEBUS_TOPIC_NAME": "<put-here-the-the-service-bus-topic-name>",
+    "EventProducerCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
     "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
     "ACTIVATION_CONSUMER": "off",

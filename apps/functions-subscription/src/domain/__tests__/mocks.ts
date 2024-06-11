@@ -6,6 +6,7 @@ export const makeTestEnv = () => {
   };
   const subscriptionWriterMock = {
     insert: vi.fn(),
+    upsert: vi.fn(),
   };
   const subscriptionRequestWriterMock = {
     insert: vi.fn(),

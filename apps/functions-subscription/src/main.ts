@@ -16,6 +16,7 @@ import { clock } from './adapters/date/clock';
 import { hashFn } from './adapters/crypto/hash';
 import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosdb/subscription-history';
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
+import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
 import { makeActivationJobCosmosHandler } from './adapters/azure/cosmosdb/activation-job';
 import { makeActivationCosmosContainer } from './adapters/azure/cosmosdb/activation';
 
@@ -95,6 +96,16 @@ if (config.subscriptionRequest.consumer === 'on')
     handler: makeSubscriptionRequestConsumerHandler(env),
   });
 
+if (config.subscriptionHistory.consumer === 'on')
+  app.cosmosDB('subscriptionHistoryConsumer', {
+    connection: 'SubscriptionHistoryCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.subscriptionHistory,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'subscriptionHistoryConsumer-',
+    handler: makeSubscriptionHistoryChangesHandler(capabilities),
+  });
+
 if (config.activations.consumer === 'on') {
   app.cosmosDB('activationConsumer', {
     connection: 'ActivationConsumerCosmosDBConnection',
@@ -103,7 +114,7 @@ if (config.activations.consumer === 'on') {
     // We are going to do this in a separate PR, waiting to merge an existing PR
     // to reuse a structure done there.
     containerName: 'activations',
-    leaseContainerName: config.cosmosdb.leasesContainerName,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'activations-',
     handler: makeActivationJobCosmosHandler(
       env,
