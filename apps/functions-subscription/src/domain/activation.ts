@@ -21,7 +21,6 @@ export type ActivationJobId = t.TypeOf<typeof ActivationJobIdCodec>;
 export const ActivationJobCodec = t.strict({
   id: ActivationJobIdCodec,
   trialId: TrialIdCodec,
-  _etag: t.string,
   createdAt: IsoDateFromString,
   usersToActivate: NonNegativeNumber,
   usersActivated: NonNegativeNumber,
