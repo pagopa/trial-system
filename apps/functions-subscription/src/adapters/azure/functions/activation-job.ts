@@ -29,11 +29,10 @@ export const makeActivationJobConsumerHandler =
       TE.map(
         RA.filterMap((doc) => (doc.type === 'job' ? O.some(doc) : O.none)),
       ),
-      TE.flatMap(([job]) =>
-        // Call the method to activate users only if the updated document is a job
-        job
-          ? env.processActivationJob(job, maxConcurrencyThreshold)
-          : TE.right('success' as const),
+      TE.flatMap(
+        TE.traverseArray((job) =>
+          env.processActivationJob(job, maxConcurrencyThreshold),
+        ),
       ),
       TE.getOrElse((error) => {
         // if an error occurs, the retry policy will be applied if it is defined

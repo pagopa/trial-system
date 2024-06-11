@@ -10,6 +10,7 @@ import {
 import * as TE from 'fp-ts/TaskEither';
 import { makeActivationJobConsumerHandler } from '../../functions/activation-job';
 import { ActivationJobCodec } from '../../../../domain/activation-job';
+import { TrialId } from '../../../../domain/subscription';
 
 describe('makeActivationJobConsumerHandler', () => {
   const maxConcurrencyThreshold = 1;
@@ -24,7 +25,7 @@ describe('makeActivationJobConsumerHandler', () => {
       env,
       maxConcurrencyThreshold,
     )(messages, context);
-    expect(actual).toStrictEqual('success');
+    expect(actual).toStrictEqual(['success']);
     const expectedArgument = {
       ...ActivationJobCodec.encode(anActivationJob),
       createdAt: anActivationJob.createdAt,
@@ -32,6 +33,40 @@ describe('makeActivationJobConsumerHandler', () => {
 
     expect(env.processActivationJob).toHaveBeenCalledWith(
       expectedArgument,
+      maxConcurrencyThreshold,
+    );
+  });
+  it('should return a success and a failure when two different jobs are processed', async () => {
+    const env = makeTestSystemEnv();
+    const context = makeFunctionContext();
+    const anotherJob = {
+      ...anActivationJob,
+      trialId: 'aTotallyDifferentTrial' as TrialId,
+    };
+    const messages = [anActivationJob, anActivationRequest, anotherJob];
+
+    env.processActivationJob
+      .mockReturnValueOnce(TE.right('success'))
+      .mockReturnValueOnce(TE.right('fail'));
+
+    const actual = await makeActivationJobConsumerHandler(
+      env,
+      maxConcurrencyThreshold,
+    )(messages, context);
+    expect(actual).toStrictEqual(['success', 'fail']);
+
+    expect(env.processActivationJob).toHaveBeenCalledWith(
+      {
+        ...ActivationJobCodec.encode(anActivationJob),
+        createdAt: anActivationJob.createdAt,
+      },
+      maxConcurrencyThreshold,
+    );
+    expect(env.processActivationJob).toHaveBeenCalledWith(
+      {
+        ...ActivationJobCodec.encode(anotherJob),
+        createdAt: anotherJob.createdAt,
+      },
       maxConcurrencyThreshold,
     );
   });
@@ -44,7 +79,7 @@ describe('makeActivationJobConsumerHandler', () => {
       env,
       maxConcurrencyThreshold,
     )(messages, context);
-    expect(actual).toStrictEqual('success');
+    expect(actual).toStrictEqual([]);
 
     expect(env.processActivationJob).toHaveBeenCalledTimes(0);
   });
