@@ -134,7 +134,7 @@ if (config.activations.consumer === 'on')
 
 if (config.events.producer === 'on')
   app.cosmosDB('eventProducer', {
-    connection: 'EventProducerCosmosConnection',
+    connection: 'SubscriptionHistoryCosmosConnection',
     databaseName: config.cosmosdb.databaseName,
     containerName: config.cosmosdb.containersNames.subscriptionHistory,
     leaseContainerName: config.cosmosdb.containersNames.leases,

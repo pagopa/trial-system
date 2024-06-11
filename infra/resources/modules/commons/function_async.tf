@@ -34,6 +34,9 @@ locals {
     ACTIVATION_MAX_FETCH_SIZE                             = "999"
     ACTIVATIONS_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.activations.name
     ActivationConsumerCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
+
+    EVENTS_PRODUCER              = "on"
+    EVENTS_SERVICEBUS_TOPIC_NAME = "${local.domain}-topic-events"
   }
 }
 
