@@ -70,14 +70,14 @@ app.http('createSubscription', {
   methods: ['POST'],
   authLevel: 'function',
   handler: makePostSubscriptionHandler(env),
-  route: '/trials/{trialId}/subscriptions',
+  route: 'trials/{trialId}/subscriptions',
 });
 
 app.http('getSubscription', {
   methods: ['GET'],
   authLevel: 'function',
   handler: makeGetSubscriptionHandler(env),
-  route: '/trials/{trialId}/subscriptions/{userId}',
+  route: 'trials/{trialId}/subscriptions/{userId}',
 });
 
 if (config.subscriptionRequest.consumer === 'on')
