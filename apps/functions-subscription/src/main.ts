@@ -16,6 +16,7 @@ import { clock } from './adapters/date/clock';
 import { hashFn } from './adapters/crypto/hash';
 import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosdb/subscription-history';
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
+import { makeCreateActivationJobHandler } from './adapters/azure/functions/create-activation-job';
 
 const config = pipe(
   parseConfig(process.env),
@@ -78,6 +79,14 @@ app.http('getSubscription', {
   authLevel: 'function',
   handler: makeGetSubscriptionHandler(env),
   route: 'trials/{trialId}/subscriptions/{userId}',
+});
+
+app.http('createActivationJob', {
+  methods: ['POST'],
+  authLevel: 'function',
+  handler: makeCreateActivationJobHandler(env),
+  // TODO: Change this route accordingly to the OpenAPI. PR#60
+  route: 'trials/{trialId}/activations',
 });
 
 if (config.subscriptionRequest.consumer === 'on')
