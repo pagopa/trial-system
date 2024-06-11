@@ -5,8 +5,8 @@ import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { flow, pipe } from 'fp-ts/lib/function';
 import { InvocationContext } from '@azure/functions';
 import {
-  ActivationJobItemCodec,
-  ActivationRequestItemCodec,
+  ActivationJobCodec,
+  ActivationRequestCodec,
 } from '../../../domain/activation';
 import { SystemEnv } from '../../../system-env';
 
@@ -24,7 +24,7 @@ export const makeActivationJobCosmosHandler =
       // documents is an array of documents of the activations container
       TE.fromEither(
         t
-          .array(t.union([ActivationRequestItemCodec, ActivationJobItemCodec]))
+          .array(t.union([ActivationRequestCodec, ActivationJobCodec]))
           .decode(documents),
       ),
       // Keep only job documents

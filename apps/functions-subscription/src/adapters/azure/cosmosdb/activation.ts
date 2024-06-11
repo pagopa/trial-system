@@ -10,7 +10,7 @@ import {
   PatchOperationType,
 } from '@azure/cosmos';
 import {
-  ActivationRequestItemCodec,
+  ActivationRequestCodec,
   ActivationResult,
   ActivationConsumer,
 } from '../../../domain/activation';
@@ -43,7 +43,7 @@ export const makeActivationCosmosContainer = (
               .fetchAll(),
           E.toError,
         ),
-        TE.flatMapEither(decodeFromFeed(ActivationRequestItemCodec)),
+        TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
     activateRequestItems: (jobId, trialId, activationRequests) => {
       if (activationRequests.length > 0) {

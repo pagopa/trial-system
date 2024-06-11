@@ -9,7 +9,7 @@ import {
 } from '../../functions/__tests__/mocks';
 import * as TE from 'fp-ts/TaskEither';
 import { makeActivationJobCosmosHandler } from '../activation-job';
-import { ActivationJobItemCodec } from '../../../../domain/activation';
+import { ActivationJobCodec } from '../../../../domain/activation';
 
 describe('makeActivationJobCosmosHandler', () => {
   const maxConcurrencyThreshold = 1;
@@ -26,7 +26,7 @@ describe('makeActivationJobCosmosHandler', () => {
     )(messages, context);
     expect(actual).toStrictEqual(['success']);
     const expectedArgument = {
-      ...ActivationJobItemCodec.encode(anActivationJob),
+      ...ActivationJobCodec.encode(anActivationJob),
       createdAt: anActivationJob.createdAt,
     };
 

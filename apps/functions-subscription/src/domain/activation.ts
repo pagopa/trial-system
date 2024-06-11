@@ -18,7 +18,7 @@ export const ActivationJobIdCodec = t.brand(
 );
 export type ActivationJobId = t.TypeOf<typeof ActivationJobIdCodec>;
 
-export const ActivationJobItemCodec = t.strict({
+export const ActivationJobCodec = t.strict({
   id: ActivationJobIdCodec,
   trialId: TrialIdCodec,
   _etag: t.string,
@@ -28,7 +28,7 @@ export const ActivationJobItemCodec = t.strict({
   type: t.literal('job'),
 });
 
-export type ActivationJobItem = t.TypeOf<typeof ActivationJobItemCodec>;
+export type ActivationJobItem = t.TypeOf<typeof ActivationJobCodec>;
 
 // a unique brand for id of document with type request
 interface ActivationRequestIdBrand {
@@ -43,7 +43,7 @@ export const ActivationRequestIdCodec = t.brand(
 );
 export type ActivationRequestId = t.TypeOf<typeof ActivationRequestIdCodec>;
 
-export const ActivationRequestItemCodec = t.strict({
+export const ActivationRequestCodec = t.strict({
   id: ActivationRequestIdCodec,
   trialId: TrialIdCodec,
   _etag: t.string,
@@ -52,7 +52,7 @@ export const ActivationRequestItemCodec = t.strict({
   type: t.literal('request'),
   activated: t.boolean,
 });
-export type ActivationRequestItem = t.TypeOf<typeof ActivationRequestItemCodec>;
+export type ActivationRequestItem = t.TypeOf<typeof ActivationRequestCodec>;
 
 export type ActivationResult = 'success' | 'fail';
 
