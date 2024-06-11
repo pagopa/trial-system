@@ -138,6 +138,6 @@ if (config.events.producer === 'on')
     databaseName: config.cosmosdb.databaseName,
     containerName: config.cosmosdb.containersNames.subscriptionHistory,
     leaseContainerName: config.cosmosdb.containersNames.leases,
-    leaseContainerPrefix: 'eventProducer',
+    leaseContainerPrefix: 'eventProducer-',
     handler: makeEventsProducerCosmosDBHandler(capabilities),
   });
