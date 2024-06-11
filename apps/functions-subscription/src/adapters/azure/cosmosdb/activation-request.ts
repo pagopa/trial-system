@@ -47,7 +47,7 @@ export const makeActivationRequestRepository = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
-    activate: ({ id: jobId }, trialId, activationRequests) => {
+    activate: ({ id: jobId, trialId }, activationRequests) => {
       if (activationRequests.length > 0) {
         return pipe(
           activationRequests,

@@ -18,13 +18,13 @@ describe('makeActivationJobCosmosHandler', () => {
     const context = makeFunctionContext();
     const messages = [anActivationJob];
 
-    env.processActivationJob.mockReturnValueOnce(TE.right(['success']));
+    env.processActivationJob.mockReturnValueOnce(TE.right('success'));
 
     const actual = await makeActivationJobCosmosHandler(
       env,
       maxConcurrencyThreshold,
     )(messages, context);
-    expect(actual).toStrictEqual(['success']);
+    expect(actual).toStrictEqual('success');
     const expectedArgument = {
       ...ActivationJobCodec.encode(anActivationJob),
       createdAt: anActivationJob.createdAt,
@@ -44,7 +44,7 @@ describe('makeActivationJobCosmosHandler', () => {
       env,
       maxConcurrencyThreshold,
     )(messages, context);
-    expect(actual).toStrictEqual(['success']);
+    expect(actual).toStrictEqual('success');
 
     expect(env.processActivationJob).toHaveBeenCalledTimes(0);
   });

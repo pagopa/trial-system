@@ -48,7 +48,6 @@ export interface ActivationRequestRepository {
    */
   readonly activate: (
     job: ActivationJob,
-    trialId: TrialId,
     activationRequests: readonly ActivationRequest[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }

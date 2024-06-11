@@ -72,7 +72,7 @@ describe('makeActivationRequestRepository', () => {
 
       const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activate(anActivationJob, anActivationJob.trialId, [])();
+      ).activate(anActivationJob, [])();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(0);
@@ -92,11 +92,7 @@ describe('makeActivationRequestRepository', () => {
 
       const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activate(
-        anActivationJob,
-        anActivationJob.trialId,
-        activationRequests,
-      )();
+      ).activate(anActivationJob, activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
@@ -128,11 +124,7 @@ describe('makeActivationRequestRepository', () => {
 
       const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activate(
-        anActivationJob,
-        anActivationJob.trialId,
-        activationRequests,
-      )();
+      ).activate(anActivationJob, activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(
@@ -155,11 +147,7 @@ describe('makeActivationRequestRepository', () => {
 
       const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activate(
-        anActivationJob,
-        anActivationJob.trialId,
-        activationRequests,
-      )();
+      ).activate(anActivationJob, activationRequests)();
 
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
@@ -182,11 +170,7 @@ describe('makeActivationRequestRepository', () => {
 
       const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activate(
-        anActivationJob,
-        anActivationJob.trialId,
-        activationRequests,
-      )();
+      ).activate(anActivationJob, activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(

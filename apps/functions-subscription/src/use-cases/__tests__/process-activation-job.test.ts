@@ -38,7 +38,6 @@ describe('processActivationJob', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
       anActivationJob,
-      anActivationJob.trialId,
       activationRequests,
     );
   });
@@ -63,12 +62,7 @@ describe('processActivationJob', () => {
     expect(actual).toStrictEqual(expected);
     expect(
       mockEnv.activationRequestRepository.activate,
-    ).toHaveBeenNthCalledWith(
-      1,
-      anActivationJob,
-      anActivationJob.trialId,
-      activationRequests,
-    );
+    ).toHaveBeenNthCalledWith(1, anActivationJob, activationRequests);
   });
   it('should activate just one batch when one succeed and one fail', async () => {
     const mockEnv = makeTestEnv();
@@ -98,7 +92,6 @@ describe('processActivationJob', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
       anActivationJob,
-      anActivationJob.trialId,
       activationRequests,
     );
   });

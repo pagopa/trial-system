@@ -23,7 +23,6 @@ export const processActivationJob = (
           } else {
             return activationRequestRepository.activate(
               job,
-              job.trialId,
               activationRequests,
             );
           }
