@@ -3,12 +3,12 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from '../domain/capabilities';
-import { ActivationJobItem } from '../domain/activation';
+import { ActivationJob } from '../domain/activation';
 
 type Env = Pick<Capabilities, 'activationConsumer'>;
 
 export const processActivationJob = (
-  job: ActivationJobItem,
+  job: ActivationJob,
   maxFetchSize: number,
 ) =>
   pipe(

@@ -27,7 +27,7 @@ export const ActivationJobCodec = t.strict({
   type: t.literal('job'),
 });
 
-export type ActivationJobItem = t.TypeOf<typeof ActivationJobCodec>;
+export type ActivationJob = t.TypeOf<typeof ActivationJobCodec>;
 
 // a unique brand for id of document with type request
 interface ActivationRequestIdBrand {
@@ -51,7 +51,7 @@ export const ActivationRequestCodec = t.strict({
   type: t.literal('request'),
   activated: t.boolean,
 });
-export type ActivationRequestItem = t.TypeOf<typeof ActivationRequestCodec>;
+export type ActivationRequest = t.TypeOf<typeof ActivationRequestCodec>;
 
 export type ActivationResult = 'success' | 'fail';
 
@@ -63,7 +63,7 @@ export interface ActivationConsumer {
   readonly fetchActivationRequestItemsToActivate: (
     trialId: TrialId,
     elementsToFetch: number,
-  ) => TE.TaskEither<Error, readonly ActivationRequestItem[]>;
+  ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
 
   /**
    * This function is responsible to activate the activation requests.
@@ -73,6 +73,6 @@ export interface ActivationConsumer {
   readonly activateRequestItems: (
     jobId: ActivationJobId,
     trialId: TrialId,
-    activationRequests: readonly ActivationRequestItem[],
+    activationRequests: readonly ActivationRequest[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }
