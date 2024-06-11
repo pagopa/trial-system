@@ -12,7 +12,7 @@
 
     "SUBSCRIPTION_HISTORY_CONSUMER": "on",
     "SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME": "subscription-history",
-    "SubscriptionHistoryCosmosConnection__accountEndpoint": "https://cosmosdb-playground-tmp.documents.azure.com:443/",
+    "SubscriptionHistoryCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
     "SUBSCRIPTION_REQUEST_CONSUMER": "on",
     "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
