@@ -18,7 +18,7 @@ import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosd
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
 import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
 import { makeActivationJobCosmosHandler } from './adapters/azure/cosmosdb/activation-job';
-import { makeActivationCosmosContainer } from './adapters/azure/cosmosdb/activation';
+import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
 
 const config = pipe(
   parseConfig(process.env),
@@ -51,7 +51,7 @@ const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
 
-const activationConsumer = makeActivationCosmosContainer(
+const activationRequestRepository = makeActivationRequestRepository(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
@@ -60,7 +60,7 @@ const capabilities: Capabilities = {
   subscriptionWriter: subscriptionReaderWriter,
   subscriptionRequestWriter,
   subscriptionHistoryWriter,
-  activationConsumer,
+  activationRequestRepository,
   hashFn,
   clock,
 };

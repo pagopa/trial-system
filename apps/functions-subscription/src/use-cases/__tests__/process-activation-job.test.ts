@@ -25,10 +25,10 @@ describe('processActivationJob', () => {
 
     const chunks = RA.chunksOf(chunkSize)(activationRequests);
 
-    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
+    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationConsumer.activateRequestItems.mockReturnValue(
+    mockEnv.activationRequestRepository.activate.mockReturnValue(
       TE.right('success' as const),
     );
 
@@ -39,20 +39,16 @@ describe('processActivationJob', () => {
     const expected = E.right(['success', 'success']);
 
     expect(actual).toStrictEqual(expected);
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledTimes(chunks.length);
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(
-      anActivationJob.id,
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
+      chunks.length,
+    );
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+      anActivationJob,
       anActivationJob.trialId,
       chunks[0],
     );
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(
-      anActivationJob.id,
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+      anActivationJob,
       anActivationJob.trialId,
       chunks[1],
     );
@@ -62,10 +58,10 @@ describe('processActivationJob', () => {
     const testEnv = mockEnv as unknown as Capabilities;
 
     const activationRequests = [anActivationRequest];
-    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
+    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationConsumer.activateRequestItems.mockReturnValue(
+    mockEnv.activationRequestRepository.activate.mockReturnValue(
       TE.right('success' as const),
     );
 
@@ -77,10 +73,10 @@ describe('processActivationJob', () => {
 
     expect(actual).toStrictEqual(expected);
     expect(
-      mockEnv.activationConsumer.activateRequestItems,
+      mockEnv.activationRequestRepository.activate,
     ).toHaveBeenNthCalledWith(
       1,
-      anActivationJob.id,
+      anActivationJob,
       anActivationJob.trialId,
       activationRequests,
     );
@@ -98,10 +94,10 @@ describe('processActivationJob', () => {
       id: 'anotherId',
     })(requests);
     const chunks = RA.chunksOf(chunkSize)(activationRequests);
-    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
+    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationConsumer.activateRequestItems
+    mockEnv.activationRequestRepository.activate
       .mockReturnValueOnce(TE.right('success' as const))
       .mockReturnValueOnce(TE.right('fail' as const));
 
@@ -112,20 +108,16 @@ describe('processActivationJob', () => {
     const expected = E.right(['success', 'fail']);
 
     expect(actual).toStrictEqual(expected);
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledTimes(2);
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(
-      anActivationJob.id,
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
+      2,
+    );
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+      anActivationJob,
       anActivationJob.trialId,
       chunks[0],
     );
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledWith(
-      anActivationJob.id,
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+      anActivationJob,
       anActivationJob.trialId,
       chunks[1],
     );
@@ -134,9 +126,7 @@ describe('processActivationJob', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
-      TE.right([]),
-    );
+    mockEnv.activationRequestRepository.list.mockReturnValueOnce(TE.right([]));
 
     const actual = await processActivationJob(
       anActivationJob,
@@ -145,16 +135,16 @@ describe('processActivationJob', () => {
     const expected = E.right([]);
 
     expect(actual).toStrictEqual(expected);
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledTimes(0);
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
+      0,
+    );
   });
   it('should return an error when the fetch fail', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
     const unexpectedError = new Error('Unexpected error');
 
-    mockEnv.activationConsumer.fetchActivationRequestItemsToActivate.mockReturnValueOnce(
+    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
       TE.left(unexpectedError),
     );
 
@@ -165,8 +155,8 @@ describe('processActivationJob', () => {
     const expected = E.left(unexpectedError);
 
     expect(actual).toStrictEqual(expected);
-    expect(
-      mockEnv.activationConsumer.activateRequestItems,
-    ).toHaveBeenCalledTimes(0);
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
+      0,
+    );
   });
 });

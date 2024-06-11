@@ -3,9 +3,9 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from '../domain/capabilities';
-import { ActivationJob } from '../domain/activation';
+import { ActivationJob } from '../domain/activation-job';
 
-type Env = Pick<Capabilities, 'activationConsumer'>;
+type Env = Pick<Capabilities, 'activationRequestRepository'>;
 
 export const processActivationJob = (
   job: ActivationJob,
@@ -13,12 +13,9 @@ export const processActivationJob = (
 ) =>
   pipe(
     RTE.ask<Env>(),
-    RTE.flatMapTaskEither(({ activationConsumer }) =>
+    RTE.flatMapTaskEither(({ activationRequestRepository }) =>
       pipe(
-        activationConsumer.fetchActivationRequestItemsToActivate(
-          job.trialId,
-          maxFetchSize,
-        ),
+        activationRequestRepository.list(job.trialId, maxFetchSize),
         TE.flatMap((activationRequests) => {
           if (RA.isEmpty(activationRequests)) {
             // Early return if no elements are fetched
@@ -34,8 +31,8 @@ export const processActivationJob = (
               RA.chunksOf(99),
               // Process every chunk
               TE.traverseArray((activationRequests) =>
-                activationConsumer.activateRequestItems(
-                  job.id,
+                activationRequestRepository.activate(
+                  job,
                   job.trialId,
                   activationRequests,
                 ),

@@ -4,10 +4,8 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import { flow, pipe } from 'fp-ts/lib/function';
 import { InvocationContext } from '@azure/functions';
-import {
-  ActivationJobCodec,
-  ActivationRequestCodec,
-} from '../../../domain/activation';
+import { ActivationRequestCodec } from '../../../domain/activation-request';
+import { ActivationJobCodec } from '../../../domain/activation-job';
 import { SystemEnv } from '../../../system-env';
 
 export const makeActivationJobCosmosHandler =

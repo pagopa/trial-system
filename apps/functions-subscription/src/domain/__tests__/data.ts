@@ -4,7 +4,8 @@ import {
 } from '@pagopa/ts-commons/lib/numbers';
 import { SubscriptionId, TrialId, UserId } from '../subscription';
 import { SubscriptionHistoryId } from '../subscription-history';
-import { ActivationJobId, ActivationRequestId } from '../activation';
+import { ActivationRequestId } from '../activation-request';
+import { ActivationJobId } from '../activation-job';
 
 const aSubscriptionHistoryId =
   'aSubscriptionHistoryId' as SubscriptionHistoryId;

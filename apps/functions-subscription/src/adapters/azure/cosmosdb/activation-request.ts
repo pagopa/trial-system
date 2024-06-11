@@ -12,16 +12,16 @@ import {
 import {
   ActivationRequestCodec,
   ActivationResult,
-  ActivationConsumer,
-} from '../../../domain/activation';
+  ActivationRequestRepository,
+} from '../../../domain/activation-request';
 import { decodeFromFeed } from './decode';
 
-export const makeActivationCosmosContainer = (
+export const makeActivationRequestRepository = (
   db: Database,
-): ActivationConsumer => {
+): ActivationRequestRepository => {
   const container = db.container('activations');
   return {
-    fetchActivationRequestItemsToActivate: (trialId, elementsToFetch) =>
+    list: (trialId, elementsToFetch) =>
       pipe(
         TE.tryCatch(
           () =>
@@ -45,7 +45,7 @@ export const makeActivationCosmosContainer = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
-    activateRequestItems: (jobId, trialId, activationRequests) => {
+    activate: ({ id: jobId }, trialId, activationRequests) => {
       if (activationRequests.length > 0) {
         const batchOperations: readonly OperationInput[] = pipe(
           activationRequests,

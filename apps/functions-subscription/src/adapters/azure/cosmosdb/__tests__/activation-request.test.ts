@@ -6,7 +6,7 @@ import {
   anActivationJob,
   anActivationRequest,
 } from '../../../../domain/__tests__/data';
-import { makeActivationCosmosContainer } from '../activation';
+import { makeActivationRequestRepository } from '../activation-request';
 
 describe('makeActivationCosmosContainer', () => {
   describe('activateActivationRequests', () => {
@@ -43,9 +43,9 @@ describe('makeActivationCosmosContainer', () => {
       const mockDB = makeDatabaseMock();
       const result = 'success' as const;
 
-      const actual = await makeActivationCosmosContainer(
+      const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activateRequestItems(anActivationJob.id, anActivationJob.trialId, [])();
+      ).activate(anActivationJob, anActivationJob.trialId, [])();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(0);
@@ -62,10 +62,10 @@ describe('makeActivationCosmosContainer', () => {
         .container('')
         .items.batch.mockResolvedValueOnce({ result: mockBatchResponse });
 
-      const actual = await makeActivationCosmosContainer(
+      const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activateRequestItems(
-        anActivationJob.id,
+      ).activate(
+        anActivationJob,
         anActivationJob.trialId,
         activationRequests,
       )();
@@ -83,10 +83,10 @@ describe('makeActivationCosmosContainer', () => {
       const error = new Error('Something went wrong');
       mockDB.container('').items.batch.mockRejectedValueOnce(error);
 
-      const actual = await makeActivationCosmosContainer(
+      const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activateRequestItems(
-        anActivationJob.id,
+      ).activate(
+        anActivationJob,
         anActivationJob.trialId,
         activationRequests,
       )();
@@ -110,10 +110,10 @@ describe('makeActivationCosmosContainer', () => {
         .container('')
         .items.batch.mockResolvedValueOnce({ result: mockBatchResponse });
 
-      const actual = await makeActivationCosmosContainer(
+      const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).activateRequestItems(
-        anActivationJob.id,
+      ).activate(
+        anActivationJob,
         anActivationJob.trialId,
         activationRequests,
       )();
@@ -138,12 +138,9 @@ describe('makeActivationCosmosContainer', () => {
         fetchAll: () => Promise.resolve({ resources: activationRequests }),
       });
 
-      const actual = await makeActivationCosmosContainer(
+      const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).fetchActivationRequestItemsToActivate(
-        anActivationJob.trialId,
-        elementsToFetch,
-      )();
+      ).list(anActivationJob.trialId, elementsToFetch)();
 
       expect(actual).toStrictEqual(E.right(activationRequests));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
@@ -155,12 +152,9 @@ describe('makeActivationCosmosContainer', () => {
         fetchAll: () => Promise.resolve({ resources: [] }),
       });
 
-      const actual = await makeActivationCosmosContainer(
+      const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).fetchActivationRequestItemsToActivate(
-        anActivationJob.trialId,
-        elementsToFetch,
-      )();
+      ).list(anActivationJob.trialId, elementsToFetch)();
 
       expect(actual).toStrictEqual(E.right([]));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
@@ -173,12 +167,9 @@ describe('makeActivationCosmosContainer', () => {
         fetchAll: () => Promise.reject(error),
       });
 
-      const actual = await makeActivationCosmosContainer(
+      const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).fetchActivationRequestItemsToActivate(
-        anActivationJob.trialId,
-        elementsToFetch,
-      )();
+      ).list(anActivationJob.trialId, elementsToFetch)();
 
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);

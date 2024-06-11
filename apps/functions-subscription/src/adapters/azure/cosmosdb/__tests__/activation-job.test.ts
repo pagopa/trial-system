@@ -9,7 +9,7 @@ import {
 } from '../../functions/__tests__/mocks';
 import * as TE from 'fp-ts/TaskEither';
 import { makeActivationJobCosmosHandler } from '../activation-job';
-import { ActivationJobCodec } from '../../../../domain/activation';
+import { ActivationJobCodec } from '../../../../domain/activation-job';
 
 describe('makeActivationJobCosmosHandler', () => {
   const maxConcurrencyThreshold = 1;
