@@ -27,6 +27,7 @@ export const decodeFromFeed =
       list.resources,
       t.array(codec).decode,
       E.mapLeft(
-        () => new Error(`Unable to parse the list using codec ${codec.name}`),
+        () =>
+          new Error(`Unable to parse the resources using codec ${codec.name}`),
       ),
     );
