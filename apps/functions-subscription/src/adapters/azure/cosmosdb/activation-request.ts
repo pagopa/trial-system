@@ -64,12 +64,11 @@ export const makeActivationRequestRepository = (
                 () => container.items.batch([...chunk], trialId),
                 E.toError,
               ),
-              TE.map(({ result }) => makeActivationResult(result)),
+              TE.map(({ result }) => result ?? []),
             ),
           ),
-          TE.map((results) =>
-            RA.every((res) => res === 'success')(results) ? 'success' : 'fail',
-          ),
+          TE.map(RA.flatten),
+          TE.map(makeActivationResult),
         );
       } else {
         return TE.of('success');
@@ -79,11 +78,9 @@ export const makeActivationRequestRepository = (
 };
 
 const makeActivationResult = (
-  arr: readonly OperationResponse[] | undefined,
+  arr: readonly OperationResponse[],
 ): ActivationResult => {
-  return arr && arr.every(({ statusCode }) => statusCode === 200)
-    ? 'success'
-    : 'fail';
+  return arr.every(({ statusCode }) => statusCode === 200) ? 'success' : 'fail';
 };
 
 const makeBatchOperations =
