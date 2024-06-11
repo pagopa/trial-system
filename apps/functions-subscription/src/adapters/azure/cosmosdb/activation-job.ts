@@ -2,7 +2,7 @@ import * as t from 'io-ts';
 import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
-import { flow, pipe } from 'fp-ts/lib/function';
+import { pipe } from 'fp-ts/lib/function';
 import { InvocationContext } from '@azure/functions';
 import { ActivationRequestCodec } from '../../../domain/activation-request';
 import { ActivationJobCodec } from '../../../domain/activation-job';
@@ -27,9 +27,7 @@ export const makeActivationJobCosmosHandler =
       ),
       // Keep only job documents
       TE.map(
-        flow(
-          RA.filterMap((doc) => (doc.type === 'job' ? O.some(doc) : O.none)),
-        ),
+        RA.filterMap((doc) => (doc.type === 'job' ? O.some(doc) : O.none)),
       ),
       TE.flatMap(([job]) =>
         // Call the method to activate users only if the updated document is a job
