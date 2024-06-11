@@ -47,33 +47,30 @@ export const makeActivationRequestRepository = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
-    activate: ({ id: jobId, trialId }, activationRequests) => {
-      if (activationRequests.length > 0) {
-        return pipe(
-          activationRequests,
-          // Split in chunks
-          // Transactional batch can handle only 100 items per batch.
-          // Since one item must be the update of the job, we can handle
-          // batches of 99 items.
-          // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
-          RA.chunksOf(99),
-          RA.map(makeBatchOperations(jobId)),
-          TE.traverseArray((chunk) =>
-            pipe(
+    activate: ({ id: jobId, trialId }, activationRequests) =>
+      pipe(
+        activationRequests,
+        // Split in chunks
+        // Transactional batch can handle only 100 items per batch.
+        // Since one item must be the update of the job, we can handle
+        // batches of 99 items.
+        // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
+        RA.chunksOf(99),
+        RA.map(makeBatchOperations(jobId)),
+        TE.traverseArray((chunk) => {
+          if (activationRequests.length > 0)
+            return pipe(
               TE.tryCatch(
                 () => container.items.batch([...chunk], trialId),
                 E.toError,
               ),
               TE.map(({ result }) => result ?? []),
-            ),
-          ),
-          TE.map(RA.flatten),
-          TE.map(makeActivationResult),
-        );
-      } else {
-        return TE.of('success');
-      }
-    },
+            );
+          else return TE.of([]);
+        }),
+        TE.map(RA.flatten),
+        TE.map(makeActivationResult),
+      ),
   };
 };
 
