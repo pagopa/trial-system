@@ -18,10 +18,10 @@ export interface Config {
   readonly activations: {
     readonly consumer: 'on' | 'off';
     readonly maxFetchSize: number;
-  },
+  };
   readonly events: {
     readonly producer: 'on' | 'off';
-  },
+  };
   readonly servicebus: {
     readonly namespace: string;
     readonly names: {
