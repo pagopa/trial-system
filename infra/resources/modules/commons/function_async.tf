@@ -16,13 +16,24 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
-    COSMOSDB_ENDPOINT                  = module.cosmosdb_account.endpoint
-    COSMOSDB_DATABASE_NAME             = module.cosmosdb_sql_database_trial.name
-    EVENTHUB_NAMESPACE                 = "${module.event_hub.name}.servicebus.windows.net"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
-    SUBSCRIPTION_REQUEST_CONSUMER      = "on"
+    COSMOSDB_ENDPOINT      = module.cosmosdb_account.endpoint
+    COSMOSDB_DATABASE_NAME = module.cosmosdb_sql_database_trial.name
+    EVENTHUB_NAMESPACE     = "${module.event_hub.name}.servicebus.windows.net"
 
+    LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
+
+    SUBSCRIPTION_HISTORY_CONSUMER                        = "on"
+    SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME         = azurerm_cosmosdb_sql_container.subscription_history.name
+    SubscriptionHistoryCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
+
+    SUBSCRIPTION_REQUEST_CONSUMER                                  = "on"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = "${local.domain}-subscription-requests"
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
+
+    ACTIVATION_CONSUMER                                   = "on"
+    ACTIVATION_MAX_FETCH_SIZE                             = "999"
+    ACTIVATIONS_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.activations.name
+    ActivationConsumerCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
   }
 }
 
@@ -162,7 +173,11 @@ module "subscription_async_fn_staging_slot" {
 
   app_settings = merge(
     local.async_app_settings,
-    {},
+    {
+      # Avoiding host ID collisions
+      # https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations?tabs=azure-cli#avoiding-host-id-collisions
+      AzureFunctionsWebHost__hostid = "subscription-async-fn-01-staging"
+    },
   )
 
   subnet_id = module.subscription_async_snet.id

@@ -16,6 +16,9 @@ import { clock } from './adapters/date/clock';
 import { hashFn } from './adapters/crypto/hash';
 import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosdb/subscription-history';
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
+import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
+import { makeActivationJobConsumerHandler } from './adapters/azure/functions/activation-job';
+import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
 
 const config = pipe(
   parseConfig(process.env),
@@ -48,11 +51,16 @@ const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
 
+const activationRequestRepository = makeActivationRequestRepository(
+  cosmosDB.database(config.cosmosdb.databaseName),
+);
+
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
   subscriptionRequestWriter,
   subscriptionHistoryWriter,
+  activationRequestRepository,
   hashFn,
   clock,
 };
@@ -87,3 +95,27 @@ if (config.subscriptionRequest.consumer === 'on')
     cardinality: 'many',
     handler: makeSubscriptionRequestConsumerHandler(env),
   });
+
+if (config.subscriptionHistory.consumer === 'on')
+  app.cosmosDB('subscriptionHistoryConsumer', {
+    connection: 'SubscriptionHistoryCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.subscriptionHistory,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'subscriptionHistoryConsumer-',
+    handler: makeSubscriptionHistoryChangesHandler(capabilities),
+  });
+
+if (config.activations.consumer === 'on') {
+  app.cosmosDB('activationConsumer', {
+    connection: 'ActivationConsumerCosmosDBConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.activations,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: `${config.cosmosdb.containersNames.activations}-`,
+    handler: makeActivationJobConsumerHandler(
+      env,
+      config.activations.maxFetchSize,
+    ),
+  });
+}
