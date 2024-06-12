@@ -3,8 +3,10 @@ resource "azurerm_servicebus_namespace" "main" {
   resource_group_name = azurerm_resource_group.data_rg.name
   location            = var.location
   # The premium is required to use private endpoint
-  sku      = "Premium"
-  capacity = 1
+  sku = "Premium"
+
+  capacity                     = 1
+  premium_messaging_partitions = 1
 
   tags = var.tags
 }
