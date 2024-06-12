@@ -14,6 +14,9 @@ export const makeTestEnv = () => {
   const subscriptionHistoryWriterMock = {
     insert: vi.fn(),
   };
+  const eventWriterMock = {
+    send: vi.fn(),
+  };
   const hashFnMock = vi.fn();
   const clockMock = {
     now: vi.fn(),
@@ -32,6 +35,7 @@ export const makeTestEnv = () => {
     subscriptionRequestWriter: subscriptionRequestWriterMock,
     subscriptionHistoryWriter: subscriptionHistoryWriterMock,
     activationRequestRepository: activationRequestRepositoryMock,
+    eventWriter: eventWriterMock,
     hashFn: hashFnMock,
     clock: clockMock,
     monotonicId: monotonicIdMock,

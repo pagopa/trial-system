@@ -94,7 +94,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-auth@npm:^1.3.0, @azure/core-auth@npm:^1.4.0, @azure/core-auth@npm:^1.5.0":
+"@azure/core-amqp@npm:^4.1.1":
+  version: 4.3.0
+  resolution: "@azure/core-amqp@npm:4.3.0"
+  dependencies:
+    "@azure/abort-controller": "npm:^2.0.0"
+    "@azure/core-auth": "npm:^1.7.2"
+    "@azure/core-util": "npm:^1.9.0"
+    "@azure/logger": "npm:^1.1.2"
+    buffer: "npm:^6.0.3"
+    events: "npm:^3.3.0"
+    process: "npm:^0.11.10"
+    rhea: "npm:^3.0.0"
+    rhea-promise: "npm:^3.0.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/e23bab6ec037f350977e21b1cfdf25cdd525548bbbea2dd8cec0652a82992c014b3d19719459746919e5d4613e7eb0afa18f9119b989df9ddc05b999f1b84fd5
+  languageName: node
+  linkType: hard
+
+"@azure/core-auth@npm:^1.3.0, @azure/core-auth@npm:^1.4.0, @azure/core-auth@npm:^1.5.0, @azure/core-auth@npm:^1.7.2":
   version: 1.7.2
   resolution: "@azure/core-auth@npm:1.7.2"
   dependencies:
@@ -120,7 +138,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-paging@npm:^1.1.1":
+"@azure/core-paging@npm:^1.1.1, @azure/core-paging@npm:^1.4.0":
   version: 1.6.2
   resolution: "@azure/core-paging@npm:1.6.2"
   dependencies:
@@ -293,7 +311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/logger@npm:^1.0.0":
+"@azure/logger@npm:^1.0.0, @azure/logger@npm:^1.1.2":
   version: 1.1.2
   resolution: "@azure/logger@npm:1.1.2"
   dependencies:
@@ -340,6 +358,32 @@ __metadata:
     "@opentelemetry/instrumentation": "npm:^0.41.2"
     tslib: "npm:^2.2.0"
   checksum: 10c0/f50e74da60a5bd0c1eac9452611650a27a3dfde7941fab156e9b067013f02811809d52387b8cdd666f3462c0982a5592fea50a4443a5c86cc152e2f52193fde0
+  languageName: node
+  linkType: hard
+
+"@azure/service-bus@npm:^7.9.4":
+  version: 7.9.4
+  resolution: "@azure/service-bus@npm:7.9.4"
+  dependencies:
+    "@azure/abort-controller": "npm:^1.0.0"
+    "@azure/core-amqp": "npm:^4.1.1"
+    "@azure/core-auth": "npm:^1.3.0"
+    "@azure/core-client": "npm:^1.0.0"
+    "@azure/core-paging": "npm:^1.4.0"
+    "@azure/core-rest-pipeline": "npm:^1.1.0"
+    "@azure/core-tracing": "npm:^1.0.0"
+    "@azure/core-util": "npm:^1.1.1"
+    "@azure/core-xml": "npm:^1.0.0"
+    "@azure/logger": "npm:^1.0.0"
+    "@types/is-buffer": "npm:^2.0.0"
+    buffer: "npm:^6.0.0"
+    is-buffer: "npm:^2.0.3"
+    jssha: "npm:^3.1.0"
+    long: "npm:^5.2.0"
+    process: "npm:^0.11.10"
+    rhea-promise: "npm:^3.0.0"
+    tslib: "npm:^2.2.0"
+  checksum: 10c0/e1bd8c560726a9afa20b46d00592f7d1b619075caf7dd87bca0a94a0d6a41a6ae2af4761105253e48d40fcbb33afcc933ed0602da9349bb896b61a204f0be185
   languageName: node
   linkType: hard
 
@@ -1642,6 +1686,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/is-buffer@npm:^2.0.0":
+  version: 2.0.2
+  resolution: "@types/is-buffer@npm:2.0.2"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/c3221edd6b7bb190711e34ceec67b8c77fa68ce893a651b803ead2edc75d12dcda7021fdd42c161b421551f6744094ce7dfdb451955059cb292fafab816ba467
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:^7.0.15, @types/json-schema@npm:^7.0.6":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
@@ -2461,7 +2514,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^6.0.0":
+"buffer@npm:^6.0.0, buffer@npm:^6.0.3":
   version: 6.0.3
   resolution: "buffer@npm:6.0.3"
   dependencies:
@@ -3837,7 +3890,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"events@npm:^3.0.0":
+"events@npm:^3.0.0, events@npm:^3.3.0":
   version: 3.3.0
   resolution: "events@npm:3.3.0"
   checksum: 10c0/d6b6f2adbccbcda74ddbab52ed07db727ef52e31a61ed26db9feb7dc62af7fc8e060defa65e5f8af9449b86b52cc1a1f6a79f2eafcf4e62add2b7a1fa4a432f6
@@ -4283,6 +4336,7 @@ __metadata:
     "@azure/event-hubs": "npm:^5.11.4"
     "@azure/functions": "npm:^4.4.0"
     "@azure/identity": "npm:^4.2.0"
+    "@azure/service-bus": "npm:^7.9.4"
     "@pagopa/handler-kit": "npm:^1.1.0"
     "@pagopa/handler-kit-azure-func": "npm:^2.0.4"
     "@pagopa/io-functions-commons": "npm:^29.0.4"
@@ -5783,6 +5837,13 @@ __metadata:
   version: 4.0.0
   resolution: "long@npm:4.0.0"
   checksum: 10c0/50a6417d15b06104dbe4e3d4a667c39b137f130a9108ea8752b352a4cfae047531a3ac351c181792f3f8768fe17cca6b0f406674a541a86fb638aaac560d83ed
+  languageName: node
+  linkType: hard
+
+"long@npm:^5.2.0":
+  version: 5.2.3
+  resolution: "long@npm:5.2.3"
+  checksum: 10c0/6a0da658f5ef683b90330b1af76f06790c623e148222da9d75b60e266bbf88f803232dd21464575681638894a84091616e7f89557aa087fd14116c0f4e0e43d9
   languageName: node
   linkType: hard
 

@@ -19,6 +19,15 @@ export interface Config {
     readonly consumer: 'on' | 'off';
     readonly maxFetchSize: number;
   };
+  readonly events: {
+    readonly producer: 'on' | 'off';
+  };
+  readonly servicebus: {
+    readonly namespace: string;
+    readonly names: {
+      readonly event: string;
+    };
+  };
   readonly eventhubs: {
     readonly namespace: string;
     readonly names: {
@@ -44,8 +53,9 @@ const OnOrOffCodec = t.keyof({
 const EnvsCodec = t.strict({
   COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
-  LEASES_COSMOSDB_CONTAINER_NAME: NonEmptyString,
   EVENTHUB_NAMESPACE: NonEmptyString,
+  SERVICEBUS_NAMESPACE: NonEmptyString,
+  LEASES_COSMOSDB_CONTAINER_NAME: NonEmptyString,
   SUBSCRIPTION_REQUEST_CONSUMER: OnOrOffCodec,
   SUBSCRIPTION_REQUEST_EVENTHUB_NAME: NonEmptyString,
   SUBSCRIPTION_HISTORY_CONSUMER: OnOrOffCodec,
@@ -53,6 +63,8 @@ const EnvsCodec = t.strict({
   ACTIVATION_CONSUMER: OnOrOffCodec,
   ACTIVATION_MAX_FETCH_SIZE: NumberFromString.pipe(WithinRangeInteger(1, 1000)),
   ACTIVATIONS_COSMOSDB_CONTAINER_NAME: NonEmptyString,
+  EVENTS_PRODUCER: OnOrOffCodec,
+  EVENTS_SERVICEBUS_TOPIC_NAME: NonEmptyString,
 });
 
 export const parseConfig = (
@@ -72,6 +84,15 @@ export const parseConfig = (
         activations: {
           consumer: envs.ACTIVATION_CONSUMER,
           maxFetchSize: envs.ACTIVATION_MAX_FETCH_SIZE,
+        },
+        events: {
+          producer: envs.EVENTS_PRODUCER,
+        },
+        servicebus: {
+          namespace: envs.SERVICEBUS_NAMESPACE,
+          names: {
+            event: envs.EVENTS_SERVICEBUS_TOPIC_NAME,
+          },
         },
         eventhubs: {
           namespace: envs.EVENTHUB_NAMESPACE,
