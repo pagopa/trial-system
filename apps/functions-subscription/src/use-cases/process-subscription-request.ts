@@ -42,7 +42,6 @@ export const processSubscriptionRequest = ({
           env.subscriptionWriter.insert(subscription),
           TE.orElse(recoverItemAlreadyExists(subscription)),
           TE.flatMap(() =>
-            //  The write on subscription history will be done by the trigger on activations container
             env.subscriptionHistoryWriter.insert(subscriptionHistory),
           ),
           TE.orElse(recoverItemAlreadyExists(subscription)),

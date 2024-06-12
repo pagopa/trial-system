@@ -50,12 +50,15 @@ export const anActivationJob = {
   _etag: 'anEtag',
 };
 
-export const anActivationRequest = {
+export const anActivationRequestWithoutEtag = {
   id: anActivationRequestId,
   userId: aUserId,
   trialId: aTrialId,
   createdAt: new Date(),
   activated: false,
   type: 'request' as const,
+};
+export const anActivationRequest = {
+  ...anActivationRequestWithoutEtag,
   _etag: 'anEtag',
 };

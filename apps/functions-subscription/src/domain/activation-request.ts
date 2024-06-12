@@ -13,6 +13,7 @@ import {
 } from './subscription';
 import { ActivationJob } from './activation-job';
 import { Capabilities } from './capabilities';
+import { ItemAlreadyExists } from './errors';
 
 // a unique brand for id of document with type request
 interface ActivationRequestIdBrand {
@@ -46,7 +47,7 @@ export interface ActivationRequestRepository {
    */
   readonly insert: (
     activationRequest: Omit<ActivationRequest, '_etag'>,
-  ) => TE.TaskEither<Error, ActivationRequest>;
+  ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationRequest>;
   /**
    * This function returns a list of activation requests that are going to be
    * activated.

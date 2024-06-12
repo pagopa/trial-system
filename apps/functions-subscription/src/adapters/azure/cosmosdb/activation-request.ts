@@ -17,14 +17,21 @@ import {
 } from '../../../domain/activation-request';
 import { decodeFromFeed } from './decode';
 import { ActivationJobId } from '../../../domain/activation-job';
+import { cosmosErrorToDomainError } from './errors';
 
 export const makeActivationRequestRepository = (
   db: Database,
 ): ActivationRequestRepository => {
   const container = db.container('activations');
   return {
-    // TODO: Add implementation
-    insert: () => TE.left(new Error('Not Yet Implemented')),
+    insert: (activationRequest) =>
+      pipe(
+        TE.tryCatch(() => container.items.create(activationRequest), E.toError),
+        TE.flatMapEither(({ resource }) =>
+          pipe(resource, ActivationRequestCodec.decode, E.mapLeft(E.toError)),
+        ),
+        TE.mapLeft(cosmosErrorToDomainError),
+      ),
     list: (trialId, elementsToFetch) =>
       pipe(
         TE.tryCatch(
