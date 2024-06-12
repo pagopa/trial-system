@@ -20,6 +20,7 @@ export const makeTestEnv = () => {
   };
 
   const activationRequestRepositoryMock = {
+    insert: vi.fn(),
     list: vi.fn(),
     activate: vi.fn(),
   };

@@ -23,6 +23,8 @@ export const makeActivationRequestRepository = (
 ): ActivationRequestRepository => {
   const container = db.container('activations');
   return {
+    // TODO: Add implementation
+    insert: () => TE.left(new Error('Not Yet Implemented')),
     list: (trialId, elementsToFetch) =>
       pipe(
         TE.tryCatch(

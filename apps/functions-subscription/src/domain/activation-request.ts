@@ -1,9 +1,18 @@
 import * as t from 'io-ts';
-import * as TE from 'fp-ts/TaskEither';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
-import { TrialId, TrialIdCodec, UserIdCodec } from './subscription';
+import {
+  Subscription,
+  TrialId,
+  TrialIdCodec,
+  UserId,
+  UserIdCodec,
+} from './subscription';
 import { ActivationJob } from './activation-job';
+import { Capabilities } from './capabilities';
 
 // a unique brand for id of document with type request
 interface ActivationRequestIdBrand {
@@ -33,6 +42,12 @@ export type ActivationResult = 'success' | 'fail';
 
 export interface ActivationRequestRepository {
   /**
+   * Insert a new activation request.
+   */
+  readonly insert: (
+    activationRequest: Omit<ActivationRequest, '_etag'>,
+  ) => TE.TaskEither<Error, ActivationRequest>;
+  /**
    * This function returns a list of activation requests that are going to be
    * activated.
    */
@@ -51,3 +66,31 @@ export interface ActivationRequestRepository {
     activationRequests: readonly ActivationRequest[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }
+
+/**
+ * This function is useful to create the id of an activation request.
+ */
+const makeActivationRequestId = (trialId: TrialId, userId: UserId) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'hashFn'>>(),
+    // FIXME: The id must be monotonic ordered by date. This is just a firs implementation
+    RTE.map(({ hashFn }) => hashFn(`${trialId}${userId}`)),
+    RTE.map(({ value }) => value as ActivationRequestId),
+  );
+
+export const makeActivationRequest = ({
+  userId,
+  trialId,
+  createdAt,
+}: Subscription) =>
+  pipe(
+    makeActivationRequestId(trialId, userId),
+    RTE.map((id) => ({
+      id,
+      trialId,
+      userId,
+      createdAt,
+      type: 'request' as const,
+      activated: false,
+    })),
+  );
