@@ -1,6 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import { app } from '@azure/functions';
+import { ServiceBusClient } from '@azure/service-bus';
 import { EventHubProducerClient } from '@azure/event-hubs';
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
@@ -19,6 +20,8 @@ import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functio
 import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
 import { makeActivationJobConsumerHandler } from './adapters/azure/functions/activation-job';
 import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
+import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
+import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
 
 const config = pipe(
   parseConfig(process.env),
@@ -39,6 +42,11 @@ const subscriptionRequestEventHub = new EventHubProducerClient(
   new DefaultAzureCredential(),
 );
 
+const serviceBus = new ServiceBusClient(
+  config.servicebus.namespace,
+  new DefaultAzureCredential(),
+);
+
 const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
@@ -55,12 +63,17 @@ const activationRequestRepository = makeActivationRequestRepository(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
+const eventWriter = makeEventWriterServiceBus(
+  serviceBus.createSender(config.servicebus.names.event),
+);
+
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
   subscriptionRequestWriter,
   subscriptionHistoryWriter,
   activationRequestRepository,
+  eventWriter,
   hashFn,
   clock,
 };
@@ -106,7 +119,7 @@ if (config.subscriptionHistory.consumer === 'on')
     handler: makeSubscriptionHistoryChangesHandler(capabilities),
   });
 
-if (config.activations.consumer === 'on') {
+if (config.activations.consumer === 'on')
   app.cosmosDB('activationConsumer', {
     connection: 'ActivationConsumerCosmosDBConnection',
     databaseName: config.cosmosdb.databaseName,
@@ -118,4 +131,13 @@ if (config.activations.consumer === 'on') {
       config.activations.maxFetchSize,
     ),
   });
-}
+
+if (config.events.producer === 'on')
+  app.cosmosDB('eventProducer', {
+    connection: 'SubscriptionHistoryCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.subscriptionHistory,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'eventProducer-',
+    handler: makeEventsProducerCosmosDBHandler(capabilities),
+  });

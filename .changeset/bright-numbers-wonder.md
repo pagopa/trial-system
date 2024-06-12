@@ -2,4 +2,4 @@
 "functions-subscription": minor
 ---
 
-Add activation job processor
+[IOPLT-467] Add events producer

@@ -223,3 +223,6 @@ components:
           type: number
           minimum: 1
           description: The total number of users to activate
+    SubscriptionEvent:
+      type: object
+      $ref: '#/components/schemas/Subscription'
