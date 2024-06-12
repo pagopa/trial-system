@@ -1,4 +1,4 @@
-export interface Id {
+interface Id {
   readonly value: string;
 }
 
