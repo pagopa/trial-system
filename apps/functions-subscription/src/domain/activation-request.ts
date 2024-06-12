@@ -8,7 +8,6 @@ import {
   Subscription,
   TrialId,
   TrialIdCodec,
-  UserId,
   UserIdCodec,
 } from './subscription';
 import { ActivationJob } from './activation-job';
@@ -71,11 +70,10 @@ export interface ActivationRequestRepository {
 /**
  * This function is useful to create the id of an activation request.
  */
-const makeActivationRequestId = (trialId: TrialId, userId: UserId) =>
+const makeActivationRequestId = () =>
   pipe(
-    RTE.ask<Pick<Capabilities, 'hashFn'>>(),
-    // FIXME: The id must be monotonic ordered by date. This is just a firs implementation
-    RTE.map(({ hashFn }) => hashFn(`${trialId}${userId}`)),
+    RTE.ask<Pick<Capabilities, 'monotonicId'>>(),
+    RTE.map(({ monotonicId }) => monotonicId()),
     RTE.map(({ value }) => value as ActivationRequestId),
   );
 
@@ -85,7 +83,7 @@ export const makeActivationRequest = ({
   createdAt,
 }: Subscription) =>
   pipe(
-    makeActivationRequestId(trialId, userId),
+    makeActivationRequestId(),
     RTE.map((id) => ({
       id,
       trialId,
