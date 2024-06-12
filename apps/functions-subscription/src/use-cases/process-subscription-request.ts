@@ -6,10 +6,13 @@ import { Capabilities } from '../domain/capabilities';
 import { Subscription, makeSubscription } from '../domain/subscription';
 import { ItemAlreadyExists } from '../domain/errors';
 import { makeSubscriptionHistory } from '../domain/subscription-history';
+import { makeActivationRequest } from '../domain/activation-request';
 
 type Env = Pick<
   Capabilities,
-  'subscriptionWriter' | 'subscriptionHistoryWriter'
+  | 'subscriptionWriter'
+  | 'subscriptionHistoryWriter'
+  | 'activationRequestRepository'
 >;
 
 const recoverItemAlreadyExists =
@@ -30,15 +33,24 @@ export const processSubscriptionRequest = ({
     RTE.bindW('subscriptionHistory', ({ subscription }) =>
       makeSubscriptionHistory(subscription),
     ),
-    RTE.flatMapTaskEither(({ subscription, subscriptionHistory, ...env }) =>
-      pipe(
-        env.subscriptionWriter.insert(subscription),
-        TE.orElse(recoverItemAlreadyExists(subscription)),
-        TE.chain(() =>
-          env.subscriptionHistoryWriter.insert(subscriptionHistory),
+    RTE.bindW('activationRequest', ({ subscription }) =>
+      makeActivationRequest(subscription),
+    ),
+    RTE.flatMapTaskEither(
+      ({ subscription, subscriptionHistory, activationRequest, ...env }) =>
+        pipe(
+          env.subscriptionWriter.insert(subscription),
+          TE.orElse(recoverItemAlreadyExists(subscription)),
+          TE.flatMap(() =>
+            //  The write on subscription history will be done by the trigger on activations container
+            env.subscriptionHistoryWriter.insert(subscriptionHistory),
+          ),
+          TE.orElse(recoverItemAlreadyExists(subscription)),
+          TE.flatMap(() =>
+            env.activationRequestRepository.insert(activationRequest),
+          ),
+          TE.map(() => ({ trialId, userId })),
+          TE.orElse(recoverItemAlreadyExists(subscription)),
         ),
-        TE.map(() => ({ trialId, userId })),
-        TE.orElse(recoverItemAlreadyExists(subscription)),
-      ),
     ),
   );
