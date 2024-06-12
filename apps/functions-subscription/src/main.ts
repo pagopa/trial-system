@@ -19,6 +19,7 @@ import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functio
 import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
 import { makeActivationJobConsumerHandler } from './adapters/azure/functions/activation-job';
 import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
+import { monotonicId } from './adapters/ulid/monotonic-id';
 
 const config = pipe(
   parseConfig(process.env),
@@ -63,6 +64,7 @@ const capabilities: Capabilities = {
   activationRequestRepository,
   hashFn,
   clock,
+  monotonicId,
 };
 
 const env = makeSystemEnv(capabilities);

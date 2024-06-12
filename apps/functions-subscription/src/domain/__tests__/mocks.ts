@@ -18,6 +18,7 @@ export const makeTestEnv = () => {
   const clockMock = {
     now: vi.fn(),
   };
+  const monotonicIdMock = vi.fn();
 
   const activationRequestRepositoryMock = {
     insert: vi.fn(),
@@ -33,5 +34,6 @@ export const makeTestEnv = () => {
     activationRequestRepository: activationRequestRepositoryMock,
     hashFn: hashFnMock,
     clock: clockMock,
+    monotonicId: monotonicIdMock,
   };
 };
