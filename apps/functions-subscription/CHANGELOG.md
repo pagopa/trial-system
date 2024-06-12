@@ -1,5 +1,13 @@
 # functions-subscription
 
+## 0.3.0
+
+### Minor Changes
+
+- 09c55db: Add activation job processor
+- 83efeeb: [IOPLT-552] Add process that keeps `subscription` in sync with `subscription-history`
+- 594322b: [IOPLT-528] Add event hub consumer to populate subscription-history
+
 ## 0.2.0
 
 ### Minor Changes
