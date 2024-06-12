@@ -201,7 +201,7 @@ module "subscription_async_fn_staging_slot" {
 resource "azurerm_role_assignment" "subs_asyn_staging_write_to_sbt" {
   scope                = azurerm_servicebus_topic.events.id
   role_definition_name = "Azure Service Bus Data Sender"
-  principal_id         = module.subscription_async_fn.system_identity_principal
+  principal_id         = module.subscription_async_fn_staging_slot.system_identity_principal
 }
 
 # Enables the subscription_async_fn_staging to read from the event-hub
