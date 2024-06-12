@@ -68,22 +68,17 @@ export interface ActivationRequestRepository {
 }
 
 /**
- * This function is useful to create the id of an activation request.
+ * This function is useful to create an activation request.
  */
-const makeActivationRequestId = () =>
-  pipe(
-    RTE.ask<Pick<Capabilities, 'monotonicId'>>(),
-    RTE.map(({ monotonicId }) => monotonicId()),
-    RTE.map(({ value }) => value as ActivationRequestId),
-  );
-
 export const makeActivationRequest = ({
   userId,
   trialId,
   createdAt,
 }: Subscription) =>
   pipe(
-    makeActivationRequestId(),
+    RTE.ask<Pick<Capabilities, 'monotonicId'>>(),
+    RTE.map(({ monotonicId }) => monotonicId()),
+    RTE.map(({ value }) => value as ActivationRequestId),
     RTE.map((id) => ({
       id,
       trialId,
