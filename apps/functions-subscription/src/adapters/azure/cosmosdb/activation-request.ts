@@ -15,7 +15,7 @@ import {
   ActivationRequestRepository,
   ActivationResult,
 } from '../../../domain/activation-request';
-import { decodeFromFeed } from './decode';
+import { decodeFromFeed, decodeFromItem } from './decode';
 import { ActivationJobId } from '../../../domain/activation-job';
 import { cosmosErrorToDomainError } from './errors';
 
@@ -27,8 +27,12 @@ export const makeActivationRequestRepository = (
     insert: (activationRequest) =>
       pipe(
         TE.tryCatch(() => container.items.create(activationRequest), E.toError),
-        TE.flatMapEither(({ resource }) =>
-          pipe(resource, ActivationRequestCodec.decode, E.mapLeft(E.toError)),
+        TE.flatMapEither(decodeFromItem(ActivationRequestCodec)),
+        TE.flatMap(
+          TE.fromOption(
+            () =>
+              new Error('Something went wrong inserting an activation request'),
+          ),
         ),
         TE.mapLeft(cosmosErrorToDomainError),
       ),
