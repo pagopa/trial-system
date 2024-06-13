@@ -25,5 +25,5 @@ export interface Capabilities {
   readonly eventWriter: EventWriter;
   readonly hashFn: HashFn;
   readonly clock: Clock;
-  readonly monotonicId: MonotonicIdFn;
+  readonly monotonicIdFn: MonotonicIdFn;
 }

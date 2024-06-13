@@ -22,7 +22,7 @@ import { makeActivationJobConsumerHandler } from './adapters/azure/functions/act
 import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
 import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
 import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
-import { monotonicId } from './adapters/ulid/monotonic-id';
+import { monotonicIdFn } from './adapters/ulid/monotonic-id';
 
 const config = pipe(
   parseConfig(process.env),
@@ -77,7 +77,7 @@ const capabilities: Capabilities = {
   eventWriter,
   hashFn,
   clock,
-  monotonicId,
+  monotonicIdFn,
 };
 
 const env = makeSystemEnv(capabilities);

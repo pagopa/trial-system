@@ -68,8 +68,8 @@ export const makeActivationRequest = ({
   userId,
 }: Pick<ActivationRequest, 'trialId' | 'userId'>) =>
   pipe(
-    RTE.ask<Pick<Capabilities, 'monotonicId'>>(),
-    RTE.map(({ monotonicId }) => monotonicId()),
+    RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
+    RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
     RTE.map(({ value }) => value as ActivationRequestId),
     RTE.map((id) => ({
       id,

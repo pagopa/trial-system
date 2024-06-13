@@ -3,4 +3,4 @@ import { MonotonicIdFn } from '../../domain/monotonic-id';
 
 const ulid = monotonicFactory();
 
-export const monotonicId: MonotonicIdFn = () => ({ value: ulid() });
+export const monotonicIdFn: MonotonicIdFn = () => ({ value: ulid() });

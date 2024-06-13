@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { monotonicId } from '../monotonic-id';
+import { monotonicIdFn } from '../monotonic-id';
 
 describe('monotonicId', () => {
-  const { value: firstId } = monotonicId();
-  const { value: secondId } = monotonicId();
+  const { value: firstId } = monotonicIdFn();
+  const { value: secondId } = monotonicIdFn();
   it('should produce different ids', () => {
     expect(firstId).not.toStrictEqual(secondId);
   });
