@@ -24,6 +24,7 @@
     "EventProducerCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
     "ACTIVATION_CONSUMER": "on",
+    "ACTIVATIONS_COSMOSDB_CONTAINER_NAME": "activations"
     "ACTIVATION_MAX_FETCH_SIZE": "50",
     "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>"
   }

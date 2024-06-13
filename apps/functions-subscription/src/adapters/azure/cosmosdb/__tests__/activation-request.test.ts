@@ -2,14 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
-import { Database } from '@azure/cosmos';
+import { Database, ErrorResponse } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
 import {
   anActivationJob,
   anActivationRequest,
+  anInsertActivationRequest,
 } from '../../../../domain/__tests__/data';
 import { makeActivationRequestRepository } from '../activation-request';
 import { ActivationRequestId } from '../../../../domain/activation-request';
+import { ItemAlreadyExists } from '../../../../domain/errors';
 
 const makeTestData = (length: number) => {
   // Create an array of ActivationRequest, changing the id property
@@ -65,6 +67,45 @@ const makeTestData = (length: number) => {
 };
 
 describe('makeActivationRequestRepository', () => {
+  describe('insert', () => {
+    it('should return the inserted item', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB
+        .container('')
+        .items.create.mockResolvedValueOnce({ resource: anActivationRequest });
+
+      const actual = await makeActivationRequestRepository(
+        mockDB as unknown as Database,
+      ).insert(anInsertActivationRequest)();
+
+      expect(actual).toStrictEqual(E.right(anActivationRequest));
+      expect(mockDB.container('').items.create).toBeCalledWith(
+        anInsertActivationRequest,
+      );
+    });
+    it('should return ItemAlreadyExists if the item already exists', async () => {
+      const mockDB = makeDatabaseMock();
+      const error = new ErrorResponse('');
+      // eslint-disable-next-line functional/immutable-data
+      error.code = 409;
+
+      mockDB.container('').items.create.mockRejectedValueOnce(error);
+
+      const actual = await makeActivationRequestRepository(
+        mockDB as unknown as Database,
+      ).insert(anInsertActivationRequest)();
+
+      expect(actual).toMatchObject(
+        E.left(
+          new ItemAlreadyExists(
+            `The item already exists; original error body: ${error.body}`,
+          ),
+        ),
+      );
+    });
+  });
+
   describe('activate', () => {
     it('should not perform the update when there are no elements to update', async () => {
       const mockDB = makeDatabaseMock();

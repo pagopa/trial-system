@@ -15,14 +15,30 @@ import {
   ActivationRequestRepository,
   ActivationResult,
 } from '../../../domain/activation-request';
-import { decodeFromFeed } from './decode';
+import { decodeFromFeed, decodeFromItem } from './decode';
 import { ActivationJobId } from '../../../domain/activation-job';
+import { cosmosErrorToDomainError } from './errors';
 
 export const makeActivationRequestRepository = (
   db: Database,
 ): ActivationRequestRepository => {
   const container = db.container('activations');
   return {
+    insert: (insertActivationRequest) =>
+      pipe(
+        TE.tryCatch(
+          () => container.items.create(insertActivationRequest),
+          E.toError,
+        ),
+        TE.flatMapEither(decodeFromItem(ActivationRequestCodec)),
+        TE.flatMap(
+          TE.fromOption(
+            () =>
+              new Error('Something went wrong inserting an activation request'),
+          ),
+        ),
+        TE.mapLeft(cosmosErrorToDomainError),
+      ),
     list: (trialId, elementsToFetch) =>
       pipe(
         TE.tryCatch(
