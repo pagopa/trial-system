@@ -3,12 +3,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
-import {
-  Subscription,
-  TrialId,
-  TrialIdCodec,
-  UserIdCodec,
-} from './subscription';
+import { TrialId, TrialIdCodec, UserIdCodec } from './subscription';
 import { ActivationJob } from './activation-job';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
@@ -69,10 +64,9 @@ export interface ActivationRequestRepository {
  * This function is useful to create an activation request.
  */
 export const makeActivationRequest = ({
-  userId,
   trialId,
-  createdAt,
-}: Subscription) =>
+  userId,
+}: Pick<ActivationRequest, 'trialId' | 'userId'>) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicId'>>(),
     RTE.map(({ monotonicId }) => monotonicId()),
@@ -81,7 +75,6 @@ export const makeActivationRequest = ({
       id,
       trialId,
       userId,
-      createdAt,
       type: 'request' as const,
       activated: false,
     })),

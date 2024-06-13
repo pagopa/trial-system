@@ -33,9 +33,7 @@ export const processSubscriptionRequest = ({
     RTE.bindW('subscriptionHistory', ({ subscription }) =>
       makeSubscriptionHistory(subscription),
     ),
-    RTE.bindW('activationRequest', ({ subscription }) =>
-      makeActivationRequest(subscription),
-    ),
+    RTE.apSW('activationRequest', makeActivationRequest({ trialId, userId })),
     RTE.flatMapTaskEither(
       ({ subscription, subscriptionHistory, activationRequest, ...env }) =>
         pipe(
