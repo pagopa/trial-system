@@ -23,7 +23,6 @@
     "EVENTS_SERVICEBUS_TOPIC_NAME": "<put-here-the-the-service-bus-topic-name>",
     "EventProducerCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
-
     "ACTIVATION_CONSUMER": "on",
     "ACTIVATIONS_COSMOSDB_CONTAINER_NAME": "activations"
     "ACTIVATION_MAX_FETCH_SIZE": "50",
