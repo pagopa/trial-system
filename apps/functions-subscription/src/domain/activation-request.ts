@@ -21,14 +21,23 @@ export const ActivationRequestIdCodec = t.brand(
 );
 export type ActivationRequestId = t.TypeOf<typeof ActivationRequestIdCodec>;
 
-export const ActivationRequestCodec = t.strict({
+export const InsertActivationRequestCodec = t.strict({
   id: ActivationRequestIdCodec,
   trialId: TrialIdCodec,
-  _etag: t.string,
   userId: UserIdCodec,
   type: t.literal('request'),
   activated: t.boolean,
 });
+export type InsertActivationRequest = t.TypeOf<
+  typeof InsertActivationRequestCodec
+>;
+
+export const ActivationRequestCodec = t.intersection([
+  InsertActivationRequestCodec,
+  t.strict({
+    _etag: t.string,
+  }),
+]);
 export type ActivationRequest = t.TypeOf<typeof ActivationRequestCodec>;
 
 export type ActivationResult = 'success' | 'fail';
@@ -38,7 +47,7 @@ export interface ActivationRequestRepository {
    * Insert a new activation request.
    */
   readonly insert: (
-    activationRequest: Omit<ActivationRequest, '_etag'>,
+    activationRequest: InsertActivationRequest,
   ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationRequest>;
   /**
    * This function returns a list of activation requests that are going to be
@@ -60,10 +69,7 @@ export interface ActivationRequestRepository {
   ) => TE.TaskEither<Error, ActivationResult>;
 }
 
-/**
- * This function is useful to create an activation request.
- */
-export const makeActivationRequest = ({
+export const makeInsertActivationRequest = ({
   trialId,
   userId,
 }: Pick<ActivationRequest, 'trialId' | 'userId'>) =>

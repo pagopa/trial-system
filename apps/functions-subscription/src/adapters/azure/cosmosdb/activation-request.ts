@@ -14,6 +14,7 @@ import {
   ActivationRequestCodec,
   ActivationRequestRepository,
   ActivationResult,
+  InsertActivationRequestCodec,
 } from '../../../domain/activation-request';
 import { decodeFromFeed, decodeFromItem } from './decode';
 import { ActivationJobId } from '../../../domain/activation-job';
@@ -24,9 +25,11 @@ export const makeActivationRequestRepository = (
 ): ActivationRequestRepository => {
   const container = db.container('activations');
   return {
-    insert: (activationRequest) =>
+    insert: (insertActivationRequest) =>
       pipe(
-        TE.tryCatch(() => container.items.create(activationRequest), E.toError),
+        InsertActivationRequestCodec.encode(insertActivationRequest),
+        (encoded) =>
+          TE.tryCatch(() => container.items.create(encoded), E.toError),
         TE.flatMapEither(decodeFromItem(ActivationRequestCodec)),
         TE.flatMap(
           TE.fromOption(

@@ -6,7 +6,7 @@ import { Capabilities } from '../domain/capabilities';
 import { Subscription, makeSubscription } from '../domain/subscription';
 import { ItemAlreadyExists } from '../domain/errors';
 import { makeSubscriptionHistory } from '../domain/subscription-history';
-import { makeActivationRequest } from '../domain/activation-request';
+import { makeInsertActivationRequest } from '../domain/activation-request';
 
 type Env = Pick<
   Capabilities,
@@ -33,7 +33,10 @@ export const processSubscriptionRequest = ({
     RTE.bindW('subscriptionHistory', ({ subscription }) =>
       makeSubscriptionHistory(subscription),
     ),
-    RTE.apSW('activationRequest', makeActivationRequest({ trialId, userId })),
+    RTE.apSW(
+      'activationRequest',
+      makeInsertActivationRequest({ trialId, userId }),
+    ),
     RTE.flatMapTaskEither(
       ({ subscription, subscriptionHistory, activationRequest, ...env }) =>
         pipe(

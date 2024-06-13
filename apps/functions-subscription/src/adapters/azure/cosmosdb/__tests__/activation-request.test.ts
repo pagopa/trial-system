@@ -7,7 +7,7 @@ import { makeDatabaseMock } from './mocks';
 import {
   anActivationJob,
   anActivationRequest,
-  anActivationRequestWithoutEtag,
+  anInsertActivationRequest,
 } from '../../../../domain/__tests__/data';
 import { makeActivationRequestRepository } from '../activation-request';
 import { ActivationRequestId } from '../../../../domain/activation-request';
@@ -77,11 +77,11 @@ describe('makeActivationRequestRepository', () => {
 
       const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).insert(anActivationRequestWithoutEtag)();
+      ).insert(anInsertActivationRequest)();
 
       expect(actual).toStrictEqual(E.right(anActivationRequest));
       expect(mockDB.container('').items.create).toBeCalledWith(
-        anActivationRequestWithoutEtag,
+        anInsertActivationRequest,
       );
     });
     it('should return ItemAlreadyExists if the item already exists', async () => {
@@ -94,7 +94,7 @@ describe('makeActivationRequestRepository', () => {
 
       const actual = await makeActivationRequestRepository(
         mockDB as unknown as Database,
-      ).insert(anActivationRequestWithoutEtag)();
+      ).insert(anInsertActivationRequest)();
 
       expect(actual).toMatchObject(
         E.left(
