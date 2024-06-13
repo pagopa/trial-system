@@ -1,43 +1,23 @@
-import { vi } from 'vitest';
+import { mock, mockFn } from 'vitest-mock-extended';
+import { SubscriptionReader, SubscriptionWriter } from '../subscription';
+import { SubscriptionRequestWriter } from '../subscription-request';
+import { SubscriptionHistoryWriter } from '../subscription-history';
+import { EventWriter } from '../event';
+import { ActivationRequestRepository } from '../activation-request';
+import { Clock } from '../clock';
+import { MonotonicIdFn } from '../monotonic-id';
+import { HashFn } from '../hash';
 
 export const makeTestEnv = () => {
-  const subscriptionReaderMock = {
-    get: vi.fn(),
-  };
-  const subscriptionWriterMock = {
-    insert: vi.fn(),
-    upsert: vi.fn(),
-  };
-  const subscriptionRequestWriterMock = {
-    insert: vi.fn(),
-  };
-  const subscriptionHistoryWriterMock = {
-    insert: vi.fn(),
-  };
-  const eventWriterMock = {
-    send: vi.fn(),
-  };
-  const hashFnMock = vi.fn();
-  const clockMock = {
-    now: vi.fn(),
-  };
-  const monotonicIdFnMock = vi.fn();
-
-  const activationRequestRepositoryMock = {
-    insert: vi.fn(),
-    list: vi.fn(),
-    activate: vi.fn(),
-  };
-
   return {
-    subscriptionReader: subscriptionReaderMock,
-    subscriptionWriter: subscriptionWriterMock,
-    subscriptionRequestWriter: subscriptionRequestWriterMock,
-    subscriptionHistoryWriter: subscriptionHistoryWriterMock,
-    activationRequestRepository: activationRequestRepositoryMock,
-    eventWriter: eventWriterMock,
-    hashFn: hashFnMock,
-    clock: clockMock,
-    monotonicIdFn: monotonicIdFnMock,
+    subscriptionReader: mock<SubscriptionReader>(),
+    subscriptionWriter: mock<SubscriptionWriter>(),
+    subscriptionRequestWriter: mock<SubscriptionRequestWriter>(),
+    subscriptionHistoryWriter: mock<SubscriptionHistoryWriter>(),
+    activationRequestRepository: mock<ActivationRequestRepository>(),
+    eventWriter: mock<EventWriter>(),
+    clock: mock<Clock>(),
+    hashFn: mockFn<HashFn>(),
+    monotonicIdFn: mockFn<MonotonicIdFn>(),
   };
 };
