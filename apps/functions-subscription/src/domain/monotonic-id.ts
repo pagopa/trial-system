@@ -1,5 +1,5 @@
-interface Id {
+interface MonotonicId {
   readonly value: string;
 }
 
-export type MonotonicId = () => Id;
+export type MonotonicIdFn = () => MonotonicId;

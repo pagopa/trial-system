@@ -6,7 +6,7 @@ import { SubscriptionId, TrialId, UserId } from '../subscription';
 import { SubscriptionHistoryId } from '../subscription-history';
 import { ActivationRequestId } from '../activation-request';
 import { ActivationJobId } from '../activation-job';
-import { MonotonicId } from '../monotonic-id';
+import { MonotonicIdFn } from '../monotonic-id';
 
 const aSubscriptionHistoryId =
   'aSubscriptionHistoryId' as SubscriptionHistoryId;
@@ -17,7 +17,7 @@ const anActivationJobId = 'anActivationJobId' as ActivationJobId;
 const anActivationRequestId = 'anActivationRequestId' as ActivationRequestId;
 export const aMonotonicId = {
   value: '01J06GDVZJCDZ0RCM543KN4DR6',
-} as ReturnType<MonotonicId>;
+} as ReturnType<MonotonicIdFn>;
 
 export const aSubscription = {
   id: aSubscriptionId,

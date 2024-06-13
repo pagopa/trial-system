@@ -8,7 +8,7 @@ import { SubscriptionReader, SubscriptionWriter } from './subscription';
 import { SubscriptionHistoryWriter } from './subscription-history';
 import { SubscriptionRequestWriter } from './subscription-request';
 import { ActivationRequestRepository } from './activation-request';
-import { MonotonicId } from './monotonic-id';
+import { MonotonicIdFn } from './monotonic-id';
 
 /**
  * Maps the capabilities to a given property name. Pick the capability using the
@@ -25,5 +25,5 @@ export interface Capabilities {
   readonly eventWriter: EventWriter;
   readonly hashFn: HashFn;
   readonly clock: Clock;
-  readonly monotonicId: MonotonicId;
+  readonly monotonicId: MonotonicIdFn;
 }
