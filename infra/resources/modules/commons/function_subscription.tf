@@ -19,6 +19,7 @@ locals {
     COSMOSDB_ENDPOINT      = module.cosmosdb_account.endpoint
     COSMOSDB_DATABASE_NAME = module.cosmosdb_sql_database_trial.name
     EVENTHUB_NAMESPACE     = "${module.event_hub.name}.servicebus.windows.net"
+    SERVICEBUS_NAMESPACE   = "${local.servicebus_namespace}.servicebus.windows.net"
 
     LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
 
