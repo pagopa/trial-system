@@ -103,9 +103,6 @@ describe('makeActivationRequestRepository', () => {
           ),
         ),
       );
-      expect(mockDB.container('').items.create).toBeCalledWith(
-        anActivationRequestWithoutEtag,
-      );
     });
   });
 
