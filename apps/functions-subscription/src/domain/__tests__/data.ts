@@ -58,7 +58,6 @@ export const anActivationRequestWithoutEtag = {
   id: anActivationRequestId,
   userId: aUserId,
   trialId: aTrialId,
-  createdAt: new Date(),
   activated: false,
   type: 'request' as const,
 };

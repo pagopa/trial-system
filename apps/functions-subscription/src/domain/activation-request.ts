@@ -2,7 +2,6 @@ import * as t from 'io-ts';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
-import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import {
   Subscription,
@@ -32,7 +31,6 @@ export const ActivationRequestCodec = t.strict({
   trialId: TrialIdCodec,
   _etag: t.string,
   userId: UserIdCodec,
-  createdAt: IsoDateFromString,
   type: t.literal('request'),
   activated: t.boolean,
 });
