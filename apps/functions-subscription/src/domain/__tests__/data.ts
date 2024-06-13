@@ -7,8 +7,10 @@ import { SubscriptionHistoryId } from '../subscription-history';
 import { ActivationRequestId } from '../activation-request';
 import { ActivationJobId } from '../activation-job';
 
-const aSubscriptionHistoryId =
-  'aSubscriptionHistoryId' as SubscriptionHistoryId;
+const aSubscriptionHistoryIdV0 =
+  'aSubscriptionHistoryIdV0' as SubscriptionHistoryId;
+const aSubscriptionHistoryIdV1 =
+  'aSubscriptionHistoryIdV1' as SubscriptionHistoryId;
 const aSubscriptionId = 'aSubscriptionId' as SubscriptionId;
 const aUserId = 'aUserId' as UserId;
 const aTrialId = 'aTrialId' as TrialId;
@@ -30,14 +32,25 @@ export const aSubscriptionRequest = {
 };
 
 export const aSubscriptionHistory = {
-  id: aSubscriptionHistoryId,
+  id: aSubscriptionHistoryIdV0,
   subscriptionId: aSubscriptionId,
   userId: aUserId,
   trialId: aTrialId,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: aSubscription.createdAt,
+  updatedAt: aSubscription.updatedAt,
   state: 'SUBSCRIBED' as const,
   version: 0 as NonNegativeInteger,
+};
+
+export const aSubscriptionHistoryV1 = {
+  id: aSubscriptionHistoryIdV1,
+  subscriptionId: aSubscriptionId,
+  userId: aUserId,
+  trialId: aTrialId,
+  createdAt: aSubscriptionHistory.createdAt,
+  updatedAt: new Date(),
+  state: 'ACTIVE' as const,
+  version: 1 as NonNegativeInteger,
 };
 
 export const anActivationJob = {
@@ -47,7 +60,6 @@ export const anActivationJob = {
   usersToActivate: 100 as NonNegativeNumber,
   usersActivated: 0 as NonNegativeNumber,
   type: 'job' as const,
-  _etag: 'anEtag',
 };
 
 export const anInsertActivationRequest = {

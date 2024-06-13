@@ -1,0 +1,100 @@
+import { describe, expect, it } from 'vitest';
+import * as O from 'fp-ts/lib/Option';
+import * as E from 'fp-ts/lib/Either';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { makeTestEnv } from '../../domain/__tests__/mocks';
+import { Capabilities } from '../../domain/capabilities';
+import { processActivationRequest } from '../process-activation-request';
+import {
+    aSubscription,
+  aSubscriptionHistory,
+  aSubscriptionHistoryV1,
+  anActivationRequest,
+} from '../../domain/__tests__/data';
+
+describe('processActivationRequest', () => {
+  it('should create a new version of subscription-history', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    mockEnv.hashFn
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistoryV1.id });
+    mockEnv.subscriptionHistoryReader.getLatest.mockReturnValueOnce(
+      TE.right(O.some(aSubscriptionHistory)),
+    );
+    mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
+      TE.right(void 0),
+    );
+
+    const actual =
+      await processActivationRequest(anActivationRequest)(testEnv)();
+
+    expect(actual).toStrictEqual(E.right(void 0));
+    expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledWith(
+      { subscriptionId: aSubscription.id },
+    );
+    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledWith(
+      aSubscriptionHistoryV1,
+    );
+  });
+
+  it('should fail if subscription does not exist', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    mockEnv.hashFn
+      .mockReturnValueOnce({ value: aSubscription.id });
+    mockEnv.subscriptionHistoryReader.getLatest.mockReturnValueOnce(
+      TE.right(O.none),
+    );
+
+    const actual =
+      await processActivationRequest(anActivationRequest)(testEnv)();
+    const expected = E.left(new Error('Subscription History not found'));
+
+    expect(actual).toStrictEqual(expected);
+    expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
+  });
+
+  it('should fail if update subscription raise an error', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+    const error = new Error('Oh No!');
+
+    mockEnv.hashFn
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistoryV1.id });
+    mockEnv.subscriptionHistoryReader.getLatest.mockReturnValueOnce(
+      TE.right(O.some(aSubscriptionHistory)),
+    );
+    mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
+      TE.left(error),
+    );
+
+    const actual =
+      await processActivationRequest(anActivationRequest)(testEnv)();
+
+    expect(actual).toStrictEqual(E.left(error));
+  });
+
+  it('should fail if get subscription raise an error', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+    const error = new Error('Oh No!');
+
+    mockEnv.hashFn
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistoryV1.id });
+    mockEnv.subscriptionHistoryReader.getLatest.mockReturnValueOnce(
+      TE.left(error),
+    );
+
+    const actual =
+      await processActivationRequest(anActivationRequest)(testEnv)();
+
+    expect(actual).toStrictEqual(E.left(error));
+    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
+  });
+});

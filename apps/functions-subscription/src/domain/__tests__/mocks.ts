@@ -11,6 +11,9 @@ export const makeTestEnv = () => {
   const subscriptionRequestWriterMock = {
     insert: vi.fn(),
   };
+  const subscriptionHistoryReaderMock = {
+    getLatest: vi.fn(),
+  };
   const subscriptionHistoryWriterMock = {
     insert: vi.fn(),
   };
@@ -33,6 +36,7 @@ export const makeTestEnv = () => {
     subscriptionReader: subscriptionReaderMock,
     subscriptionWriter: subscriptionWriterMock,
     subscriptionRequestWriter: subscriptionRequestWriterMock,
+    subscriptionHistoryReader: subscriptionHistoryReaderMock,
     subscriptionHistoryWriter: subscriptionHistoryWriterMock,
     activationRequestRepository: activationRequestRepositoryMock,
     eventWriter: eventWriterMock,
