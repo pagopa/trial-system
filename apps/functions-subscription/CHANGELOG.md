@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 0.4.0
+
+### Minor Changes
+
+- dc23360: [IOPLT-467] Add events producer
+
 ## 0.3.0
 
 ### Minor Changes

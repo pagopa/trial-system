@@ -5,6 +5,9 @@ resource "azurerm_servicebus_namespace" "main" {
   # The premium is required to use private endpoint
   sku = "Premium"
 
+  capacity                     = 1
+  premium_messaging_partitions = 1
+
   tags = var.tags
 }
 
