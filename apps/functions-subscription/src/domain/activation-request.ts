@@ -21,24 +21,16 @@ export const ActivationRequestIdCodec = t.brand(
 );
 export type ActivationRequestId = t.TypeOf<typeof ActivationRequestIdCodec>;
 
-export const InsertActivationRequestCodec = t.strict({
+export const ActivationRequestCodec = t.strict({
   id: ActivationRequestIdCodec,
   trialId: TrialIdCodec,
   userId: UserIdCodec,
   type: t.literal('request'),
   activated: t.boolean,
+  _etag: t.string,
 });
-export type InsertActivationRequest = t.TypeOf<
-  typeof InsertActivationRequestCodec
->;
-
-export const ActivationRequestCodec = t.intersection([
-  InsertActivationRequestCodec,
-  t.strict({
-    _etag: t.string,
-  }),
-]);
 export type ActivationRequest = t.TypeOf<typeof ActivationRequestCodec>;
+type InsertActivationRequest = Omit<ActivationRequest, '_etag'>;
 
 export type ActivationResult = 'success' | 'fail';
 
