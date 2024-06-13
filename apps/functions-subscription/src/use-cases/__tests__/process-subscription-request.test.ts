@@ -20,10 +20,10 @@ describe('processSubscriptionRequest', () => {
     mockEnv.monotonicIdFn.mockReturnValueOnce({
       value: anActivationRequest.id,
     });
-    mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
     mockEnv.hashFn
-      .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
-      .mockReturnValueOnce(TE.right({ value: aSubscriptionHistory.id }));
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
     mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
       TE.right(aSubscription),
     );
@@ -50,10 +50,10 @@ describe('processSubscriptionRequest', () => {
     mockEnv.monotonicIdFn.mockReturnValueOnce({
       value: anActivationRequest.id,
     });
-    mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
     mockEnv.hashFn
-      .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
-      .mockReturnValueOnce(TE.right({ value: aSubscriptionHistory.id }));
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
     mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('')),
     );
@@ -80,10 +80,10 @@ describe('processSubscriptionRequest', () => {
     mockEnv.monotonicIdFn.mockReturnValueOnce({
       value: anActivationRequest.id,
     });
-    mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
     mockEnv.hashFn
-      .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
-      .mockReturnValueOnce(TE.right({ value: aSubscriptionHistory.id }));
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
     mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
       TE.right(aSubscription),
     );
@@ -110,10 +110,10 @@ describe('processSubscriptionRequest', () => {
     mockEnv.monotonicIdFn.mockReturnValueOnce({
       value: anActivationRequest.id,
     });
-    mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
     mockEnv.hashFn
-      .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
-      .mockReturnValueOnce(TE.right({ value: aSubscriptionHistory.id }));
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
     mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('')),
     );
@@ -141,10 +141,10 @@ describe('processSubscriptionRequest', () => {
     mockEnv.monotonicIdFn.mockReturnValueOnce({
       value: anActivationRequest.id,
     });
-    mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
     mockEnv.hashFn
-      .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
-      .mockReturnValueOnce(TE.right({ value: aSubscriptionHistory.id }));
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
     mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
       TE.right(aSubscription),
     );
