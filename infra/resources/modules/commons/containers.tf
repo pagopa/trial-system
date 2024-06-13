@@ -28,10 +28,6 @@ resource "azurerm_cosmosdb_sql_container" "subscription_history" {
       path = "/*"
     }
 
-    excluded_path {
-      path = "/\"_etag\"/?"
-    }
-
     composite_index {
       index {
         path  = "/subscriptionId"
@@ -61,10 +57,6 @@ resource "azurerm_cosmosdb_sql_container" "activations" {
   indexing_policy {
     included_path {
       path = "/*"
-    }
-
-    excluded_path {
-      path = "/\"_etag\"/?"
     }
 
     composite_index {
@@ -106,10 +98,6 @@ resource "azurerm_cosmosdb_sql_container" "leases" {
   indexing_policy {
     included_path {
       path = "/*"
-    }
-
-    excluded_path {
-      path = "/\"_etag\"/?"
     }
   }
 }
