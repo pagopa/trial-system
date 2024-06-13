@@ -7,7 +7,6 @@ import {
   aSubscription,
   aSubscriptionHistory,
   anActivationRequest,
-  aMonotonicId,
 } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
@@ -18,7 +17,7 @@ describe('processSubscriptionRequest', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.monotonicId.mockReturnValueOnce(aMonotonicId);
+    mockEnv.monotonicId.mockReturnValueOnce({ value: anActivationRequest.id });
     mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
     mockEnv.hashFn
       .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
@@ -46,7 +45,7 @@ describe('processSubscriptionRequest', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.monotonicId.mockReturnValueOnce(aMonotonicId);
+    mockEnv.monotonicId.mockReturnValueOnce({ value: anActivationRequest.id });
     mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
     mockEnv.hashFn
       .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
@@ -74,7 +73,7 @@ describe('processSubscriptionRequest', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.monotonicId.mockReturnValueOnce(aMonotonicId);
+    mockEnv.monotonicId.mockReturnValueOnce({ value: anActivationRequest.id });
     mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
     mockEnv.hashFn
       .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
@@ -102,7 +101,7 @@ describe('processSubscriptionRequest', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.monotonicId.mockReturnValueOnce(aMonotonicId);
+    mockEnv.monotonicId.mockReturnValueOnce({ value: anActivationRequest.id });
     mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
     mockEnv.hashFn
       .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
@@ -131,7 +130,7 @@ describe('processSubscriptionRequest', () => {
     const testEnv = mockEnv as unknown as Capabilities;
     const unexpectedError = new Error('Unexpected error');
 
-    mockEnv.monotonicId.mockReturnValueOnce(aMonotonicId);
+    mockEnv.monotonicId.mockReturnValueOnce({ value: anActivationRequest.id });
     mockEnv.clock.now.mockReturnValueOnce(TE.right(aSubscription.createdAt));
     mockEnv.hashFn
       .mockReturnValueOnce(TE.right({ value: aSubscription.id }))
