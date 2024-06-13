@@ -98,7 +98,7 @@ describe('processSubscriptionRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestRepository.insert).toBeCalledTimes(1);
   });
-  it('should succeed if the the first version of subscription-history and subscription already exists', async () => {
+  it('should succeed if the the first version of subscription-history, subscription and activation already exists', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -114,7 +114,7 @@ describe('processSubscriptionRequest', () => {
       TE.left(new ItemAlreadyExists('')),
     );
     mockEnv.activationRequestRepository.insert.mockReturnValueOnce(
-      TE.right(anActivationRequest),
+      TE.left(new ItemAlreadyExists('')),
     );
 
     const actual =
