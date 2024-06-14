@@ -9,6 +9,7 @@ import {
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
 import { processActivationJob } from '../process-activation-job';
+import { ActivationRequestId } from '../../domain/activation-request';
 
 describe('processActivationJob', () => {
   const fetchSize = 100;
@@ -19,7 +20,7 @@ describe('processActivationJob', () => {
     // Creating an array of many requests; every element has a different id
     const activationRequests = Array.from({ length: fetchSize }, (_, i) => ({
       ...anActivationRequest,
-      id: `${i}`,
+      id: `${i}` as ActivationRequestId,
     }));
 
     mockEnv.activationRequestRepository.list.mockReturnValueOnce(
@@ -50,14 +51,14 @@ describe('processActivationJob', () => {
       TE.right(activationRequests),
     );
     mockEnv.activationRequestRepository.activate.mockReturnValue(
-      TE.right(['success'] as const),
+      TE.right('success'),
     );
 
     const actual = await processActivationJob(
       anActivationJob,
       fetchSize,
     )(testEnv)();
-    const expected = E.right(['success']);
+    const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
     expect(
@@ -70,11 +71,11 @@ describe('processActivationJob', () => {
 
     const requests = Array.from({ length: fetchSize }, (_, i) => ({
       ...anActivationRequest,
-      id: `${i}`,
+      id: `${i}` as ActivationRequestId,
     }));
     const activationRequests = RA.append({
       ...anActivationRequest,
-      id: 'anotherId',
+      id: 'anotherId' as ActivationRequestId,
     })(requests);
     mockEnv.activationRequestRepository.list.mockReturnValueOnce(
       TE.right(activationRequests),

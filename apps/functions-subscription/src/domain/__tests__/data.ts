@@ -73,3 +73,8 @@ export const anActivationRequest = {
   ...anInsertActivationRequest,
   _etag: 'anEtag',
 };
+export const anActivationRequestActivated = {
+  ...anInsertActivationRequest,
+  activated: true,
+  _etag: 'anEtag',
+};

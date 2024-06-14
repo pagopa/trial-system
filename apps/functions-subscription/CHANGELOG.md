@@ -1,5 +1,23 @@
 # functions-subscription
 
+## 0.6.2
+
+### Patch Changes
+
+- 9447cca: Update the updatedAt field when creating a new version of subscription history
+
+## 0.6.1
+
+### Patch Changes
+
+- 8e665be: Fix issues on activations change feed
+
+## 0.6.0
+
+### Minor Changes
+
+- 48362d8: [IOPLT-556] Add process activations change feed
+
 ## 0.5.0
 
 ### Minor Changes
