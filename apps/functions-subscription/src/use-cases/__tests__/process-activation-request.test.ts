@@ -10,10 +10,23 @@ import {
   aSubscriptionHistory,
   aSubscriptionHistoryV1,
   anActivationRequest,
+  anActivationRequestActivated,
 } from '../../domain/__tests__/data';
 
 describe('processActivationRequest', () => {
-  it('should create a new version of subscription-history', async () => {
+  it('should return none if activation request is not activated', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    const actual =
+      await processActivationRequest(anActivationRequest)(testEnv)();
+
+    expect(actual).toStrictEqual(E.right(O.none));
+    expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledTimes(0);
+    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
+  });
+
+  it('should create a new version of subscription-history if activated', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -27,10 +40,11 @@ describe('processActivationRequest', () => {
       TE.right(aSubscriptionHistoryV1),
     );
 
-    const actual =
-      await processActivationRequest(anActivationRequest)(testEnv)();
+    const actual = await processActivationRequest(anActivationRequestActivated)(
+      testEnv,
+    )();
 
-    expect(actual).toStrictEqual(E.right(aSubscriptionHistoryV1));
+    expect(actual).toStrictEqual(E.right(O.some(aSubscriptionHistoryV1)));
     expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledWith({
       subscriptionId: aSubscription.id,
     });
@@ -48,8 +62,9 @@ describe('processActivationRequest', () => {
       TE.right(O.none),
     );
 
-    const actual =
-      await processActivationRequest(anActivationRequest)(testEnv)();
+    const actual = await processActivationRequest(anActivationRequestActivated)(
+      testEnv,
+    )();
     const expected = E.left(new Error('Subscription History not found'));
 
     expect(actual).toStrictEqual(expected);
@@ -72,8 +87,9 @@ describe('processActivationRequest', () => {
       TE.left(error),
     );
 
-    const actual =
-      await processActivationRequest(anActivationRequest)(testEnv)();
+    const actual = await processActivationRequest(anActivationRequestActivated)(
+      testEnv,
+    )();
 
     expect(actual).toStrictEqual(E.left(error));
   });
@@ -90,8 +106,9 @@ describe('processActivationRequest', () => {
       TE.left(error),
     );
 
-    const actual =
-      await processActivationRequest(anActivationRequest)(testEnv)();
+    const actual = await processActivationRequest(anActivationRequestActivated)(
+      testEnv,
+    )();
 
     expect(actual).toStrictEqual(E.left(error));
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
