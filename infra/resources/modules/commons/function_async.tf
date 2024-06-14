@@ -97,7 +97,11 @@ module "subscription_async_fn" {
 
   app_settings = merge(
     local.async_app_settings,
-    {},
+    {
+      # Avoiding host ID collisions
+      # https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations?tabs=azure-cli#avoiding-host-id-collisions
+      AzureFunctionsWebHost__hostid = "subscription-async-fn-01"
+    },
   )
 
   sticky_app_setting_names = []
