@@ -64,7 +64,7 @@ export const makeSubscriptionHistory = (subscription: Subscription) => {
   );
 };
 
-export const updateSubscriptionHistory = (
+export const makeSubscriptionHistoryNextVersion = (
   subscriptionHistory: SubscriptionHistory,
   update: Partial<Omit<SubscriptionHistory, 'id' | 'version'>>,
 ) => {

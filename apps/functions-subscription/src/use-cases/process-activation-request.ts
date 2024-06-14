@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { Capabilities } from '../domain/capabilities';
 import { ActivationRequest } from '../domain/activation-request';
-import { updateSubscriptionHistory } from '../domain/subscription-history';
+import { makeSubscriptionHistoryNextVersion } from '../domain/subscription-history';
 import { makeSubscriptionId } from '../domain/subscription';
 
 type Env = Pick<
@@ -33,7 +33,7 @@ export const processActivationRequest = ({
     RTE.bindW(
       'subscriptionHistoryNewVersion',
       ({ subscriptionHistoryLatest }) =>
-        updateSubscriptionHistory(subscriptionHistoryLatest, {
+        makeSubscriptionHistoryNextVersion(subscriptionHistoryLatest, {
           state: 'ACTIVE',
         }),
     ),
