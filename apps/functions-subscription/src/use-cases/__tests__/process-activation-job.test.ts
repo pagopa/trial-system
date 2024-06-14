@@ -100,8 +100,9 @@ describe('processActivationJob', () => {
     const testEnv = mockEnv as unknown as Capabilities;
 
     mockEnv.activationRequestRepository.list.mockReturnValueOnce(TE.right([]));
-    mockEnv.activationRequestRepository.activate
-      .mockReturnValueOnce(TE.right('success' as const))
+    mockEnv.activationRequestRepository.activate.mockReturnValueOnce(
+      TE.right('success' as const),
+    );
 
     const actual = await processActivationJob(
       anActivationJob,
