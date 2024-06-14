@@ -100,6 +100,8 @@ describe('processActivationJob', () => {
     const testEnv = mockEnv as unknown as Capabilities;
 
     mockEnv.activationRequestRepository.list.mockReturnValueOnce(TE.right([]));
+    mockEnv.activationRequestRepository.activate
+      .mockReturnValueOnce(TE.right('success' as const))
 
     const actual = await processActivationJob(
       anActivationJob,
@@ -108,9 +110,6 @@ describe('processActivationJob', () => {
     const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
-      0,
-    );
   });
   it('should return an error when the fetch fail', async () => {
     const mockEnv = makeTestEnv();

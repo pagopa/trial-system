@@ -6,7 +6,7 @@ import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
 import { processActivationRequest } from '../process-activation-request';
 import {
-    aSubscription,
+  aSubscription,
   aSubscriptionHistory,
   aSubscriptionHistoryV1,
   anActivationRequest,
@@ -31,9 +31,9 @@ describe('processActivationRequest', () => {
       await processActivationRequest(anActivationRequest)(testEnv)();
 
     expect(actual).toStrictEqual(E.right(void 0));
-    expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledWith(
-      { subscriptionId: aSubscription.id },
-    );
+    expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledWith({
+      subscriptionId: aSubscription.id,
+    });
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledWith(
       aSubscriptionHistoryV1,
     );
@@ -43,8 +43,7 @@ describe('processActivationRequest', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.hashFn
-      .mockReturnValueOnce({ value: aSubscription.id });
+    mockEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
     mockEnv.subscriptionHistoryReader.getLatest.mockReturnValueOnce(
       TE.right(O.none),
     );
