@@ -78,7 +78,7 @@ describe('processActivationRequest', () => {
     expect(actual).toStrictEqual(E.left(error));
   });
 
-  it('should fail if get subscription raise an error', async () => {
+  it('should fail if get latest subscription history raise an error', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
     const error = new Error('Oh No!');
