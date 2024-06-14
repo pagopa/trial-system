@@ -3,12 +3,29 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "NODE_ENV": "development",
+
     "COSMOSDB_ENDPOINT": "<put-here-the-the-cosmos-database-endpoint>",
     "COSMOSDB_DATABASE_NAME": "<put-here-the-name-of-cosmos-database>",
     "EVENTHUB_NAMESPACE": "<put-here-the-the-event-hub-namespace>",
-    "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
+    "SERVICEBUS_NAMESPACE": "<put-here-the-the-service-bus-namespace>",
+    "AzureWebJobsStorage": "<put-here-the-connection-string-to-a-storage>",
+
+    "LEASES_COSMOSDB_CONTAINER_NAME": "leases",
+
+    "SUBSCRIPTION_HISTORY_CONSUMER": "on",
+    "SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME": "subscription-history",
+    "SubscriptionHistoryCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
+
     "SUBSCRIPTION_REQUEST_CONSUMER": "on",
-    "SubscriptionRequestEventHubConnection__fullyQualifiedNamespace": "<put-here-the-the-event-hub-namespace>",
-    "AzureWebJobsStorage": "<put-here-the-connection-string-to-a-storage>"
+    "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
+
+    "EVENTS_PRODUCER": "on",
+    "EVENTS_SERVICEBUS_TOPIC_NAME": "<put-here-the-the-service-bus-topic-name>",
+    "EventProducerCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
+
+    "ACTIVATION_CONSUMER": "on",
+    "ACTIVATIONS_COSMOSDB_CONTAINER_NAME": "activations",
+    "ACTIVATION_MAX_FETCH_SIZE": "50",
+    "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>"
   }
 }

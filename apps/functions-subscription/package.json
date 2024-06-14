@@ -2,7 +2,7 @@
   "name": "functions-subscription",
   "private": true,
   "main": "./dist/main.js",
-  "version": "0.2.0",
+  "version": "0.6.2",
   "description": "The Azure function that let users to subscribe to a trial and to provide information about the subscriptions.",
   "scripts": {
     "clean": "rimraf ./dist ./src/generated/definitions/internal",
@@ -19,13 +19,15 @@
     "@azure/cosmos": "^4.0.0",
     "@azure/event-hubs": "^5.11.4",
     "@azure/functions": "^4.4.0",
-    "@azure/identity": "^4.2.0",
+    "@azure/identity": "^4.2.1",
+    "@azure/service-bus": "^7.9.4",
     "@pagopa/handler-kit": "^1.1.0",
     "@pagopa/handler-kit-azure-func": "^2.0.4",
     "@pagopa/io-functions-commons": "^29.0.4",
     "@pagopa/ts-commons": "^13.0.0",
     "fp-ts": "^2.16.5",
-    "io-ts": "^2.2.19"
+    "io-ts": "^2.2.19",
+    "ulid": "^2.3.0"
   },
   "devDependencies": {
     "@pagopa/openapi-codegen-ts": "^13.1.0",
@@ -37,6 +39,7 @@
     "rimraf": "^5.0.5",
     "shx": "^0.3.4",
     "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "vitest-mock-extended": "^1.3.1"
   }
 }

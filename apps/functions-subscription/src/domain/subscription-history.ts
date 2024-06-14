@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import { pipe } from 'fp-ts/lib/function';
+import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
@@ -13,6 +14,7 @@ import {
 import { ItemAlreadyExists } from './errors';
 import { Capabilities } from './capabilities';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
+import { nowDate } from './clock';
 
 // a unique brand for subscriptionHistoryId
 interface SubscriptionHistoryIdBrand {
@@ -48,12 +50,33 @@ export interface SubscriptionHistoryWriter {
   ) => TE.TaskEither<Error | ItemAlreadyExists, SubscriptionHistory>;
 }
 
+export interface SubscriptionHistoryReader {
+  readonly getLatest: (
+    filter: Pick<SubscriptionHistory, 'subscriptionId'>,
+  ) => TE.TaskEither<Error, O.Option<SubscriptionHistory>>;
+}
+
 export const makeSubscriptionHistory = (subscription: Subscription) => {
   const { trialId, userId, id: subscriptionId } = subscription;
   const version = 0 as NonNegativeInteger;
   return pipe(
     makeSubscriptionHistoryId(trialId, userId, version),
     RTE.map((id) => ({ ...subscription, id, version, subscriptionId })),
+  );
+};
+
+export const makeSubscriptionHistoryNextVersion = (
+  subscriptionHistory: SubscriptionHistory,
+  update: Partial<Omit<SubscriptionHistory, 'id' | 'version'>>,
+) => {
+  const { trialId, userId, version: prevVersion } = subscriptionHistory;
+  const updated = { ...subscriptionHistory, ...update };
+  const version = (prevVersion + 1) as NonNegativeInteger;
+  return pipe(
+    RTE.Do,
+    RTE.apSW('updatedAt', nowDate()),
+    RTE.apSW('id', makeSubscriptionHistoryId(trialId, userId, version)),
+    RTE.map(({ id, updatedAt }) => ({ ...updated, updatedAt, id, version })),
   );
 };
 

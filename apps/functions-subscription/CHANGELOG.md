@@ -1,5 +1,48 @@
 # functions-subscription
 
+## 0.6.2
+
+### Patch Changes
+
+- 9447cca: Update the updatedAt field when creating a new version of subscription history
+
+## 0.6.1
+
+### Patch Changes
+
+- 8e665be: Fix issues on activations change feed
+
+## 0.6.0
+
+### Minor Changes
+
+- 48362d8: [IOPLT-556] Add process activations change feed
+
+## 0.5.0
+
+### Minor Changes
+
+- 80330a4: Create an activation request when processing a subscription request
+
+### Patch Changes
+
+- 5e46121: Bump @azure/identity from 4.2.0 to 4.2.1
+- 4559acc: Bump braces from 3.0.2 to 3.0.3
+
+## 0.4.0
+
+### Minor Changes
+
+- dc23360: [IOPLT-467] Add events producer
+
+## 0.3.0
+
+### Minor Changes
+
+- 09c55db: Add activation job processor
+- 83efeeb: [IOPLT-552] Add process that keeps `subscription` in sync with `subscription-history`
+- 594322b: [IOPLT-528] Add event hub consumer to populate subscription-history
+
 ## 0.2.0
 
 ### Minor Changes

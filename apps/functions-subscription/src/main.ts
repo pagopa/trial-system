@@ -1,6 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import { app } from '@azure/functions';
+import { ServiceBusClient } from '@azure/service-bus';
 import { EventHubProducerClient } from '@azure/event-hubs';
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
@@ -16,6 +17,12 @@ import { clock } from './adapters/date/clock';
 import { hashFn } from './adapters/crypto/hash';
 import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosdb/subscription-history';
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
+import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
+import { makeActivationsChangesHandler } from './adapters/azure/functions/process-activations-changes';
+import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
+import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
+import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
+import { monotonicIdFn } from './adapters/ulid/monotonic-id';
 import { makeCreateActivationJobHandler } from './adapters/azure/functions/create-activation-job';
 
 const config = pipe(
@@ -37,11 +44,16 @@ const subscriptionRequestEventHub = new EventHubProducerClient(
   new DefaultAzureCredential(),
 );
 
+const serviceBus = new ServiceBusClient(
+  config.servicebus.namespace,
+  new DefaultAzureCredential(),
+);
+
 const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
-const subscriptionHistoryWriter = makeSubscriptionHistoryCosmosContainer(
+const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
@@ -49,13 +61,25 @@ const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
 
+const activationRequestRepository = makeActivationRequestRepository(
+  cosmosDB.database(config.cosmosdb.databaseName),
+);
+
+const eventWriter = makeEventWriterServiceBus(
+  serviceBus.createSender(config.servicebus.names.event),
+);
+
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
+  subscriptionHistoryReader: subscriptionHistoryReaderWriter,
+  subscriptionHistoryWriter: subscriptionHistoryReaderWriter,
   subscriptionRequestWriter,
-  subscriptionHistoryWriter,
+  activationRequestRepository,
+  eventWriter,
   hashFn,
   clock,
+  monotonicIdFn,
 };
 
 const env = makeSystemEnv(capabilities);
@@ -95,4 +119,34 @@ if (config.subscriptionRequest.consumer === 'on')
     eventHubName: config.eventhubs.names.subscriptionRequest,
     cardinality: 'many',
     handler: makeSubscriptionRequestConsumerHandler(env),
+  });
+
+if (config.subscriptionHistory.consumer === 'on')
+  app.cosmosDB('subscriptionHistoryConsumer', {
+    connection: 'SubscriptionHistoryCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.subscriptionHistory,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'subscriptionHistoryConsumer-',
+    handler: makeSubscriptionHistoryChangesHandler(capabilities),
+  });
+
+if (config.activations.consumer === 'on')
+  app.cosmosDB('activationConsumer', {
+    connection: 'ActivationConsumerCosmosDBConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.activations,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'activationConsumer-',
+    handler: makeActivationsChangesHandler({ env, config }),
+  });
+
+if (config.events.producer === 'on')
+  app.cosmosDB('eventProducer', {
+    connection: 'SubscriptionHistoryCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.subscriptionHistory,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'eventProducer-',
+    handler: makeEventsProducerCosmosDBHandler(capabilities),
   });
