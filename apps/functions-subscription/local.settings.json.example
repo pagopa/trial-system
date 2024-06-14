@@ -18,7 +18,6 @@
 
     "SUBSCRIPTION_REQUEST_CONSUMER": "on",
     "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
-    "SubscriptionRequestEventHubConnection__fullyQualifiedNamespace": "<put-here-the-the-event-hub-namespace>",
 
     "EVENTS_PRODUCER": "on",
     "EVENTS_SERVICEBUS_TOPIC_NAME": "<put-here-the-the-service-bus-topic-name>",
