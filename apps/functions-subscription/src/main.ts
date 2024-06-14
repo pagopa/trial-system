@@ -18,10 +18,11 @@ import { hashFn } from './adapters/crypto/hash';
 import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosdb/subscription-history';
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
 import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
-import { makeActivationJobConsumerHandler } from './adapters/azure/functions/activation-job';
+import { makeActivationsChangesHandler } from './adapters/azure/functions/process-activations-changes';
 import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
 import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
 import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
+import { monotonicIdFn } from './adapters/ulid/monotonic-id';
 
 const config = pipe(
   parseConfig(process.env),
@@ -51,7 +52,7 @@ const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
-const subscriptionHistoryWriter = makeSubscriptionHistoryCosmosContainer(
+const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
@@ -70,12 +71,14 @@ const eventWriter = makeEventWriterServiceBus(
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
+  subscriptionHistoryReader: subscriptionHistoryReaderWriter,
+  subscriptionHistoryWriter: subscriptionHistoryReaderWriter,
   subscriptionRequestWriter,
-  subscriptionHistoryWriter,
   activationRequestRepository,
   eventWriter,
   hashFn,
   clock,
+  monotonicIdFn,
 };
 
 const env = makeSystemEnv(capabilities);
@@ -126,10 +129,7 @@ if (config.activations.consumer === 'on')
     containerName: config.cosmosdb.containersNames.activations,
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: `${config.cosmosdb.containersNames.activations}-`,
-    handler: makeActivationJobConsumerHandler(
-      env,
-      config.activations.maxFetchSize,
-    ),
+    handler: makeActivationsChangesHandler({ env, config }),
   });
 
 if (config.events.producer === 'on')

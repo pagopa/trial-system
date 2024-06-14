@@ -1,5 +1,16 @@
 # functions-subscription
 
+## 0.5.0
+
+### Minor Changes
+
+- 80330a4: Create an activation request when processing a subscription request
+
+### Patch Changes
+
+- 5e46121: Bump @azure/identity from 4.2.0 to 4.2.1
+- 4559acc: Bump braces from 3.0.2 to 3.0.3
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,5 @@
 resource "azurerm_servicebus_namespace" "main" {
-  name                = "${local.domain}-srvb"
+  name                = local.servicebus_namespace
   resource_group_name = azurerm_resource_group.data_rg.name
   location            = var.location
   # The premium is required to use private endpoint

@@ -11,6 +11,9 @@ export const makeTestEnv = () => {
   const subscriptionRequestWriterMock = {
     insert: vi.fn(),
   };
+  const subscriptionHistoryReaderMock = {
+    getLatest: vi.fn(),
+  };
   const subscriptionHistoryWriterMock = {
     insert: vi.fn(),
   };
@@ -21,8 +24,10 @@ export const makeTestEnv = () => {
   const clockMock = {
     now: vi.fn(),
   };
+  const monotonicIdFnMock = vi.fn();
 
   const activationRequestRepositoryMock = {
+    insert: vi.fn(),
     list: vi.fn(),
     activate: vi.fn(),
   };
@@ -31,10 +36,12 @@ export const makeTestEnv = () => {
     subscriptionReader: subscriptionReaderMock,
     subscriptionWriter: subscriptionWriterMock,
     subscriptionRequestWriter: subscriptionRequestWriterMock,
+    subscriptionHistoryReader: subscriptionHistoryReaderMock,
     subscriptionHistoryWriter: subscriptionHistoryWriterMock,
     activationRequestRepository: activationRequestRepositoryMock,
     eventWriter: eventWriterMock,
     hashFn: hashFnMock,
     clock: clockMock,
+    monotonicIdFn: monotonicIdFnMock,
   };
 };
