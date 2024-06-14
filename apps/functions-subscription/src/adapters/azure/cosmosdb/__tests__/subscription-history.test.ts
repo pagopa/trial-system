@@ -72,7 +72,7 @@ describe('makeSubscriptionHistoryCosmosContainer', () => {
       expect(actual).toStrictEqual(E.right(O.some(aSubscriptionHistory)));
       expect(mockDB.container('').items.query).toBeCalledWith({
         query:
-          'SELECT * FROM c WHERE subscriptionId = @sId ORDER BY version DESC OFFEST 0 LIMIT 1',
+          'SELECT * FROM c WHERE c.subscriptionId = @sId ORDER BY c.version DESC OFFSET 0 LIMIT 1',
         parameters: [
           {
             name: '@sId',
