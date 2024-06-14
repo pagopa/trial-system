@@ -1,4 +1,5 @@
 import { pipe } from 'fp-ts/lib/function';
+import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { Capabilities } from '../domain/capabilities';
@@ -14,31 +15,36 @@ type Env = Pick<
 export const processActivationRequest = ({
   trialId,
   userId,
-}: ActivationRequest) =>
-  pipe(
-    RTE.ask<Env>(),
-    RTE.apSW('subscriptionId', makeSubscriptionId(trialId, userId)),
-    RTE.bindW(
-      'subscriptionHistoryLatest',
-      ({ subscriptionHistoryReader, subscriptionId }) =>
-        pipe(
-          subscriptionHistoryReader.getLatest({ subscriptionId }),
-          TE.flatMapOption(
-            (some) => some,
-            () => new Error('Subscription History not found'),
+  activated,
+}: ActivationRequest) => {
+  if (activated)
+    return pipe(
+      RTE.ask<Env>(),
+      RTE.apSW('subscriptionId', makeSubscriptionId(trialId, userId)),
+      RTE.bindW(
+        'subscriptionHistoryLatest',
+        ({ subscriptionHistoryReader, subscriptionId }) =>
+          pipe(
+            subscriptionHistoryReader.getLatest({ subscriptionId }),
+            TE.flatMapOption(
+              (some) => some,
+              () => new Error('Subscription History not found'),
+            ),
+            RTE.fromTaskEither,
           ),
-          RTE.fromTaskEither,
-        ),
-    ),
-    RTE.bindW(
-      'subscriptionHistoryNewVersion',
-      ({ subscriptionHistoryLatest }) =>
-        makeSubscriptionHistoryNextVersion(subscriptionHistoryLatest, {
-          state: 'ACTIVE',
-        }),
-    ),
-    RTE.flatMapTaskEither(
-      ({ subscriptionHistoryWriter, subscriptionHistoryNewVersion }) =>
-        subscriptionHistoryWriter.insert(subscriptionHistoryNewVersion),
-    ),
-  );
+      ),
+      RTE.bindW(
+        'subscriptionHistoryNewVersion',
+        ({ subscriptionHistoryLatest }) =>
+          makeSubscriptionHistoryNextVersion(subscriptionHistoryLatest, {
+            state: 'ACTIVE',
+          }),
+      ),
+      RTE.flatMapTaskEither(
+        ({ subscriptionHistoryWriter, subscriptionHistoryNewVersion }) =>
+          subscriptionHistoryWriter.insert(subscriptionHistoryNewVersion),
+      ),
+      RTE.map(O.of),
+    );
+  else return RTE.right(O.none);
+};
