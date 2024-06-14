@@ -10,7 +10,7 @@ resource "azurerm_servicebus_namespace" "main" {
   premium_messaging_partitions = 1
 
   network_rule_set {
-    default_action = "Deny"
+    default_action = "Allow"
   }
 
   tags = var.tags
