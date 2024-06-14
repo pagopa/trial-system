@@ -1,7 +1,10 @@
 import { mock, mockFn } from 'vitest-mock-extended';
 import { SubscriptionReader, SubscriptionWriter } from '../subscription';
 import { SubscriptionRequestWriter } from '../subscription-request';
-import { SubscriptionHistoryWriter } from '../subscription-history';
+import {
+  SubscriptionHistoryReader,
+  SubscriptionHistoryWriter,
+} from '../subscription-history';
 import { EventWriter } from '../event';
 import { ActivationRequestRepository } from '../activation-request';
 import { Clock } from '../clock';
@@ -13,6 +16,7 @@ export const makeTestEnv = () => {
     subscriptionReader: mock<SubscriptionReader>(),
     subscriptionWriter: mock<SubscriptionWriter>(),
     subscriptionRequestWriter: mock<SubscriptionRequestWriter>(),
+    subscriptionHistoryReader: mock<SubscriptionHistoryReader>(),
     subscriptionHistoryWriter: mock<SubscriptionHistoryWriter>(),
     activationRequestRepository: mock<ActivationRequestRepository>(),
     eventWriter: mock<EventWriter>(),

@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 0.6.0
+
+### Minor Changes
+
+- 48362d8: [IOPLT-556] Add process activations change feed
+
 ## 0.5.0
 
 ### Minor Changes
