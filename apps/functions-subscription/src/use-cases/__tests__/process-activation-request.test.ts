@@ -57,7 +57,7 @@ describe('processActivationRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
   });
 
-  it('should fail if update subscription raise an error', async () => {
+  it('should fail if insert subscription raise an error', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
     const error = new Error('Oh No!');
