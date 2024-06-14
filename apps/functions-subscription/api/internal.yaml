@@ -93,6 +93,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+  /trials/{trialId}/activation-jobs:
+    post:
+      operationId: createActivationJob
+      description: Create a job to activate users for a given trial
+      summary: Create an activation job
+      parameters:
+        - $ref: '#/components/parameters/pathTrialId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivationJob'
+      responses:
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Trial not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
 
 components:
   securitySchemes:
@@ -179,6 +214,15 @@ components:
           $ref: '#/components/schemas/CreatedAt'
         updatedAt:
           $ref: '#/components/schemas/UpdatedAt'
+    CreateActivationJob:
+      type: object
+      required:
+        - usersToActivate
+      properties:
+        usersToActivate:
+          type: number
+          minimum: 1
+          description: The total number of users to activate
     SubscriptionEvent:
       type: object
       $ref: '#/components/schemas/Subscription'
