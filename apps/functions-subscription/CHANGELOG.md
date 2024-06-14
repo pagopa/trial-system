@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 0.6.1
+
+### Patch Changes
+
+- 8e665be: Fix issues on activations change feed
+
 ## 0.6.0
 
 ### Minor Changes
