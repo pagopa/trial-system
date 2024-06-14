@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 0.6.2
+
+### Patch Changes
+
+- 9447cca: Update the updatedAt field when creating a new version of subscription history
+
 ## 0.6.1
 
 ### Patch Changes
