@@ -9,7 +9,7 @@ resource "azurerm_servicebus_namespace" "main" {
   capacity                     = 1
   premium_messaging_partitions = 1
 
-  network_rule_set = {
+  network_rule_set {
     default_action = "Deny"
   }
 
