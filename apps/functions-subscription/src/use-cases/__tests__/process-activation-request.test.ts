@@ -24,13 +24,13 @@ describe('processActivationRequest', () => {
       TE.right(O.some(aSubscriptionHistory)),
     );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
-      TE.right(void 0),
+      TE.right(aSubscriptionHistoryV1),
     );
 
     const actual =
       await processActivationRequest(anActivationRequest)(testEnv)();
 
-    expect(actual).toStrictEqual(E.right(void 0));
+    expect(actual).toStrictEqual(E.right(aSubscriptionHistoryV1));
     expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledWith({
       subscriptionId: aSubscription.id,
     });
