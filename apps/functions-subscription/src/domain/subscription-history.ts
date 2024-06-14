@@ -14,6 +14,7 @@ import {
 import { ItemAlreadyExists } from './errors';
 import { Capabilities } from './capabilities';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
+import { nowDate } from './clock';
 
 // a unique brand for subscriptionHistoryId
 interface SubscriptionHistoryIdBrand {
@@ -69,10 +70,13 @@ export const makeSubscriptionHistoryNextVersion = (
   update: Partial<Omit<SubscriptionHistory, 'id' | 'version'>>,
 ) => {
   const { trialId, userId, version: prevVersion } = subscriptionHistory;
+  const updated = { ...subscriptionHistory, ...update };
   const version = (prevVersion + 1) as NonNegativeInteger;
   return pipe(
-    makeSubscriptionHistoryId(trialId, userId, version),
-    RTE.map((id) => ({ ...subscriptionHistory, ...update, id, version })),
+    RTE.Do,
+    RTE.apSW('updatedAt', nowDate()),
+    RTE.apSW('id', makeSubscriptionHistoryId(trialId, userId, version)),
+    RTE.map(({ id, updatedAt }) => ({ ...updated, updatedAt, id, version })),
   );
 };
 

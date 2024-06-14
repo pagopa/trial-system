@@ -30,6 +30,7 @@ describe('processActivationRequest', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
+    mockEnv.clock.now.mockReturnValueOnce(aSubscriptionHistoryV1.updatedAt);
     mockEnv.hashFn
       .mockReturnValueOnce({ value: aSubscription.id })
       .mockReturnValueOnce({ value: aSubscriptionHistoryV1.id });
