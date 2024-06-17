@@ -2,10 +2,9 @@ import * as H from '@pagopa/handler-kit';
 import { pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
 import { CreateSubscription } from '../../../generated/definitions/internal/CreateSubscription';
-import { UserId, TrialId } from '../../../domain/subscription';
+import { UserId, TrialIdCodec } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
 import { parsePathParameter, parseRequestBody } from './middleware';
@@ -27,12 +26,13 @@ const makeHandlerKitHandler: H.Handler<
     ),
     RTE.apSW(
       'trialId',
-      RTE.fromEither(parsePathParameter(NonEmptyString, 'trialId')(req)),
+      RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
     ),
     RTE.flatMapTaskEither(({ insertSubscription, trialId, requestBody }) =>
       insertSubscription(
         requestBody.userId as unknown as UserId,
-        trialId as unknown as TrialId,
+        trialId,
+        requestBody.state,
       ),
     ),
     RTE.map((sub) => ({ kind: 'Subscription' as const, ...sub })),

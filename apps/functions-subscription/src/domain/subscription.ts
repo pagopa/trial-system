@@ -128,3 +128,11 @@ export const makeSubscriptionFromHistory = (
   updatedAt: subscriptionHistory.updatedAt,
   state: subscriptionHistory.state,
 });
+
+export const insertSubscription = (subscription: Subscription) =>
+  pipe(
+    RTE.ask<Capabilities, 'subscriptionWriter'>(),
+    RTE.flatMapTaskEither(({ subscriptionWriter }) =>
+      subscriptionWriter.insert(subscription),
+    ),
+  );

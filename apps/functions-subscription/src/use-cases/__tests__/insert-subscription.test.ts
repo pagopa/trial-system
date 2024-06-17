@@ -5,6 +5,7 @@ import * as E from 'fp-ts/Either';
 import { insertSubscription } from '../insert-subscription';
 import {
   aSubscription,
+  aSubscriptionHistory,
   aSubscriptionRequest,
 } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
@@ -55,6 +56,40 @@ describe('insertSubscription', () => {
     ).toBeLessThan(
       testEnv.subscriptionWriter.insert.mock.invocationCallOrder[0],
     );
+  });
+
+  it('should return the subscription created with ACTIVE state', async () => {
+    const testEnv = makeTestEnv();
+
+    const anActiveSubscriptionHistoryV0 = {
+      ...aSubscriptionHistory,
+      state: 'ACTIVE' as const,
+    };
+
+    testEnv.clock.now.mockReturnValue(aSubscription.createdAt);
+    testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
+    testEnv.hashFn
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
+    testEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
+      TE.right(anActiveSubscriptionHistoryV0),
+    );
+
+    const actual = await insertSubscription(
+      userId,
+      trialId,
+      anActiveSubscriptionHistoryV0.state,
+    )(testEnv)();
+    const expected = E.right({
+      ...aSubscription,
+      state: anActiveSubscriptionHistoryV0.state,
+    });
+
+    expect(actual).toMatchObject(expected);
+    expect(testEnv.subscriptionHistoryWriter.insert).toBeCalledWith(
+      anActiveSubscriptionHistoryV0,
+    );
+    expect(testEnv.subscriptionRequestWriter.insert).not.toHaveBeenCalled();
   });
 
   it('should return SubscriptionStoreError if item insertion fails but request insertion succeeds', async () => {

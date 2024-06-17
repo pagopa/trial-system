@@ -4,14 +4,20 @@ import * as TE from 'fp-ts/TaskEither';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from '../domain/capabilities';
 import {
+  makeSubscription,
+  Subscription,
   SubscriptionId,
   TrialId,
   UserId,
-  makeSubscriptionId,
 } from '../domain/subscription';
-import { nowDate } from '../domain/clock';
 import { SubscriptionStoreError } from './errors';
 import { ItemAlreadyExists } from '../domain/errors';
+import {
+  insertSubscriptionHistory,
+  makeSubscriptionHistory,
+} from '../domain/subscription-history';
+import { insertSubscriptionRequest } from '../domain/subscription-request';
+import { insertSubscription as insertSubscriptionRTE } from '../domain/subscription';
 
 // Maps all the requirements for this use-case
 type Env = Pick<
@@ -19,6 +25,7 @@ type Env = Pick<
   | 'subscriptionRequestWriter'
   | 'subscriptionReader'
   | 'subscriptionWriter'
+  | 'subscriptionHistoryWriter'
   | 'hashFn'
   | 'clock'
 >;
@@ -35,33 +42,42 @@ const handleSubscriptionAlreadyExists =
       ),
     );
 
-const handleMissingSubscription =
-  (userId: UserId, trialId: TrialId, id: SubscriptionId, now: Date) =>
-  ({ subscriptionRequestWriter, subscriptionWriter }: Env) =>
-    pipe(
-      subscriptionRequestWriter.insert({ userId, trialId }),
-      TE.flatMap(() =>
+const handleMissingSubscription = (subscription: Subscription) => {
+  if (subscription.state === 'ACTIVE') {
+    return pipe(
+      makeSubscriptionHistory(subscription),
+      RTE.flatMap(insertSubscriptionHistory),
+      RTE.map(() => subscription),
+    );
+  } else {
+    const { userId, trialId } = subscription;
+    return pipe(
+      insertSubscriptionRequest({ userId, trialId }),
+      RTE.flatMap(() =>
         pipe(
-          subscriptionWriter.insert({
-            id,
-            userId,
-            trialId,
-            createdAt: now,
-            updatedAt: now,
-            state: 'SUBSCRIBED',
-          }),
-          TE.mapLeft(() => new SubscriptionStoreError()),
+          insertSubscriptionRTE(subscription),
+          RTE.mapLeft(() => new SubscriptionStoreError()),
         ),
       ),
     );
+  }
+};
 
-export const insertSubscription = (userId: UserId, trialId: TrialId) =>
+export const insertSubscription = (
+  userId: UserId,
+  trialId: TrialId,
+  state?: Extract<Subscription['state'], 'ACTIVE' | 'SUBSCRIBED'>,
+) =>
   pipe(
     RTE.ask<Env>(),
-    RTE.apSW('id', makeSubscriptionId(trialId, userId)),
-    RTE.chainFirstW(({ id }) => handleSubscriptionAlreadyExists(id)),
-    RTE.apSW('now', nowDate()),
-    RTE.chainW(({ id, now }) =>
-      handleMissingSubscription(userId, trialId, id, now),
+    RTE.apSW('subscription', makeSubscription(trialId, userId)),
+    RTE.chainFirstW(({ subscription: { id } }) =>
+      handleSubscriptionAlreadyExists(id),
+    ),
+    RTE.chainW(({ subscription }) =>
+      handleMissingSubscription({
+        ...subscription,
+        state: state ?? 'SUBSCRIBED',
+      }),
     ),
   );
