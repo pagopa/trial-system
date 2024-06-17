@@ -4,7 +4,10 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { Capabilities } from '../domain/capabilities';
 import { ActivationRequest } from '../domain/activation-request';
-import { makeSubscriptionHistoryNextVersion } from '../domain/subscription-history';
+import {
+  insertSubscriptionHistory,
+  makeSubscriptionHistoryNextVersion,
+} from '../domain/subscription-history';
 import { makeSubscriptionId } from '../domain/subscription';
 
 type Env = Pick<
@@ -40,9 +43,8 @@ export const processActivationRequest = ({
             state: 'ACTIVE',
           }),
       ),
-      RTE.flatMapTaskEither(
-        ({ subscriptionHistoryWriter, subscriptionHistoryNewVersion }) =>
-          subscriptionHistoryWriter.insert(subscriptionHistoryNewVersion),
+      RTE.flatMap(({ subscriptionHistoryNewVersion }) =>
+        insertSubscriptionHistory(subscriptionHistoryNewVersion),
       ),
       RTE.map(O.of),
     );

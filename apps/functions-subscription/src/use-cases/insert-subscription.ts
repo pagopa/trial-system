@@ -4,6 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from '../domain/capabilities';
 import {
+  getSubscriptionById,
   makeSubscription,
   Subscription,
   SubscriptionId,
@@ -30,38 +31,37 @@ type Env = Pick<
   | 'clock'
 >;
 
-const handleSubscriptionAlreadyExists =
-  (id: SubscriptionId) => (env: Pick<Capabilities, 'subscriptionReader'>) =>
-    pipe(
-      env.subscriptionReader.get(id),
-      TE.flatMap(
-        O.fold(
-          () => TE.right(id),
-          () => TE.left(new ItemAlreadyExists('Subscription already exists')),
-        ),
+const handleSubscriptionAlreadyExists = (id: SubscriptionId) =>
+  pipe(
+    getSubscriptionById(id),
+    RTE.flatMapTaskEither(
+      O.fold(
+        () => TE.right(id),
+        () => TE.left(new ItemAlreadyExists('Subscription already exists')),
       ),
-    );
+    ),
+  );
 
-const handleMissingSubscription = (subscription: Subscription) => {
-  if (subscription.state === 'ACTIVE') {
-    return pipe(
-      makeSubscriptionHistory(subscription),
-      RTE.flatMap(insertSubscriptionHistory),
-      RTE.map(() => subscription),
-    );
-  } else {
-    const { userId, trialId } = subscription;
-    return pipe(
-      insertSubscriptionRequest({ userId, trialId }),
-      RTE.flatMap(() =>
-        pipe(
-          insertSubscriptionRTE(subscription),
-          RTE.mapLeft(() => new SubscriptionStoreError()),
-        ),
+const handleMissingSubscription = (subscription: Subscription) =>
+  pipe(
+    insertSubscriptionRequest({
+      userId: subscription.userId,
+      trialId: subscription.trialId,
+    }),
+    RTE.flatMap(() =>
+      pipe(
+        insertSubscriptionRTE(subscription),
+        RTE.mapLeft(() => new SubscriptionStoreError()),
       ),
-    );
-  }
-};
+    ),
+  );
+
+const handleSubscription = (subscription: Subscription) =>
+  pipe(
+    makeSubscriptionHistory(subscription),
+    RTE.flatMap(insertSubscriptionHistory),
+    RTE.map(() => subscription),
+  );
 
 export const insertSubscription = (
   userId: UserId,
@@ -75,9 +75,8 @@ export const insertSubscription = (
       handleSubscriptionAlreadyExists(id),
     ),
     RTE.chainW(({ subscription }) =>
-      handleMissingSubscription({
-        ...subscription,
-        state: state ?? 'SUBSCRIBED',
-      }),
+      state
+        ? handleSubscription({ ...subscription, state })
+        : handleMissingSubscription(subscription),
     ),
   );

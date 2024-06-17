@@ -136,3 +136,11 @@ export const insertSubscription = (subscription: Subscription) =>
       subscriptionWriter.insert(subscription),
     ),
   );
+
+export const getSubscriptionById = (subscriptionId: SubscriptionId) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'subscriptionReader'>>(),
+    RTE.flatMapTaskEither(({ subscriptionReader }) =>
+      subscriptionReader.get(subscriptionId),
+    ),
+  );
