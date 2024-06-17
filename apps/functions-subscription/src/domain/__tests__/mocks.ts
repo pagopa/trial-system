@@ -6,6 +6,7 @@ import {
   SubscriptionHistoryWriter,
 } from '../subscription-history';
 import { EventWriter } from '../event';
+import { ActivationJobWriter } from '../activation-job';
 import { ActivationRequestRepository } from '../activation-request';
 import { Clock } from '../clock';
 import { MonotonicIdFn } from '../monotonic-id';
@@ -18,6 +19,7 @@ export const makeTestEnv = () => {
     subscriptionRequestWriter: mock<SubscriptionRequestWriter>(),
     subscriptionHistoryReader: mock<SubscriptionHistoryReader>(),
     subscriptionHistoryWriter: mock<SubscriptionHistoryWriter>(),
+    activationJobWriter: mock<ActivationJobWriter>(),
     activationRequestRepository: mock<ActivationRequestRepository>(),
     eventWriter: mock<EventWriter>(),
     clock: mock<Clock>(),

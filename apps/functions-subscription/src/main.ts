@@ -23,7 +23,8 @@ import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activ
 import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
 import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
 import { monotonicIdFn } from './adapters/ulid/monotonic-id';
-import { makeCreateActivationJobHandler } from './adapters/azure/functions/create-activation-job';
+import { makeCreateActivationJobHandler } from './adapters/azure/functions/insert-activation-job';
+import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
 
 const config = pipe(
   parseConfig(process.env),
@@ -57,6 +58,10 @@ const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
+const activationJobWriter = makeActivationJobCosmosContainer(
+  cosmosDB.database(config.cosmosdb.databaseName),
+);
+
 const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
@@ -75,6 +80,7 @@ const capabilities: Capabilities = {
   subscriptionHistoryReader: subscriptionHistoryReaderWriter,
   subscriptionHistoryWriter: subscriptionHistoryReaderWriter,
   subscriptionRequestWriter,
+  activationJobWriter,
   activationRequestRepository,
   eventWriter,
   hashFn,

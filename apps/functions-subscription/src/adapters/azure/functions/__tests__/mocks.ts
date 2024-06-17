@@ -14,12 +14,14 @@ export const makeTestSystemEnv = () => {
   const getSubscriptionMock = vi.fn();
   const processActivationJobMock = vi.fn();
   const processActivationRequestMock = vi.fn();
+  const insertActivationJobMock = vi.fn();
   return {
     insertSubscription: insertSubscriptionMock,
     processSubscriptionRequest: processSubscriptionRequestMock,
     getSubscription: getSubscriptionMock,
     processActivationJob: processActivationJobMock,
     processActivationRequest: processActivationRequestMock,
+    insertActivationJob: insertActivationJobMock,
   };
 };
 
