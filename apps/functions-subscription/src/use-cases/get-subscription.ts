@@ -16,7 +16,7 @@ export const getSubscription = (userId: UserId, trialId: TrialId) =>
       pipe(
         subscriptionReader.get(id),
         TE.flatMap(
-          TE.fromOption(() => new ItemNotFound(`Subscription ${id} not found`)),
+          TE.fromOption(() => new ItemNotFound('Subscription not found')),
         ),
       ),
     ),
