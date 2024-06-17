@@ -184,17 +184,34 @@ components:
         - SUBSCRIBED
         - ACTIVE
         - DISABLED
+    CreateSubscriptionState:
+      type: string
+      description: |-
+        - SUBSCRIBED: The user is subscribed to the specified trial and does
+            not have any access to the specified trial. The system is going to
+            activate the user if any slot for the trial is available.
+        - ACTIVE: The user has the access to the specified trial.
+      enum:
+        - SUBSCRIBED
+        - ACTIVE
     TrialId:
       type: string
       description: Unique identifier of the trial.
       minLength: 1
     CreateSubscription:
+      description: >
+        Payload to create a subscription.
+        If the `state` property is not provided, the subscription will have the
+        `SUBSCRIBED` state. Otherwise, the subscription will be created with the
+        provided state.
       type: object
       required:
         - userId
       properties:
         userId:
           $ref: '#/components/schemas/UserId'
+        state:
+          $ref: '#/components/schemas/CreateSubscriptionState'
     Subscription:
       type: object
       required:
