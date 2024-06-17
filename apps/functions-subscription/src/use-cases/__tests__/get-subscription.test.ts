@@ -26,9 +26,7 @@ describe('getSubscription', () => {
 
   it('should return ItemNotFound when the subscription does not exist', async () => {
     const testEnv = makeTestEnv();
-    const notFoundError = new ItemNotFound(
-      `Subscription ${aSubscription.id} not found`,
-    );
+    const notFoundError = new ItemNotFound('Subscription not found');
 
     testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
