@@ -7,6 +7,7 @@ export const makeTestEnv = () => ({
   subscriptionRequestWriter: mock<Capabilities['subscriptionRequestWriter']>(),
   subscriptionHistoryReader: mock<Capabilities['subscriptionHistoryReader']>(),
   subscriptionHistoryWriter: mock<Capabilities['subscriptionHistoryWriter']>(),
+  activationJobReader: mock<Capabilities['activationJobReader']>(),
   activationJobWriter: mock<Capabilities['activationJobWriter']>(),
   activationRequestRepository:
     mock<Capabilities['activationRequestRepository']>(),

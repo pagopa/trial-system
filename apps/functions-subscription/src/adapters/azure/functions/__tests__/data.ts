@@ -54,3 +54,13 @@ export const makeAValidCreateActivationJobRequest = () =>
       trialId: aTrialId,
     },
   });
+
+export const makeAValidGetActivationJobRequest = () =>
+  new HttpRequest({
+    url: 'https://function/trials/{trialId}/activation-jobs/{activationJobId}',
+    method: 'GET',
+    params: {
+      trialId: aTrialId,
+      activationJobId: anActivationJob.id,
+    },
+  });

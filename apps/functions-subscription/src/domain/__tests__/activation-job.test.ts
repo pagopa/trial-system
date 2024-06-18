@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import { anActivationJob } from '../../domain/__tests__/data';
-import { makeTestEnv } from '../../domain/__tests__/mocks';
-import { insertActivationJob } from '../activation-job';
+import * as O from 'fp-ts/Option';
+import { anActivationJob } from './data';
+import { makeTestEnv } from './mocks';
+import { getActivationJob, insertActivationJob } from '../activation-job';
 
 describe('insertActivationJob', () => {
   it('should call insert as expected', async () => {
@@ -23,5 +24,34 @@ describe('insertActivationJob', () => {
 
     expect(actual).toStrictEqual(expected);
     expect(testEnv.activationJobWriter.insert).toBeCalledWith(anActivationJob);
+  });
+});
+
+describe('getActivationJob', () => {
+  it('should return a Some when the activation job exists', async () => {
+    const testEnv = makeTestEnv();
+    const { id, trialId } = anActivationJob;
+
+    testEnv.activationJobReader.get.mockReturnValueOnce(
+      TE.right(O.some(anActivationJob)),
+    );
+
+    const actual = await getActivationJob(id, trialId)(testEnv)();
+    const expected = E.right(O.some(anActivationJob));
+
+    expect(actual).toStrictEqual(expected);
+    expect(testEnv.activationJobReader.get).toBeCalledWith(id, trialId);
+  });
+
+  it('should return a None when the activation job does not exist', async () => {
+    const testEnv = makeTestEnv();
+    const { id, trialId } = anActivationJob;
+
+    testEnv.activationJobReader.get.mockReturnValueOnce(TE.right(O.none));
+
+    const actual = await getActivationJob(id, trialId)(testEnv)();
+    const expected = E.right(O.none);
+
+    expect(actual).toStrictEqual(expected);
   });
 });

@@ -1,9 +1,10 @@
 import * as t from 'io-ts';
+import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
-import { TrialIdCodec } from './subscription';
+import { TrialId, TrialIdCodec } from './subscription';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
-import { NonNegativeNumber } from '@pagopa/ts-commons/lib/numbers';
+import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { ItemAlreadyExists } from './errors';
 import { pipe } from 'fp-ts/lib/function';
@@ -27,8 +28,8 @@ export const ActivationJobCodec = t.strict({
   id: ActivationJobIdCodec,
   trialId: TrialIdCodec,
   createdAt: IsoDateFromString,
-  usersToActivate: NonNegativeNumber,
-  usersActivated: NonNegativeNumber,
+  usersToActivate: NonNegativeInteger,
+  usersActivated: NonNegativeInteger,
   type: t.literal('job'),
 });
 
@@ -40,6 +41,13 @@ export interface ActivationJobWriter {
   readonly insert: (
     ActivationJob: ActivationJob,
   ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationJob>;
+}
+
+export interface ActivationJobReader {
+  readonly get: (
+    id: ActivationJobId,
+    trialId: TrialId,
+  ) => TE.TaskEither<Error, O.Option<ActivationJob>>;
 }
 
 export const makeActivationJob = ({
@@ -58,7 +66,7 @@ export const makeActivationJob = ({
       type: 'job' as const,
       createdAt: now,
       usersToActivate,
-      usersActivated: 0 as NonNegativeNumber,
+      usersActivated: 0 as NonNegativeInteger,
     })),
   );
 
@@ -68,5 +76,13 @@ export const insertActivationJob = (insertActivationJob: InsertActivationJob) =>
     RTE.apSW('activationJob', makeActivationJob(insertActivationJob)),
     RTE.flatMapTaskEither(({ activationJob, activationJobWriter }) =>
       activationJobWriter.insert(activationJob),
+    ),
+  );
+
+export const getActivationJob = (id: ActivationJobId, trialId: TrialId) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationJobReader'>>(),
+    RTE.flatMapTaskEither(({ activationJobReader }) =>
+      activationJobReader.get(id, trialId),
     ),
   );
