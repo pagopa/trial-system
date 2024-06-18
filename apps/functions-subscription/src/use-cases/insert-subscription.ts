@@ -56,7 +56,7 @@ const handleMissingSubscription = (subscription: Subscription) =>
     ),
   );
 
-const handleSubscription = (subscription: Subscription) =>
+const handleActiveSubscription = (subscription: Subscription) =>
   pipe(
     makeSubscriptionHistory(subscription),
     RTE.flatMap(insertSubscriptionHistory),
@@ -75,8 +75,8 @@ export const insertSubscription = (
       handleSubscriptionAlreadyExists(id),
     ),
     RTE.chainW(({ subscription }) =>
-      state
-        ? handleSubscription({ ...subscription, state })
+      state === 'ACTIVE'
+        ? handleActiveSubscription({ ...subscription, state })
         : handleMissingSubscription(subscription),
     ),
   );
