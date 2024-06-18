@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import { HttpRequest } from '@azure/functions';
-import { makeAValidCreateSubscriptionRequest } from './data';
+import {
+  aCreateSubscription,
+  aCreateSubscriptionWithActiveState,
+  makeAValidCreateSubscriptionRequest,
+} from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { SubscriptionStoreError } from '../../../../use-cases/errors';
 import { aSubscription } from '../../../../domain/__tests__/data';
@@ -14,10 +18,32 @@ describe('makePostSubscriptionHandler', () => {
     env.insertSubscription.mockReturnValueOnce(TE.right(aSubscription));
 
     const actual = await makePostSubscriptionHandler(env)(
-      makeAValidCreateSubscriptionRequest(),
+      makeAValidCreateSubscriptionRequest(aCreateSubscription),
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(201);
+    expect(env.insertSubscription).toHaveBeenCalledWith(
+      aSubscription.userId,
+      aSubscription.trialId,
+      undefined,
+    );
+  });
+
+  it('should return 201 with the created subscription with active state', async () => {
+    const env = makeTestSystemEnv();
+    const anActiveSubscription = { ...aSubscription, state: 'ACTIVE' as const };
+    env.insertSubscription.mockReturnValueOnce(TE.right(anActiveSubscription));
+
+    const actual = await makePostSubscriptionHandler(env)(
+      makeAValidCreateSubscriptionRequest(aCreateSubscriptionWithActiveState),
+      makeFunctionContext(),
+    );
+    expect(actual.status).toStrictEqual(201);
+    expect(env.insertSubscription).toHaveBeenCalledWith(
+      anActiveSubscription.userId,
+      anActiveSubscription.trialId,
+      anActiveSubscription.state,
+    );
   });
 
   it('should return 202 on SubscriptionStoreError', async () => {
@@ -27,7 +53,7 @@ describe('makePostSubscriptionHandler', () => {
     );
 
     const actual = await makePostSubscriptionHandler(env)(
-      makeAValidCreateSubscriptionRequest(),
+      makeAValidCreateSubscriptionRequest(aCreateSubscription),
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(202);
@@ -59,7 +85,7 @@ describe('makePostSubscriptionHandler', () => {
     const error = new ItemAlreadyExists('Already exists');
     env.insertSubscription.mockReturnValueOnce(TE.left(error));
     const actual = await makePostSubscriptionHandler(env)(
-      makeAValidCreateSubscriptionRequest(),
+      makeAValidCreateSubscriptionRequest(aCreateSubscription),
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(409);
@@ -75,7 +101,7 @@ describe('makePostSubscriptionHandler', () => {
     env.insertSubscription.mockReturnValueOnce(TE.left(error));
 
     const actual = await makePostSubscriptionHandler(env)(
-      makeAValidCreateSubscriptionRequest(),
+      makeAValidCreateSubscriptionRequest(aCreateSubscription),
       makeFunctionContext(),
     );
 

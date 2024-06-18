@@ -90,3 +90,13 @@ const makeSubscriptionHistoryId = (
     RTE.map(({ hashFn }) => hashFn(`${trialId}${userId}${version}`)),
     RTE.map(({ value }) => value as SubscriptionHistoryId),
   );
+
+export const insertSubscriptionHistory = (
+  subscriptionHistory: SubscriptionHistory,
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'subscriptionHistoryWriter'>>(),
+    RTE.flatMapTaskEither(({ subscriptionHistoryWriter }) =>
+      subscriptionHistoryWriter.insert(subscriptionHistory),
+    ),
+  );
