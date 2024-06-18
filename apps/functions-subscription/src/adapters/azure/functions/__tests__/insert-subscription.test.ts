@@ -31,7 +31,7 @@ describe('makePostSubscriptionHandler', () => {
 
   it('should return 201 with the created subscription with active state', async () => {
     const env = makeTestSystemEnv();
-    const anActiveSubscription = { ...aSubscription, state: 'ACTIVE' };
+    const anActiveSubscription = { ...aSubscription, state: 'ACTIVE' as const };
     env.insertSubscription.mockReturnValueOnce(TE.right(anActiveSubscription));
 
     const actual = await makePostSubscriptionHandler(env)(
