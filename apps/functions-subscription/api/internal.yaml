@@ -231,7 +231,7 @@ components:
       description: Unique identifier of the trial.
       minLength: 1
     UsersToActivate:
-      type: number
+      type: integer
       minimum: 1
       format: int32
       description: The total number of users to activate
@@ -289,7 +289,7 @@ components:
         trialId:
           $ref: '#/components/schemas/TrialId'
         usersActivated:
-          type: number
+          type: integer
           format: int32
           minimum: 0
           description: The total number of activated users
