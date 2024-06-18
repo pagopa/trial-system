@@ -66,7 +66,7 @@ const handleActiveSubscription = (subscription: Subscription) =>
 export const insertSubscription = (
   userId: UserId,
   trialId: TrialId,
-  state?: Extract<Subscription['state'], 'ACTIVE' | 'SUBSCRIBED'>,
+  state: Extract<Subscription['state'], 'ACTIVE' | 'SUBSCRIBED'> = 'SUBSCRIBED',
 ) =>
   pipe(
     RTE.ask<Env>(),
