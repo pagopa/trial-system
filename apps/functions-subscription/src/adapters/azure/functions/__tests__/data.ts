@@ -3,6 +3,7 @@ import { CreateSubscription } from '../../../../generated/definitions/internal/C
 import { UserId } from '../../../../generated/definitions/internal/UserId';
 import { TrialId } from '../../../../generated/definitions/internal/TrialId';
 import { CreateSubscriptionStateEnum } from '../../../../generated/definitions/internal/CreateSubscriptionState';
+import { anActivationJob } from '../../../../domain/__tests__/data';
 
 const aUserId = 'aUserId' as UserId;
 const aTrialId = 'aTrialId' as TrialId;
@@ -37,5 +38,19 @@ export const makeAValidGetSubscriptionRequest = () =>
     params: {
       trialId: aTrialId,
       userId: aUserId,
+    },
+  });
+
+export const makeAValidCreateActivationJobRequest = () =>
+  new HttpRequest({
+    url: 'https://function/trials/{trialId}/activation-jobs',
+    method: 'POST',
+    body: {
+      string: JSON.stringify({
+        usersToActivate: anActivationJob.usersToActivate,
+      }),
+    },
+    params: {
+      trialId: aTrialId,
     },
   });

@@ -12,6 +12,7 @@ import {
 import { SubscriptionRequestWriter } from './subscription-request';
 import { ActivationRequestRepository } from './activation-request';
 import { MonotonicIdFn } from './monotonic-id';
+import { ActivationJobWriter } from './activation-job';
 
 /**
  * Maps the capabilities to a given property name. Pick the capability using the
@@ -25,6 +26,7 @@ export interface Capabilities {
   readonly subscriptionRequestWriter: SubscriptionRequestWriter;
   readonly subscriptionHistoryReader: SubscriptionHistoryReader;
   readonly subscriptionHistoryWriter: SubscriptionHistoryWriter;
+  readonly activationJobWriter: ActivationJobWriter;
   readonly activationRequestRepository: ActivationRequestRepository;
   readonly eventWriter: EventWriter;
   readonly hashFn: HashFn;
