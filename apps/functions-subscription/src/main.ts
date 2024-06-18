@@ -23,6 +23,8 @@ import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activ
 import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
 import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
 import { monotonicIdFn } from './adapters/ulid/monotonic-id';
+import { makePostActivationJobHandler } from './adapters/azure/functions/insert-activation-job';
+import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
 
 const config = pipe(
   parseConfig(process.env),
@@ -56,6 +58,10 @@ const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
+const activationJobWriter = makeActivationJobCosmosContainer(
+  cosmosDB.database(config.cosmosdb.databaseName),
+);
+
 const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
@@ -74,6 +80,7 @@ const capabilities: Capabilities = {
   subscriptionHistoryReader: subscriptionHistoryReaderWriter,
   subscriptionHistoryWriter: subscriptionHistoryReaderWriter,
   subscriptionRequestWriter,
+  activationJobWriter,
   activationRequestRepository,
   eventWriter,
   hashFn,
@@ -94,14 +101,21 @@ app.http('createSubscription', {
   methods: ['POST'],
   authLevel: 'function',
   handler: makePostSubscriptionHandler(env),
-  route: '/trials/{trialId}/subscriptions',
+  route: 'trials/{trialId}/subscriptions',
 });
 
 app.http('getSubscription', {
   methods: ['GET'],
   authLevel: 'function',
   handler: makeGetSubscriptionHandler(env),
-  route: '/trials/{trialId}/subscriptions/{userId}',
+  route: 'trials/{trialId}/subscriptions/{userId}',
+});
+
+app.http('createActivationJob', {
+  methods: ['POST'],
+  authLevel: 'function',
+  handler: makePostActivationJobHandler(env),
+  route: 'trials/{trialId}/activation-jobs',
 });
 
 if (config.subscriptionRequest.consumer === 'on')

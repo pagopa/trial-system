@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  aSubscriptionHistoryV1,
   anActivationJob,
   anActivationRequest,
 } from '../../../../domain/__tests__/data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
+import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { makeActivationsChangesHandler } from '../process-activations-changes';
 
@@ -50,7 +52,9 @@ describe('makeActivationJobConsumerHandler', () => {
     const context = makeFunctionContext();
     const messages = [anActivationRequest];
 
-    env.processActivationRequest.mockReturnValueOnce(TE.right(void 0));
+    env.processActivationRequest.mockReturnValueOnce(
+      TE.right(O.some(aSubscriptionHistoryV1)),
+    );
 
     const actual = await makeActivationsChangesHandler({
       env,
