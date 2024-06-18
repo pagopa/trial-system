@@ -1,5 +1,12 @@
 # functions-subscription
 
+## 0.7.0
+
+### Minor Changes
+
+- 15d4ea8: [IOPLT-554] Add handler to create an activation job
+- d4bfd89: Add `state` property when creating a new subscription
+
 ## 0.6.2
 
 ### Patch Changes
