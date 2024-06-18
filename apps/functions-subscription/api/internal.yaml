@@ -128,6 +128,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+  /trials/{trialId}/activation-jobs/{activationJobId}:
+    get:
+      operationId: getActivationJob
+      description: Get an activation job by its id
+      summary: Get an activation job
+      parameters:
+        - $ref: '#/components/parameters/pathTrialId'
+        - $ref: '#/components/parameters/pathActivationJobId'
+      responses:
+        '200':
+          description: The activation job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivationJob'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
 
 components:
   securitySchemes:
@@ -150,6 +175,13 @@ components:
       schema:
         # Using the reference ($ref) to UserId breaks the client generator
         # For now duplicate the type
+        type: string
+        minLength: 1
+    pathActivationJobId:
+      name: activationJobId
+      in: path
+      required: true
+      schema:
         type: string
         minLength: 1
   schemas:
@@ -198,6 +230,11 @@ components:
       type: string
       description: Unique identifier of the trial.
       minLength: 1
+    UsersToActivate:
+      type: integer
+      minimum: 1
+      format: int32
+      description: The total number of users to activate
     CreateSubscription:
       description: >
         Payload to create a subscription.
@@ -237,9 +274,27 @@ components:
         - usersToActivate
       properties:
         usersToActivate:
-          type: number
-          minimum: 1
-          description: The total number of users to activate
+          $ref: '#/components/schemas/UsersToActivate'
+    ActivationJob:
+      type: object
+      required:
+        - id
+        - trialId
+        - usersToActivate
+        - usersActivated
+      properties:
+        id:
+          type: string
+          minLength: 1
+        trialId:
+          $ref: '#/components/schemas/TrialId'
+        usersActivated:
+          type: integer
+          format: int32
+          minimum: 0
+          description: The total number of activated users
+        usersToActivate:
+          $ref: '#/components/schemas/UsersToActivate'
     SubscriptionEvent:
       type: object
       $ref: '#/components/schemas/Subscription'
