@@ -1,4 +1,6 @@
+import { ActivationJob } from '../../../domain/activation-job';
 import { Subscription } from '../../../domain/subscription';
+import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
 import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';

@@ -18,6 +18,7 @@ export const makeTestSystemEnv = () => ({
   processActivationRequest: mockFn<SystemEnv['processActivationRequest']>(),
   insertActivationJob: mockFn<SystemEnv['insertActivationJob']>(),
   getActivationJob: mockFn<SystemEnv['getActivationJob']>(),
+  updateActivationJob: mockFn<SystemEnv['updateActivationJob']>(),
 });
 
 export const makeTestInfoEnv = () => {
