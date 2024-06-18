@@ -23,7 +23,7 @@ import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activ
 import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
 import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
 import { monotonicIdFn } from './adapters/ulid/monotonic-id';
-import { makeCreateActivationJobHandler } from './adapters/azure/functions/insert-activation-job';
+import { makePostActivationJobHandler } from './adapters/azure/functions/insert-activation-job';
 import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
 
 const config = pipe(
@@ -114,7 +114,7 @@ app.http('getSubscription', {
 app.http('createActivationJob', {
   methods: ['POST'],
   authLevel: 'function',
-  handler: makeCreateActivationJobHandler(env),
+  handler: makePostActivationJobHandler(env),
   route: 'trials/{trialId}/activation-jobs',
 });
 

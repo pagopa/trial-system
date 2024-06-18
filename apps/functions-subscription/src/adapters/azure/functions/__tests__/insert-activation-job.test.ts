@@ -5,16 +5,16 @@ import { makeAValidCreateActivationJobRequest } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { anActivationJob } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
-import { makeCreateActivationJobHandler } from '../insert-activation-job';
+import { makePostActivationJobHandler } from '../insert-activation-job';
 
-describe('makeCreateActivationJobHandler', () => {
+describe('makePostActivationJobHandler', () => {
   it('should return 202 if insertActivationJob succeeds', async () => {
     const env = makeTestSystemEnv();
     const { trialId, usersToActivate } = anActivationJob;
 
     env.insertActivationJob.mockReturnValueOnce(TE.right(anActivationJob));
 
-    const actual = await makeCreateActivationJobHandler(env)(
+    const actual = await makePostActivationJobHandler(env)(
       makeAValidCreateActivationJobRequest(),
       makeFunctionContext(),
     );
@@ -36,7 +36,7 @@ describe('makeCreateActivationJobHandler', () => {
       },
     });
 
-    const actual = await makeCreateActivationJobHandler(env)(
+    const actual = await makePostActivationJobHandler(env)(
       aRequestWithInvalidBody,
       makeFunctionContext(),
     );
@@ -55,7 +55,7 @@ describe('makeCreateActivationJobHandler', () => {
 
     env.insertActivationJob.mockReturnValueOnce(TE.left(error));
 
-    const actual = await makeCreateActivationJobHandler(env)(
+    const actual = await makePostActivationJobHandler(env)(
       makeAValidCreateActivationJobRequest(),
       makeFunctionContext(),
     );
@@ -68,7 +68,7 @@ describe('makeCreateActivationJobHandler', () => {
 
     env.insertActivationJob.mockReturnValueOnce(TE.left(error));
 
-    const actual = await makeCreateActivationJobHandler(env)(
+    const actual = await makePostActivationJobHandler(env)(
       makeAValidCreateActivationJobRequest(),
       makeFunctionContext(),
     );

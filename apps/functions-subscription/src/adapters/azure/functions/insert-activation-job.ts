@@ -38,6 +38,6 @@ const makeHandlerKitHandler: H.Handler<
   ),
 );
 
-export const makeCreateActivationJobHandler = httpAzureFunction(
+export const makePostActivationJobHandler = httpAzureFunction(
   makeHandlerKitHandler,
 );
