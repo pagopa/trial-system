@@ -115,8 +115,7 @@ app.http('createActivationJob', {
   methods: ['POST'],
   authLevel: 'function',
   handler: makeCreateActivationJobHandler(env),
-  // TODO: Change this route accordingly to the OpenAPI. PR#60
-  route: 'trials/{trialId}/activations',
+  route: 'trials/{trialId}/activation-jobs',
 });
 
 if (config.subscriptionRequest.consumer === 'on')

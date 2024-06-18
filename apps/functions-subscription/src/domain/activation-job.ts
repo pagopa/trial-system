@@ -34,7 +34,7 @@ export const ActivationJobCodec = t.strict({
 
 export type ActivationJob = t.TypeOf<typeof ActivationJobCodec>;
 
-export type InsertActivationJob = Pick<
+type InsertActivationJob = Pick<
   ActivationJob,
   'trialId' | 'usersToActivate'
 >;
