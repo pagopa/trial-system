@@ -6,7 +6,7 @@ import { SystemEnv } from '../../../system-env';
 import { CreateActivationJob } from '../../../generated/definitions/internal/CreateActivationJob';
 import { parsePathParameter, parseRequestBody } from './middleware';
 import { TrialIdCodec } from '../../../domain/subscription';
-import { NonNegativeNumber } from '@pagopa/ts-commons/lib/numbers';
+import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { toHttpProblemJson } from './errors';
 
 const makeHandlerKitHandler: H.Handler<
@@ -29,7 +29,7 @@ const makeHandlerKitHandler: H.Handler<
       ({ insertActivationJob, trialId, requestBody: { usersToActivate } }) =>
         insertActivationJob({
           trialId,
-          usersToActivate: usersToActivate as NonNegativeNumber,
+          usersToActivate: usersToActivate as NonNegativeInteger,
         }),
     ),
     RTE.map(flow(H.successJson, H.withStatusCode(202))),

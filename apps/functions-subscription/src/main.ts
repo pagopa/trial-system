@@ -25,6 +25,7 @@ import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
 import { monotonicIdFn } from './adapters/ulid/monotonic-id';
 import { makePostActivationJobHandler } from './adapters/azure/functions/insert-activation-job';
 import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
+import { makeGetActivationJobHandler } from './adapters/azure/functions/get-activation-job';
 
 const config = pipe(
   parseConfig(process.env),
@@ -58,7 +59,7 @@ const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
-const activationJobWriter = makeActivationJobCosmosContainer(
+const activationJobReaderWriter = makeActivationJobCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
@@ -80,7 +81,8 @@ const capabilities: Capabilities = {
   subscriptionHistoryReader: subscriptionHistoryReaderWriter,
   subscriptionHistoryWriter: subscriptionHistoryReaderWriter,
   subscriptionRequestWriter,
-  activationJobWriter,
+  activationJobReader: activationJobReaderWriter,
+  activationJobWriter: activationJobReaderWriter,
   activationRequestRepository,
   eventWriter,
   hashFn,
@@ -116,6 +118,13 @@ app.http('createActivationJob', {
   authLevel: 'function',
   handler: makePostActivationJobHandler(env),
   route: 'trials/{trialId}/activation-job',
+});
+
+app.http('getActivationJob', {
+  methods: ['GET'],
+  authLevel: 'function',
+  handler: makeGetActivationJobHandler(env),
+  route: `trials/{trialId}/activation-job`,
 });
 
 if (config.subscriptionRequest.consumer === 'on')
