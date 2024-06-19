@@ -61,7 +61,7 @@ export const makeAValidGetActivationJobRequest = () =>
     method: 'GET',
     params: {
       trialId: aTrialId,
-    }
+    },
   });
 
 export const makeAValidUpdateActivationJobRequest = () =>
