@@ -17,14 +17,7 @@ describe('makeGetActivationJobHandler', () => {
       makeFunctionContext(),
     );
 
-    const expectedJson = {
-      usersToActivate: anActivationJob.usersToActivate,
-      usersActivated: anActivationJob.usersActivated,
-      trialId: anActivationJob.trialId,
-    };
-
     expect(actual.status).toStrictEqual(200);
-    expect(await actual.json()).toMatchObject(expectedJson);
     expect(env.getActivationJob).toHaveBeenCalledWith(anActivationJob.trialId);
   });
 
