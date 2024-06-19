@@ -19,6 +19,7 @@ export const makeActivationJobCosmosContainer = (
       pipe(
         TE.tryCatch(() => container.item(id, id).read(), E.toError),
         TE.flatMapEither(decodeFromItem(ActivationJobCodec)),
+        TE.mapLeft(cosmosErrorToDomainError),
       ),
     insert: (job) =>
       pipe(
