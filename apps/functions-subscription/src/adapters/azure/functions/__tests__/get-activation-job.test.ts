@@ -6,7 +6,7 @@ import { makeAValidGetActivationJobRequest } from './data';
 import { anActivationJob } from '../../../../domain/__tests__/data';
 import { makeGetActivationJobHandler } from '../get-activation-job';
 
-describe('getActivationJob', () => {
+describe('makeGetActivationJobHandler', () => {
   it('should return 200 when the activation job exists', async () => {
     const env = makeTestSystemEnv();
 
