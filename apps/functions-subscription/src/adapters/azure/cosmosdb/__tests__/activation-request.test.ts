@@ -44,7 +44,7 @@ const makeTestData = (length: number) => {
         // For every chunk, append the operation to update the job
         RA.appendW({
           operationType: 'Patch',
-          id: anActivationJob.id,
+          id: anActivationJob.trialId,
           resourceBody: {
             operations: [
               {
