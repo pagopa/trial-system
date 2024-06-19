@@ -11,21 +11,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from './capabilities';
 import { nowDate } from './clock';
 
-// a unique brand for id of document with type job
-interface ActivationJobIdBrand {
-  // use `unique symbol` here to ensure uniqueness across modules / packages
-  readonly ActivationJobId: unique symbol;
-}
-export const ActivationJobIdCodec = t.brand(
-  NonEmptyString,
-  (str): str is t.Branded<NonEmptyString, ActivationJobIdBrand> =>
-    str.length > 0,
-  'ActivationJobId',
-);
-export type ActivationJobId = t.TypeOf<typeof ActivationJobIdCodec>;
-
 export const ActivationJobCodec = t.strict({
-  id: ActivationJobIdCodec,
   trialId: TrialIdCodec,
   createdAt: IsoDateFromString,
   usersToActivate: NonNegativeInteger,
@@ -57,11 +43,7 @@ export const makeActivationJob = ({
   pipe(
     RTE.ask<Pick<Capabilities, 'hashFn'>>(),
     RTE.bindW('now', nowDate),
-    RTE.bindW('id', ({ hashFn }) =>
-      RTE.of(hashFn(trialId).value as ActivationJob['id']),
-    ),
-    RTE.map(({ now, id }) => ({
-      id,
+    RTE.map(({ now }) => ({
       trialId,
       type: 'job' as const,
       createdAt: now,

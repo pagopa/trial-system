@@ -32,6 +32,7 @@ describe('makeActivationJobCosmosContainer', () => {
     it('should insert the item without error', async () => {
       const mockDB = makeDatabaseMock();
       const testDB = mockDB as unknown as Database;
+      const id = anActivationJob.trialId;
 
       mockDB
         .container('')
@@ -43,7 +44,10 @@ describe('makeActivationJobCosmosContainer', () => {
         )();
 
       expect(actual).toStrictEqual(E.right(anActivationJob));
-      expect(mockDB.container('').items.create).toBeCalledWith(anActivationJob);
+      expect(mockDB.container('').items.create).toBeCalledWith({
+        ...anActivationJob,
+        id,
+      });
     });
   });
 });

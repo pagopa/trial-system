@@ -22,7 +22,10 @@ export const makeActivationJobCosmosContainer = (
       ),
     insert: (job) =>
       pipe(
-        TE.tryCatch(() => container.items.create(job), E.toError),
+        TE.tryCatch(
+          () => container.items.create({ ...job, id: job.trialId }),
+          E.toError,
+        ),
         TE.mapBoth(cosmosErrorToDomainError, () => job),
       ),
   };

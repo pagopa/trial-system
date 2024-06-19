@@ -16,8 +16,8 @@ import {
   ActivationResult,
 } from '../../../domain/activation-request';
 import { decodeFromFeed, decodeFromItem } from './decode';
-import { ActivationJobId } from '../../../domain/activation-job';
 import { cosmosErrorToDomainError } from './errors';
+import { TrialId } from '../../../domain/subscription';
 
 export const makeActivationRequestRepository = (
   db: Database,
@@ -63,7 +63,7 @@ export const makeActivationRequestRepository = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
-    activate: ({ id: jobId, trialId }, activationRequests) =>
+    activate: ({ trialId }, activationRequests) =>
       pipe(
         activationRequests,
         // Split in chunks
@@ -72,7 +72,7 @@ export const makeActivationRequestRepository = (
         // batches of 99 items.
         // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
         RA.chunksOf(99),
-        RA.map(makeBatchOperations(jobId)),
+        RA.map(makeBatchOperations(trialId)),
         TE.traverseArray((chunk) => {
           if (activationRequests.length > 0)
             return pipe(
@@ -97,7 +97,7 @@ const makeActivationResult = (
 };
 
 const makeBatchOperations =
-  (jobId: ActivationJobId) =>
+  (jobId: TrialId) =>
   (requests: readonly ActivationRequest[]): readonly OperationInput[] =>
     pipe(
       requests,

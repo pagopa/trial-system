@@ -117,7 +117,7 @@ app.http('createActivationJob', {
   methods: ['POST'],
   authLevel: 'function',
   handler: makePostActivationJobHandler(env),
-  route: 'trials/{trialId}/activation-jobs',
+  route: 'trials/{trialId}/activation-job',
 });
 
 app.http('getActivationJob', {
