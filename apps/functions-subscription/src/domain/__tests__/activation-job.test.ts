@@ -10,7 +10,6 @@ describe('insertActivationJob', () => {
     const testEnv = makeTestEnv();
     const { trialId, usersToActivate } = anActivationJob;
 
-    testEnv.hashFn.mockReturnValueOnce({ value: anActivationJob.id });
     testEnv.clock.now.mockReturnValueOnce(anActivationJob.createdAt);
     testEnv.activationJobWriter.insert.mockReturnValueOnce(
       TE.right(anActivationJob),

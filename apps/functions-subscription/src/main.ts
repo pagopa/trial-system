@@ -115,7 +115,7 @@ app.http('createActivationJob', {
   methods: ['POST'],
   authLevel: 'function',
   handler: makePostActivationJobHandler(env),
-  route: 'trials/{trialId}/activation-jobs',
+  route: 'trials/{trialId}/activation-job',
 });
 
 if (config.subscriptionRequest.consumer === 'on')
