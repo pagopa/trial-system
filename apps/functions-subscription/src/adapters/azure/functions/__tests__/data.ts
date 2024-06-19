@@ -57,10 +57,9 @@ export const makeAValidCreateActivationJobRequest = () =>
 
 export const makeAValidGetActivationJobRequest = () =>
   new HttpRequest({
-    url: 'https://function/trials/{trialId}/activation-jobs/{activationJobId}',
+    url: 'https://function/trials/{trialId}/activation-job',
     method: 'GET',
     params: {
       trialId: aTrialId,
-      activationJobId: anActivationJob.id,
     },
   });

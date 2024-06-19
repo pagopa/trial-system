@@ -18,7 +18,6 @@ describe('getActivationJob', () => {
     );
 
     const expectedJson = {
-      id: anActivationJob.id,
       usersToActivate: anActivationJob.usersToActivate,
       usersActivated: anActivationJob.usersActivated,
       trialId: anActivationJob.trialId,
@@ -26,10 +25,7 @@ describe('getActivationJob', () => {
 
     expect(actual.status).toStrictEqual(200);
     expect(await actual.json()).toMatchObject(expectedJson);
-    expect(env.getActivationJob).toHaveBeenCalledWith(
-      anActivationJob.id,
-      anActivationJob.trialId,
-    );
+    expect(env.getActivationJob).toHaveBeenCalledWith(anActivationJob.trialId);
   });
 
   it('should return 404 when the job does not exist', async () => {

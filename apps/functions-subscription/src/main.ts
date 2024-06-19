@@ -124,7 +124,7 @@ app.http('getActivationJob', {
   methods: ['GET'],
   authLevel: 'function',
   handler: makeGetActivationJobHandler(env),
-  route: `trials/{trialId}/activation-jobs/{activationJobId}`,
+  route: `trials/{trialId}/activation-job`,
 });
 
 if (config.subscriptionRequest.consumer === 'on')

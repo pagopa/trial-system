@@ -29,26 +29,26 @@ describe('insertActivationJob', () => {
 describe('getActivationJob', () => {
   it('should return a Some when the activation job exists', async () => {
     const testEnv = makeTestEnv();
-    const { id, trialId } = anActivationJob;
+    const { trialId: id } = anActivationJob;
 
     testEnv.activationJobReader.get.mockReturnValueOnce(
       TE.right(O.some(anActivationJob)),
     );
 
-    const actual = await getActivationJob(id, trialId)(testEnv)();
+    const actual = await getActivationJob(id)(testEnv)();
     const expected = E.right(O.some(anActivationJob));
 
     expect(actual).toStrictEqual(expected);
-    expect(testEnv.activationJobReader.get).toBeCalledWith(id, trialId);
+    expect(testEnv.activationJobReader.get).toBeCalledWith(id);
   });
 
   it('should return a None when the activation job does not exist', async () => {
     const testEnv = makeTestEnv();
-    const { id, trialId } = anActivationJob;
+    const { trialId: id } = anActivationJob;
 
     testEnv.activationJobReader.get.mockReturnValueOnce(TE.right(O.none));
 
-    const actual = await getActivationJob(id, trialId)(testEnv)();
+    const actual = await getActivationJob(id)(testEnv)();
     const expected = E.right(O.none);
 
     expect(actual).toStrictEqual(expected);

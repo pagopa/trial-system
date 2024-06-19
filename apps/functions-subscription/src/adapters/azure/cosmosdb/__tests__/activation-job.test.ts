@@ -16,15 +16,12 @@ describe('makeActivationJobCosmosContainer', () => {
         read: () => Promise.resolve({ resource: anActivationJob }),
       });
 
-      const { id, trialId } = anActivationJob;
+      const { trialId: id } = anActivationJob;
 
-      const actual = await makeActivationJobCosmosContainer(testDB).get(
-        id,
-        trialId,
-      )();
+      const actual = await makeActivationJobCosmosContainer(testDB).get(id)();
 
       expect(actual).toStrictEqual(E.right(O.some(anActivationJob)));
-      expect(mockDB.container('').item).toBeCalledWith(id, trialId);
+      expect(mockDB.container('').item).toBeCalledWith(id, id);
     });
   });
 

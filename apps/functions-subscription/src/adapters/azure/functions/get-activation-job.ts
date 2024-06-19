@@ -6,7 +6,6 @@ import { SystemEnv } from '../../../system-env';
 import { parsePathParameter } from './middleware';
 import { TrialIdCodec } from '../../../domain/subscription';
 import { toHttpProblemJson } from './errors';
-import { ActivationJobIdCodec } from '../../../domain/activation-job';
 import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
 import { ItemNotFound } from '../../../domain/errors';
 import { toActivationJobAPI } from './codec';
@@ -25,14 +24,8 @@ const makeHandlerKitHandler: H.Handler<
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
     ),
-    RTE.apSW(
-      'activationJobId',
-      RTE.fromEither(
-        parsePathParameter(ActivationJobIdCodec, 'activationJobId')(req),
-      ),
-    ),
-    RTE.flatMapTaskEither(({ activationJobId, trialId, getActivationJob }) =>
-      getActivationJob(activationJobId, trialId),
+    RTE.flatMapTaskEither(({ trialId, getActivationJob }) =>
+      getActivationJob(trialId),
     ),
     RTE.flatMapOption(
       (job) => job,

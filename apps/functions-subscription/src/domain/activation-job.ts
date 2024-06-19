@@ -5,7 +5,6 @@ import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { TrialId, TrialIdCodec } from './subscription';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { ItemAlreadyExists } from './errors';
 import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from './capabilities';
@@ -30,10 +29,7 @@ export interface ActivationJobWriter {
 }
 
 export interface ActivationJobReader {
-  readonly get: (
-    id: ActivationJobId,
-    trialId: TrialId,
-  ) => TE.TaskEither<Error, O.Option<ActivationJob>>;
+  readonly get: (id: TrialId) => TE.TaskEither<Error, O.Option<ActivationJob>>;
 }
 
 export const makeActivationJob = ({
@@ -61,10 +57,10 @@ export const insertActivationJob = (insertActivationJob: InsertActivationJob) =>
     ),
   );
 
-export const getActivationJob = (id: ActivationJobId, trialId: TrialId) =>
+export const getActivationJob = (id: TrialId) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'activationJobReader'>>(),
     RTE.flatMapTaskEither(({ activationJobReader }) =>
-      activationJobReader.get(id, trialId),
+      activationJobReader.get(id),
     ),
   );

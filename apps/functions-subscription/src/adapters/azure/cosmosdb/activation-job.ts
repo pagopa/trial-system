@@ -15,9 +15,9 @@ export const makeActivationJobCosmosContainer = (
 ): ActivationJobReader & ActivationJobWriter => {
   const container = db.container('activations');
   return {
-    get: (id, trialId) =>
+    get: (id) =>
       pipe(
-        TE.tryCatch(() => container.item(id, trialId).read(), E.toError),
+        TE.tryCatch(() => container.item(id, id).read(), E.toError),
         TE.flatMapEither(decodeFromItem(ActivationJobCodec)),
       ),
     insert: (job) =>

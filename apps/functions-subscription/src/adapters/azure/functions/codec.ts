@@ -17,7 +17,6 @@ export const toSubscriptionAPI = (
 export const toActivationJobAPI = (
   activationJob: ActivationJob,
 ): ActivationJobAPI => ({
-  id: activationJob.id,
   trialId: activationJob.trialId,
   usersActivated: activationJob.usersActivated,
   usersToActivate: activationJob.usersToActivate,
