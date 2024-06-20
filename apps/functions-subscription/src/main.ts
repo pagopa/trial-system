@@ -19,7 +19,7 @@ import { makeSubscriptionHistoryCosmosContainer } from './adapters/azure/cosmosd
 import { makeSubscriptionRequestConsumerHandler } from './adapters/azure/functions/process-subscription-request';
 import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/functions/process-subscription-history-changes';
 import { makeActivationsChangesHandler } from './adapters/azure/functions/process-activations-changes';
-import { makeActivationRequestRepository } from './adapters/azure/cosmosdb/activation-request';
+import { makeActivationRequestReaderWriter } from './adapters/azure/cosmosdb/activation-request';
 import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
 import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
 import { monotonicIdFn } from './adapters/ulid/monotonic-id';
@@ -68,7 +68,7 @@ const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
   subscriptionRequestEventHub,
 );
 
-const activationRequestRepository = makeActivationRequestRepository(
+const activationRequestReaderWriter = makeActivationRequestReaderWriter(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
@@ -84,7 +84,8 @@ const capabilities: Capabilities = {
   subscriptionRequestWriter,
   activationJobReader: activationJobReaderWriter,
   activationJobWriter: activationJobReaderWriter,
-  activationRequestRepository,
+  activationRequestReader: activationRequestReaderWriter,
+  activationRequestWriter: activationRequestReaderWriter,
   eventWriter,
   hashFn,
   clock,

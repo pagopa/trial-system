@@ -12,16 +12,17 @@ import {
 import {
   ActivationRequest,
   ActivationRequestCodec,
-  ActivationRequestRepository,
+  ActivationRequestReader,
+  ActivationRequestWriter,
   ActivationResult,
 } from '../../../domain/activation-request';
 import { decodeFromFeed, decodeFromItem } from './decode';
 import { cosmosErrorToDomainError } from './errors';
 import { TrialId } from '../../../domain/subscription';
 
-export const makeActivationRequestRepository = (
+export const makeActivationRequestReaderWriter = (
   db: Database,
-): ActivationRequestRepository => {
+): ActivationRequestReader & ActivationRequestWriter => {
   const container = db.container('activations');
   return {
     insert: (insertActivationRequest) =>

@@ -31,10 +31,10 @@ describe('processActivationJob', () => {
       id: `${i}` as ActivationRequestId,
     }));
 
-    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
+    mockEnv.activationRequestReader.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationRequestRepository.activate.mockReturnValue(
+    mockEnv.activationRequestWriter.activate.mockReturnValue(
       TE.right('success' as const),
     );
 
@@ -45,11 +45,11 @@ describe('processActivationJob', () => {
     const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.activationRequestRepository.list).toHaveBeenCalledWith(
+    expect(mockEnv.activationRequestReader.list).toHaveBeenCalledWith(
       activationJob.trialId,
       fetchSize,
     );
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+    expect(mockEnv.activationRequestWriter.activate).toHaveBeenCalledWith(
       activationJob,
       activationRequests,
     );
@@ -69,10 +69,10 @@ describe('processActivationJob', () => {
       id: `${i}` as ActivationRequestId,
     }));
 
-    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
+    mockEnv.activationRequestReader.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationRequestRepository.activate.mockReturnValue(
+    mockEnv.activationRequestWriter.activate.mockReturnValue(
       TE.right('success' as const),
     );
 
@@ -83,11 +83,11 @@ describe('processActivationJob', () => {
     const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.activationRequestRepository.list).toHaveBeenCalledWith(
+    expect(mockEnv.activationRequestReader.list).toHaveBeenCalledWith(
       activationJob.trialId,
       maxFetchSize,
     );
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+    expect(mockEnv.activationRequestWriter.activate).toHaveBeenCalledWith(
       activationJob,
       activationRequests,
     );
@@ -97,10 +97,10 @@ describe('processActivationJob', () => {
     const testEnv = mockEnv as unknown as Capabilities;
 
     const activationRequests = [anActivationRequest];
-    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
+    mockEnv.activationRequestReader.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationRequestRepository.activate.mockReturnValue(
+    mockEnv.activationRequestWriter.activate.mockReturnValue(
       TE.right('success'),
     );
 
@@ -111,9 +111,11 @@ describe('processActivationJob', () => {
     const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
-    expect(
-      mockEnv.activationRequestRepository.activate,
-    ).toHaveBeenNthCalledWith(1, anActivationJob, activationRequests);
+    expect(mockEnv.activationRequestWriter.activate).toHaveBeenNthCalledWith(
+      1,
+      anActivationJob,
+      activationRequests,
+    );
   });
   it('should activate just one batch when one succeed and one fail', async () => {
     const mockEnv = makeTestEnv();
@@ -127,10 +129,10 @@ describe('processActivationJob', () => {
       ...anActivationRequest,
       id: 'anotherId' as ActivationRequestId,
     })(requests);
-    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
+    mockEnv.activationRequestReader.list.mockReturnValueOnce(
       TE.right(activationRequests),
     );
-    mockEnv.activationRequestRepository.activate
+    mockEnv.activationRequestWriter.activate
       .mockReturnValueOnce(TE.right('success' as const))
       .mockReturnValueOnce(TE.right('fail' as const));
 
@@ -141,7 +143,7 @@ describe('processActivationJob', () => {
     const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+    expect(mockEnv.activationRequestWriter.activate).toHaveBeenCalledWith(
       anActivationJob,
       activationRequests,
     );
@@ -150,8 +152,8 @@ describe('processActivationJob', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.activationRequestRepository.list.mockReturnValueOnce(TE.right([]));
-    mockEnv.activationRequestRepository.activate.mockReturnValueOnce(
+    mockEnv.activationRequestReader.list.mockReturnValueOnce(TE.right([]));
+    mockEnv.activationRequestWriter.activate.mockReturnValueOnce(
       TE.right('success' as const),
     );
 
@@ -168,7 +170,7 @@ describe('processActivationJob', () => {
     const testEnv = mockEnv as unknown as Capabilities;
     const unexpectedError = new Error('Unexpected error');
 
-    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
+    mockEnv.activationRequestReader.list.mockReturnValueOnce(
       TE.left(unexpectedError),
     );
 
@@ -179,8 +181,6 @@ describe('processActivationJob', () => {
     const expected = E.left(unexpectedError);
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledTimes(
-      0,
-    );
+    expect(mockEnv.activationRequestWriter.activate).toHaveBeenCalledTimes(0);
   });
 });

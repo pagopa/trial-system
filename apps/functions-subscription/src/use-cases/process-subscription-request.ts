@@ -10,9 +10,7 @@ import { makeInsertActivationRequest } from '../domain/activation-request';
 
 type Env = Pick<
   Capabilities,
-  | 'subscriptionWriter'
-  | 'subscriptionHistoryWriter'
-  | 'activationRequestRepository'
+  'subscriptionWriter' | 'subscriptionHistoryWriter' | 'activationRequestWriter'
 >;
 
 const recoverItemAlreadyExists =
@@ -47,7 +45,7 @@ export const processSubscriptionRequest = ({
           ),
           TE.orElse(recoverItemAlreadyExists(subscription)),
           TE.flatMap(() =>
-            env.activationRequestRepository.insert(activationRequest),
+            env.activationRequestWriter.insert(activationRequest),
           ),
           TE.map(() => ({ trialId, userId })),
           TE.orElse(recoverItemAlreadyExists(subscription)),
