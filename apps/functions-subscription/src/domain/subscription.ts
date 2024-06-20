@@ -49,23 +49,18 @@ export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
 // this codec is useful to minimize the code duplication,
 // it is used by SubscriptionCodec and SubscriptionHistoryCodec
-export const SubscriptionWithoutIdCodec = t.intersection([
-  t.strict({
-    userId: UserIdCodec,
-    trialId: TrialIdCodec,
-    createdAt: IsoDateFromString,
-    updatedAt: IsoDateFromString,
-    state: t.keyof({
-      UNSUBSCRIBED: null,
-      SUBSCRIBED: null,
-      ACTIVE: null,
-      DISABLED: null,
-    }),
+export const SubscriptionWithoutIdCodec = t.strict({
+  userId: UserIdCodec,
+  trialId: TrialIdCodec,
+  createdAt: IsoDateFromString,
+  updatedAt: IsoDateFromString,
+  state: t.keyof({
+    UNSUBSCRIBED: null,
+    SUBSCRIBED: null,
+    ACTIVE: null,
+    DISABLED: null,
   }),
-  t.partial({
-    activatedAt: IsoDateFromString,
-  }),
-]);
+});
 
 export const SubscriptionCodec = t.intersection([
   t.strict({

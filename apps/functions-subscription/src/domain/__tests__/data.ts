@@ -50,7 +50,6 @@ export const aSubscriptionHistoryV1 = {
 
 export const anActivationJob = {
   trialId: aTrialId,
-  createdAt: new Date(),
   usersToActivate: 100 as NonNegativeInteger,
   usersActivated: 0 as NonNegativeInteger,
   type: 'job' as const,
