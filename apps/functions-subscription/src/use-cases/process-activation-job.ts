@@ -12,12 +12,16 @@ export const processActivationJob = (
 ) =>
   pipe(
     RTE.ask<Env>(),
-    RTE.flatMapTaskEither(({ activationRequestRepository }) =>
-      pipe(
-        activationRequestRepository.list(job.trialId, maxFetchSize),
+    RTE.flatMapTaskEither(({ activationRequestRepository }) => {
+      const itemsToFetch = Math.min(
+        maxFetchSize,
+        job.usersToActivate - job.usersActivated,
+      );
+      return pipe(
+        activationRequestRepository.list(job.trialId, itemsToFetch),
         TE.flatMap((activationRequests) =>
           activationRequestRepository.activate(job, activationRequests),
         ),
-      ),
-    ),
+      );
+    }),
   );
