@@ -66,7 +66,7 @@ const makeTestData = (length: number) => {
   };
 };
 
-describe('makeActivationRequestRepository', () => {
+describe('makeActivationRequestReaderWriter', () => {
   describe('insert', () => {
     it('should return the inserted item', async () => {
       const mockDB = makeDatabaseMock();

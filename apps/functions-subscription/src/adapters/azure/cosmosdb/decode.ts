@@ -5,8 +5,8 @@ import * as O from 'fp-ts/lib/Option';
 import { ItemResponse, ItemDefinition, FeedResponse } from '@azure/cosmos';
 
 export const decodeFromItem =
-  <A, O, T extends ItemDefinition>(codec: t.Type<A, O>) =>
-  (item: ItemResponse<T>) =>
+  <A, O>(codec: t.Type<A, O>) =>
+  <T extends ItemDefinition>(item: ItemResponse<T>) =>
     pipe(
       O.fromNullable(item.resource),
       O.map(codec.decode),
@@ -21,8 +21,8 @@ export const decodeFromItem =
     );
 
 export const decodeFromFeed =
-  <A, O, T extends FeedResponse<unknown>>(codec: t.Type<A, O>) =>
-  (list: T) =>
+  <A, O>(codec: t.Type<A, O>) =>
+  <T extends FeedResponse<unknown>>(list: T) =>
     pipe(
       list.resources,
       t.array(codec).decode,
