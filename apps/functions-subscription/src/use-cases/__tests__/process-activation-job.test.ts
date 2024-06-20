@@ -10,14 +10,22 @@ import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
 import { processActivationJob } from '../process-activation-job';
 import { ActivationRequestId } from '../../domain/activation-request';
+import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 
 describe('processActivationJob', () => {
-  const fetchSize = 100;
-  it('should activate when there are many chunk of activation requests', async () => {
+  const maxFetchSize = 100;
+  it('should activate only the elements defined by the job', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    // Creating an array of many requests; every element has a different id
+    const activationJob = {
+      ...anActivationJob,
+      usersToActivate: 2 as NonNegativeInteger,
+    };
+
+    const fetchSize = activationJob.usersToActivate;
+
+    // Creating an array of requests; every element has a different id
     const activationRequests = Array.from({ length: fetchSize }, (_, i) => ({
       ...anActivationRequest,
       id: `${i}` as ActivationRequestId,
@@ -31,14 +39,56 @@ describe('processActivationJob', () => {
     );
 
     const actual = await processActivationJob(
-      anActivationJob,
-      fetchSize,
+      activationJob,
+      maxFetchSize,
     )(testEnv)();
     const expected = E.right('success');
 
     expect(actual).toStrictEqual(expected);
+    expect(mockEnv.activationRequestRepository.list).toHaveBeenCalledWith(
+      activationJob.trialId,
+      fetchSize,
+    );
     expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
-      anActivationJob,
+      activationJob,
+      activationRequests,
+    );
+  });
+  it(`should activate only ${maxFetchSize} elements`, async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    const activationJob = {
+      ...anActivationJob,
+      usersToActivate: (maxFetchSize * 2) as NonNegativeInteger,
+    };
+
+    // Creating an array of requests; every element has a different id
+    const activationRequests = Array.from({ length: maxFetchSize }, (_, i) => ({
+      ...anActivationRequest,
+      id: `${i}` as ActivationRequestId,
+    }));
+
+    mockEnv.activationRequestRepository.list.mockReturnValueOnce(
+      TE.right(activationRequests),
+    );
+    mockEnv.activationRequestRepository.activate.mockReturnValue(
+      TE.right('success' as const),
+    );
+
+    const actual = await processActivationJob(
+      activationJob,
+      maxFetchSize,
+    )(testEnv)();
+    const expected = E.right('success');
+
+    expect(actual).toStrictEqual(expected);
+    expect(mockEnv.activationRequestRepository.list).toHaveBeenCalledWith(
+      activationJob.trialId,
+      maxFetchSize,
+    );
+    expect(mockEnv.activationRequestRepository.activate).toHaveBeenCalledWith(
+      activationJob,
       activationRequests,
     );
   });
@@ -56,7 +106,7 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      fetchSize,
+      maxFetchSize,
     )(testEnv)();
     const expected = E.right('success');
 
@@ -69,7 +119,7 @@ describe('processActivationJob', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    const requests = Array.from({ length: fetchSize }, (_, i) => ({
+    const requests = Array.from({ length: maxFetchSize }, (_, i) => ({
       ...anActivationRequest,
       id: `${i}` as ActivationRequestId,
     }));
@@ -86,7 +136,7 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      fetchSize,
+      maxFetchSize,
     )(testEnv)();
     const expected = E.right('success');
 
@@ -107,7 +157,7 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      fetchSize,
+      maxFetchSize,
     )(testEnv)();
     const expected = E.right('success');
 
@@ -124,7 +174,7 @@ describe('processActivationJob', () => {
 
     const actual = await processActivationJob(
       anActivationJob,
-      fetchSize,
+      maxFetchSize,
     )(testEnv)();
     const expected = E.left(unexpectedError);
 
