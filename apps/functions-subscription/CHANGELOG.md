@@ -1,5 +1,17 @@
 # functions-subscription
 
+## 1.0.0
+
+### Major Changes
+
+- bba3b8d: \* Remove `/trials/{trialId}/activation-jobs` endpoints
+  - Add `/trials/{trialId}/activation-job`
+
+### Minor Changes
+
+- d67aadf: [IOPLT-570] Add update activation job
+- 49ebf2d: [IOPLT-571] Implement handler to get an activation job
+
 ## 0.7.0
 
 ### Minor Changes
