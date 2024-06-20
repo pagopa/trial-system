@@ -21,7 +21,7 @@ export const ActivationJobCodec = t.strict({
 export type ActivationJob = t.TypeOf<typeof ActivationJobCodec>;
 
 type InsertActivationJob = Pick<ActivationJob, 'trialId' | 'usersToActivate'>;
-type UpdateActivationJob = Partial<Pick<ActivationJob, 'usersToActivate'>>;
+type UpdateActivationJob = Pick<ActivationJob, 'usersToActivate'>;
 
 export interface ActivationJobWriter {
   readonly insert: (
