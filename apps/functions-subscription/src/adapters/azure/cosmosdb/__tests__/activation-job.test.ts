@@ -1,10 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import * as E from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/lib/Option';
-import { Database } from '@azure/cosmos';
+import { Database, ErrorResponse } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
 import { anActivationJob } from '../../../../domain/__tests__/data';
 import { makeActivationJobCosmosContainer } from '../activation-job';
+import { ItemNotFound } from '../../../../domain/errors';
 
 describe('makeActivationJobCosmosContainer', () => {
   describe('get', () => {
@@ -45,6 +46,60 @@ describe('makeActivationJobCosmosContainer', () => {
         ...anActivationJob,
         id,
       });
+    });
+  });
+  describe('update', () => {
+    it('should call patch as expected', async () => {
+      const mockDB = makeDatabaseMock();
+      const testDB = mockDB as unknown as Database;
+      const patchMock = vi.fn();
+      const { trialId, usersToActivate } = anActivationJob;
+      const update = { usersToActivate };
+
+      mockDB.container('').item.mockReturnValueOnce({ patch: patchMock });
+      patchMock.mockResolvedValueOnce({ resource: anActivationJob });
+
+      const actual = await makeActivationJobCosmosContainer(testDB).update(
+        trialId,
+        update,
+      )();
+
+      expect(actual).toStrictEqual(E.right(anActivationJob));
+      expect(mockDB.container('').item).toBeCalledWith(trialId, trialId);
+      expect(patchMock).toBeCalledWith([
+        {
+          op: 'replace',
+          path: '/usersToActivate',
+          value: usersToActivate,
+        },
+      ]);
+    });
+
+    it('should return ItemNotFound if patch returns 404', async () => {
+      const mockDB = makeDatabaseMock();
+      const testDB = mockDB as unknown as Database;
+      const patchMock = vi.fn();
+      const { trialId, usersToActivate } = anActivationJob;
+      const update = { usersToActivate };
+      const error = new ErrorResponse();
+      // eslint-disable-next-line functional/immutable-data
+      error.code = 404;
+
+      mockDB.container('').item.mockReturnValueOnce({ patch: patchMock });
+      patchMock.mockRejectedValueOnce(error);
+
+      const actual = await makeActivationJobCosmosContainer(testDB).update(
+        trialId,
+        update,
+      )();
+
+      expect(actual).toStrictEqual(
+        E.left(
+          new ItemNotFound(
+            `The item was not found; original error body: ${error.body}`,
+          ),
+        ),
+      );
     });
   });
 });

@@ -26,6 +26,7 @@ import { monotonicIdFn } from './adapters/ulid/monotonic-id';
 import { makePostActivationJobHandler } from './adapters/azure/functions/insert-activation-job';
 import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
 import { makeGetActivationJobHandler } from './adapters/azure/functions/get-activation-job';
+import { makePutActivationJobHandler } from './adapters/azure/functions/update-activation-job';
 
 const config = pipe(
   parseConfig(process.env),
@@ -125,6 +126,13 @@ app.http('getActivationJob', {
   authLevel: 'function',
   handler: makeGetActivationJobHandler(env),
   route: `trials/{trialId}/activation-job`,
+});
+
+app.http('updateActivationJob', {
+  methods: ['PUT'],
+  authLevel: 'function',
+  handler: makePutActivationJobHandler(env),
+  route: 'trials/{trialId}/activation-job',
 });
 
 if (config.subscriptionRequest.consumer === 'on')

@@ -117,6 +117,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+    put:
+      operationId: updateActivationJob
+      description: Update an activation job
+      summary: Update an activation job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActivationJob'
+      responses:
+        '200':
+          description: The activation job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivationJob'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
     post:
       operationId: createActivationJob
       description: Create the job to activate users for a given trial
@@ -265,6 +297,13 @@ components:
         updatedAt:
           $ref: '#/components/schemas/UpdatedAt'
     CreateActivationJob:
+      type: object
+      required:
+        - usersToActivate
+      properties:
+        usersToActivate:
+          $ref: '#/components/schemas/UsersToActivate'
+    UpdateActivationJob:
       type: object
       required:
         - usersToActivate

@@ -29,5 +29,25 @@ export const makeActivationJobCosmosContainer = (
         ),
         TE.mapBoth(cosmosErrorToDomainError, () => job),
       ),
+    update: (trialId, update) =>
+      pipe(
+        TE.tryCatch(
+          () =>
+            container.item(trialId, trialId).patch([
+              {
+                op: 'replace',
+                path: '/usersToActivate',
+                value: update.usersToActivate,
+              },
+            ]),
+          E.toError,
+        ),
+        TE.flatMapEither(decodeFromItem(ActivationJobCodec)),
+        TE.flatMapOption(
+          (result) => result,
+          () => new Error('Error during ActivationJob update'),
+        ),
+        TE.mapLeft(cosmosErrorToDomainError),
+      ),
   };
 };

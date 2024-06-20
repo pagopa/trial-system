@@ -5,7 +5,7 @@ import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { TrialId, TrialIdCodec } from './subscription';
 import { IsoDateFromString } from '@pagopa/ts-commons/lib/dates';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
-import { ItemAlreadyExists } from './errors';
+import { ItemAlreadyExists, ItemNotFound } from './errors';
 import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from './capabilities';
 import { nowDate } from './clock';
@@ -21,11 +21,17 @@ export const ActivationJobCodec = t.strict({
 export type ActivationJob = t.TypeOf<typeof ActivationJobCodec>;
 
 type InsertActivationJob = Pick<ActivationJob, 'trialId' | 'usersToActivate'>;
+type UpdateActivationJob = Pick<ActivationJob, 'usersToActivate'>;
 
 export interface ActivationJobWriter {
   readonly insert: (
-    ActivationJob: ActivationJob,
+    activationJob: ActivationJob,
   ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationJob>;
+
+  readonly update: (
+    trialId: ActivationJob['trialId'],
+    update: UpdateActivationJob,
+  ) => TE.TaskEither<Error | ItemNotFound, ActivationJob>;
 }
 
 export interface ActivationJobReader {
@@ -37,9 +43,8 @@ export const makeActivationJob = ({
   usersToActivate,
 }: InsertActivationJob) =>
   pipe(
-    RTE.ask<Pick<Capabilities, 'hashFn'>>(),
-    RTE.bindW('now', nowDate),
-    RTE.map(({ now }) => ({
+    nowDate(),
+    RTE.map((now) => ({
       trialId,
       type: 'job' as const,
       createdAt: now,
@@ -62,5 +67,16 @@ export const getActivationJob = (id: TrialId) =>
     RTE.ask<Pick<Capabilities, 'activationJobReader'>>(),
     RTE.flatMapTaskEither(({ activationJobReader }) =>
       activationJobReader.get(id),
+    ),
+  );
+
+export const updateActivationJob = (
+  trialId: ActivationJob['trialId'],
+  update: UpdateActivationJob,
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationJobWriter'>>(),
+    RTE.flatMapTaskEither(({ activationJobWriter }) =>
+      activationJobWriter.update(trialId, update),
     ),
   );
