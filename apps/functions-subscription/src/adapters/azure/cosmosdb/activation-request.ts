@@ -40,14 +40,14 @@ export const makeActivationRequestReaderWriter = (
         ),
         TE.mapLeft(cosmosErrorToDomainError),
       ),
-    list: (trialId, elementsToFetch) =>
+    list: (trialId, limit) =>
       pipe(
         TE.tryCatch(
           () =>
             container.items
               .query({
                 query:
-                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.activated = false OFFSET 0 LIMIT @limit',
+                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.activated = false ORDER BY c.id ASC OFFSET 0 LIMIT @limit',
                 parameters: [
                   {
                     name: '@trialId',
@@ -55,7 +55,7 @@ export const makeActivationRequestReaderWriter = (
                   },
                   {
                     name: '@limit',
-                    value: elementsToFetch,
+                    value: limit,
                   },
                 ],
               })
