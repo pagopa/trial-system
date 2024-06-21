@@ -1,5 +1,13 @@
 # functions-subscription
 
+## 1.0.2
+
+### Patch Changes
+
+- 65fcf2e: Remove unused fields:
+  - Remove `createdAt` from the `ActivationJob` object
+  - Remove `activatedAt` from `Subscription` and `SubscriptionHistory`
+
 ## 1.0.1
 
 ### Patch Changes
