@@ -9,7 +9,7 @@ import {
   anActivationRequest,
   anInsertActivationRequest,
 } from '../../../../domain/__tests__/data';
-import { makeActivationRequestRepository } from '../activation-request';
+import { makeActivationRequestReaderWriter } from '../activation-request';
 import { ActivationRequestId } from '../../../../domain/activation-request';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 
@@ -66,7 +66,7 @@ const makeTestData = (length: number) => {
   };
 };
 
-describe('makeActivationRequestRepository', () => {
+describe('makeActivationRequestReaderWriter', () => {
   describe('insert', () => {
     it('should return the inserted item', async () => {
       const mockDB = makeDatabaseMock();
@@ -75,7 +75,7 @@ describe('makeActivationRequestRepository', () => {
         .container('')
         .items.create.mockResolvedValueOnce({ resource: anActivationRequest });
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).insert(anInsertActivationRequest)();
 
@@ -92,7 +92,7 @@ describe('makeActivationRequestRepository', () => {
 
       mockDB.container('').items.create.mockRejectedValueOnce(error);
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).insert(anInsertActivationRequest)();
 
@@ -111,7 +111,7 @@ describe('makeActivationRequestRepository', () => {
       const mockDB = makeDatabaseMock();
       const result = 'success' as const;
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).activate(anActivationJob, [])();
 
@@ -131,7 +131,7 @@ describe('makeActivationRequestRepository', () => {
         .container('')
         .items.batch.mockResolvedValueOnce({ result: mockBatchResponse });
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).activate(anActivationJob, activationRequests)();
 
@@ -163,7 +163,7 @@ describe('makeActivationRequestRepository', () => {
         result: mockBatchResponseChunks[1],
       });
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).activate(anActivationJob, activationRequests)();
 
@@ -186,7 +186,7 @@ describe('makeActivationRequestRepository', () => {
       const error = new Error('Something went wrong');
       mockDB.container('').items.batch.mockRejectedValueOnce(error);
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).activate(anActivationJob, activationRequests)();
 
@@ -209,7 +209,7 @@ describe('makeActivationRequestRepository', () => {
         .container('')
         .items.batch.mockResolvedValueOnce({ result: mockBatchResponse });
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).activate(anActivationJob, activationRequests)();
 
@@ -233,7 +233,7 @@ describe('makeActivationRequestRepository', () => {
         fetchAll: () => Promise.resolve({ resources: activationRequests }),
       });
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).list(anActivationJob.trialId, elementsToFetch)();
 
@@ -247,7 +247,7 @@ describe('makeActivationRequestRepository', () => {
         fetchAll: () => Promise.resolve({ resources: [] }),
       });
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).list(anActivationJob.trialId, elementsToFetch)();
 
@@ -262,7 +262,7 @@ describe('makeActivationRequestRepository', () => {
         fetchAll: () => Promise.reject(error),
       });
 
-      const actual = await makeActivationRequestRepository(
+      const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
       ).list(anActivationJob.trialId, elementsToFetch)();
 

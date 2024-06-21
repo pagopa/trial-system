@@ -34,13 +34,7 @@ type InsertActivationRequest = Omit<ActivationRequest, '_etag'>;
 
 export type ActivationResult = 'success' | 'fail';
 
-export interface ActivationRequestRepository {
-  /**
-   * Insert a new activation request.
-   */
-  readonly insert: (
-    activationRequest: InsertActivationRequest,
-  ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationRequest>;
+export interface ActivationRequestReader {
   /**
    * This function returns a list of activation requests that are going to be
    * activated.
@@ -49,7 +43,15 @@ export interface ActivationRequestRepository {
     trialId: TrialId,
     elementsToFetch: number,
   ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
+}
 
+export interface ActivationRequestWriter {
+  /**
+   * Insert a new activation request.
+   */
+  readonly insert: (
+    activationRequest: InsertActivationRequest,
+  ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationRequest>;
   /**
    * This function is responsible to activate the activation requests.
    * If any of the activation request cannot be activated, then none of them

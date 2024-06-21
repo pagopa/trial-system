@@ -4,7 +4,10 @@ import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from '../domain/capabilities';
 import { ActivationJob } from '../domain/activation-job';
 
-type Env = Pick<Capabilities, 'activationRequestRepository'>;
+type Env = Pick<
+  Capabilities,
+  'activationRequestReader' | 'activationRequestWriter'
+>;
 
 export const processActivationJob = (
   job: ActivationJob,
@@ -15,12 +18,13 @@ export const processActivationJob = (
     RTE.let('limit', () =>
       Math.min(maxFetchSize, job.usersToActivate - job.usersActivated),
     ),
-    RTE.flatMapTaskEither(({ activationRequestRepository, limit }) =>
-      pipe(
-        activationRequestRepository.list(job.trialId, limit),
-        TE.flatMap((activationRequests) =>
-          activationRequestRepository.activate(job, activationRequests),
+    RTE.flatMapTaskEither(
+      ({ activationRequestReader, activationRequestWriter, limit }) =>
+        pipe(
+          activationRequestReader.list(job.trialId, limit),
+          TE.flatMap((activationRequests) =>
+            activationRequestWriter.activate(job, activationRequests),
+          ),
         ),
-      ),
     ),
   );

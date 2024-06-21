@@ -30,7 +30,7 @@ describe('processSubscriptionRequest', () => {
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionHistory),
     );
-    mockEnv.activationRequestRepository.insert.mockReturnValueOnce(
+    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
       TE.right(anActivationRequest),
     );
 
@@ -41,7 +41,7 @@ describe('processSubscriptionRequest', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.activationRequestRepository.insert).toBeCalledTimes(1);
+    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
   it('should insert the first version of subscription-history if subscription already exists', async () => {
     const mockEnv = makeTestEnv();
@@ -60,7 +60,7 @@ describe('processSubscriptionRequest', () => {
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionHistory),
     );
-    mockEnv.activationRequestRepository.insert.mockReturnValueOnce(
+    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
       TE.right(anActivationRequest),
     );
 
@@ -71,7 +71,7 @@ describe('processSubscriptionRequest', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.activationRequestRepository.insert).toBeCalledTimes(1);
+    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
   it('should insert the subscription if first version of subscription-history already exists', async () => {
     const mockEnv = makeTestEnv();
@@ -90,7 +90,7 @@ describe('processSubscriptionRequest', () => {
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('')),
     );
-    mockEnv.activationRequestRepository.insert.mockReturnValueOnce(
+    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
       TE.right(anActivationRequest),
     );
 
@@ -101,7 +101,7 @@ describe('processSubscriptionRequest', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.activationRequestRepository.insert).toBeCalledTimes(1);
+    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
   it('should succeed if the the first version of subscription-history, subscription and activation already exists', async () => {
     const mockEnv = makeTestEnv();
@@ -120,7 +120,7 @@ describe('processSubscriptionRequest', () => {
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('')),
     );
-    mockEnv.activationRequestRepository.insert.mockReturnValueOnce(
+    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('')),
     );
 
@@ -131,7 +131,7 @@ describe('processSubscriptionRequest', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.activationRequestRepository.insert).toBeCalledTimes(1);
+    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
   it('should fail if an unexpected error is raised', async () => {
     const mockEnv = makeTestEnv();
@@ -159,6 +159,6 @@ describe('processSubscriptionRequest', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.activationRequestRepository.insert).not.toHaveBeenCalled();
+    expect(mockEnv.activationRequestWriter.insert).not.toHaveBeenCalled();
   });
 });

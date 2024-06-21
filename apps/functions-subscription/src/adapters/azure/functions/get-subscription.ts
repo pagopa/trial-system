@@ -2,9 +2,8 @@ import * as H from '@pagopa/handler-kit';
 import { pipe, flow } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
-import { UserId, TrialId } from '../../../domain/subscription';
+import { TrialIdCodec, UserIdCodec } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import { parsePathParameter } from './middleware';
 import { toHttpProblemJson } from './errors';
@@ -20,17 +19,14 @@ const makeHandlerKitHandler: H.Handler<
     RTE.ask<Pick<SystemEnv, 'getSubscription'>>(),
     RTE.apSW(
       'userId',
-      RTE.fromEither(parsePathParameter(NonEmptyString, 'userId')(req)),
+      RTE.fromEither(parsePathParameter(UserIdCodec, 'userId')(req)),
     ),
     RTE.apSW(
       'trialId',
-      RTE.fromEither(parsePathParameter(NonEmptyString, 'trialId')(req)),
+      RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
     ),
     RTE.flatMapTaskEither(({ getSubscription, trialId, userId }) =>
-      getSubscription(
-        userId as unknown as UserId,
-        trialId as unknown as TrialId,
-      ),
+      getSubscription(userId, trialId),
     ),
     RTE.mapBoth(toHttpProblemJson, flow(toSubscriptionAPI, H.successJson)),
     RTE.orElseW(RTE.of),

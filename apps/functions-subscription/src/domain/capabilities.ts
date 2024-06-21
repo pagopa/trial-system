@@ -10,7 +10,10 @@ import {
   SubscriptionHistoryWriter,
 } from './subscription-history';
 import { SubscriptionRequestWriter } from './subscription-request';
-import { ActivationRequestRepository } from './activation-request';
+import {
+  ActivationRequestReader,
+  ActivationRequestWriter,
+} from './activation-request';
 import { MonotonicIdFn } from './monotonic-id';
 import { ActivationJobReader, ActivationJobWriter } from './activation-job';
 
@@ -28,7 +31,8 @@ export interface Capabilities {
   readonly subscriptionHistoryWriter: SubscriptionHistoryWriter;
   readonly activationJobReader: ActivationJobReader;
   readonly activationJobWriter: ActivationJobWriter;
-  readonly activationRequestRepository: ActivationRequestRepository;
+  readonly activationRequestReader: ActivationRequestReader;
+  readonly activationRequestWriter: ActivationRequestWriter;
   readonly eventWriter: EventWriter;
   readonly hashFn: HashFn;
   readonly clock: Clock;
