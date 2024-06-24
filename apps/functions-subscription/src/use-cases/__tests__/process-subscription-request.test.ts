@@ -3,7 +3,6 @@ import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { processSubscriptionRequest } from '../process-subscription-request';
 import {
-  aSubscriptionRequest,
   aSubscription,
   aSubscriptionHistory,
   anActivationRequest,
@@ -11,6 +10,8 @@ import {
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
 import { ItemAlreadyExists } from '../../domain/errors';
+
+const { userId, trialId } = aSubscription;
 
 describe('processSubscriptionRequest', () => {
   it('should insert the first version of subscription-history, subscription and activation', async () => {
@@ -34,11 +35,9 @@ describe('processSubscriptionRequest', () => {
       TE.right(anActivationRequest),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
@@ -64,11 +63,9 @@ describe('processSubscriptionRequest', () => {
       TE.right(anActivationRequest),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
@@ -94,11 +91,9 @@ describe('processSubscriptionRequest', () => {
       TE.right(anActivationRequest),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
@@ -124,11 +119,9 @@ describe('processSubscriptionRequest', () => {
       TE.left(new ItemAlreadyExists('')),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
@@ -152,8 +145,7 @@ describe('processSubscriptionRequest', () => {
       TE.left(unexpectedError),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
     const expected = E.left(unexpectedError);
 
     expect(actual).toStrictEqual(expected);

@@ -1,6 +1,6 @@
 import { flow, apply } from 'fp-ts/lib/function';
 import { Capabilities } from './domain/capabilities';
-import { insertSubscription } from './use-cases/insert-subscription';
+import { createSubscription } from './use-cases/create-subscription';
 import { getSubscription } from './use-cases/get-subscription';
 import { processSubscriptionRequest } from './use-cases/process-subscription-request';
 import { processActivationJob } from './use-cases/process-activation-job';
@@ -12,7 +12,7 @@ import {
 } from './domain/activation-job';
 
 export const makeSystemEnv = (capabilities: Capabilities) => ({
-  insertSubscription: flow(insertSubscription, apply(capabilities)),
+  createSubscription: flow(createSubscription, apply(capabilities)),
   getSubscription: flow(getSubscription, apply(capabilities)),
   processSubscriptionRequest: flow(
     processSubscriptionRequest,

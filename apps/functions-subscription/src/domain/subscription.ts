@@ -90,6 +90,12 @@ export interface SubscriptionWriter {
   readonly upsert: (subscription: Subscription) => TE.TaskEither<Error, void>;
 }
 
+export interface SubscriptionQueue {
+  readonly enqueue: (
+    subscription: Subscription,
+  ) => TE.TaskEither<Error, Subscription>;
+}
+
 /**
  * This function is useful to create a subscription id.
  */
@@ -100,7 +106,11 @@ export const makeSubscriptionId = (trialId: TrialId, userId: UserId) =>
     RTE.map(({ value }) => value as SubscriptionId),
   );
 
-export const makeSubscription = (trialId: TrialId, userId: UserId) =>
+export const makeSubscription = ({
+  trialId,
+  userId,
+  state,
+}: Pick<Subscription, 'trialId' | 'userId' | 'state'>) =>
   pipe(
     RTE.Do,
     RTE.apSW('id', makeSubscriptionId(trialId, userId)),
@@ -108,7 +118,6 @@ export const makeSubscription = (trialId: TrialId, userId: UserId) =>
     RTE.map(({ date, id }) => {
       const createdAt = date;
       const updatedAt = date;
-      const state = 'SUBSCRIBED' as const;
       return { id, userId, trialId, createdAt, updatedAt, state };
     }),
   );
@@ -126,9 +135,17 @@ export const makeSubscriptionFromHistory = (
 
 export const insertSubscription = (subscription: Subscription) =>
   pipe(
-    RTE.ask<Capabilities, 'subscriptionWriter'>(),
+    RTE.ask<Pick<Capabilities, 'subscriptionWriter'>>(),
     RTE.flatMapTaskEither(({ subscriptionWriter }) =>
       subscriptionWriter.insert(subscription),
+    ),
+  );
+
+export const enqueueSubscription = (subscription: Subscription) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'subscriptionQueue'>>(),
+    RTE.flatMapTaskEither(({ subscriptionQueue }) =>
+      subscriptionQueue.enqueue(subscription),
     ),
   );
 

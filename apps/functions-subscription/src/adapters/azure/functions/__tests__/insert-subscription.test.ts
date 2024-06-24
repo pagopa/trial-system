@@ -15,14 +15,14 @@ import { makePostSubscriptionHandler } from '../insert-subscription';
 describe('makePostSubscriptionHandler', () => {
   it('should return 201 with the created subscription', async () => {
     const env = makeTestSystemEnv();
-    env.insertSubscription.mockReturnValueOnce(TE.right(aSubscription));
+    env.createSubscription.mockReturnValueOnce(TE.right(aSubscription));
 
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(aCreateSubscription),
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(201);
-    expect(env.insertSubscription).toHaveBeenCalledWith(
+    expect(env.createSubscription).toHaveBeenCalledWith(
       aSubscription.userId,
       aSubscription.trialId,
       undefined,
@@ -32,14 +32,14 @@ describe('makePostSubscriptionHandler', () => {
   it('should return 201 with the created subscription with active state', async () => {
     const env = makeTestSystemEnv();
     const anActiveSubscription = { ...aSubscription, state: 'ACTIVE' as const };
-    env.insertSubscription.mockReturnValueOnce(TE.right(anActiveSubscription));
+    env.createSubscription.mockReturnValueOnce(TE.right(anActiveSubscription));
 
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(aCreateSubscriptionWithActiveState),
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(201);
-    expect(env.insertSubscription).toHaveBeenCalledWith(
+    expect(env.createSubscription).toHaveBeenCalledWith(
       anActiveSubscription.userId,
       anActiveSubscription.trialId,
       anActiveSubscription.state,
@@ -48,7 +48,7 @@ describe('makePostSubscriptionHandler', () => {
 
   it('should return 202 on SubscriptionStoreError', async () => {
     const env = makeTestSystemEnv();
-    env.insertSubscription.mockReturnValueOnce(
+    env.createSubscription.mockReturnValueOnce(
       TE.left(new SubscriptionStoreError()),
     );
 
@@ -83,7 +83,7 @@ describe('makePostSubscriptionHandler', () => {
   it('should return 409 when the subscription already exists', async () => {
     const env = makeTestSystemEnv();
     const error = new ItemAlreadyExists('Already exists');
-    env.insertSubscription.mockReturnValueOnce(TE.left(error));
+    env.createSubscription.mockReturnValueOnce(TE.left(error));
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(aCreateSubscription),
       makeFunctionContext(),
@@ -98,7 +98,7 @@ describe('makePostSubscriptionHandler', () => {
   it('should return 500 when the use case returned an error', async () => {
     const env = makeTestSystemEnv();
     const error = new Error('Something went wrong');
-    env.insertSubscription.mockReturnValueOnce(TE.left(error));
+    env.createSubscription.mockReturnValueOnce(TE.left(error));
 
     const actual = await makePostSubscriptionHandler(env)(
       makeAValidCreateSubscriptionRequest(aCreateSubscription),

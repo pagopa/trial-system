@@ -66,7 +66,8 @@ export interface ActivationRequestWriter {
 export const makeInsertActivationRequest = ({
   trialId,
   userId,
-}: Pick<ActivationRequest, 'trialId' | 'userId'>) =>
+  activated,
+}: Pick<ActivationRequest, 'trialId' | 'userId' | 'activated'>) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
     RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
@@ -76,6 +77,6 @@ export const makeInsertActivationRequest = ({
       trialId,
       userId,
       type: 'request' as const,
-      activated: false,
+      activated,
     })),
   );

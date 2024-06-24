@@ -9,7 +9,6 @@ import { makeInfoHandler } from './adapters/azure/functions/info';
 import { makePostSubscriptionHandler } from './adapters/azure/functions/insert-subscription';
 import { makeGetSubscriptionHandler } from './adapters/azure/functions/get-subscription';
 import { makeSubscriptionCosmosContainer } from './adapters/azure/cosmosdb/subscription';
-import { makeSubscriptionRequestEventHubProducer } from './adapters/azure/eventhubs/subscription-request';
 import { parseConfig } from './config';
 import { Capabilities } from './domain/capabilities';
 import { makeSystemEnv } from './system-env';
@@ -27,6 +26,7 @@ import { makePostActivationJobHandler } from './adapters/azure/functions/insert-
 import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
 import { makeGetActivationJobHandler } from './adapters/azure/functions/get-activation-job';
 import { makePutActivationJobHandler } from './adapters/azure/functions/update-activation-job';
+import { makeSubscriptionQueueEventHubProducer } from './adapters/azure/eventhubs/subscription';
 
 const config = pipe(
   parseConfig(process.env),
@@ -64,7 +64,7 @@ const activationJobReaderWriter = makeActivationJobCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
-const subscriptionRequestWriter = makeSubscriptionRequestEventHubProducer(
+const subscriptionQueue = makeSubscriptionQueueEventHubProducer(
   subscriptionRequestEventHub,
 );
 
@@ -81,7 +81,7 @@ const capabilities: Capabilities = {
   subscriptionWriter: subscriptionReaderWriter,
   subscriptionHistoryReader: subscriptionHistoryReaderWriter,
   subscriptionHistoryWriter: subscriptionHistoryReaderWriter,
-  subscriptionRequestWriter,
+  subscriptionQueue,
   activationJobReader: activationJobReaderWriter,
   activationJobWriter: activationJobReaderWriter,
   activationRequestReader: activationRequestReaderWriter,
