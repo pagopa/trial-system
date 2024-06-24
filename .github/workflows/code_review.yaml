@@ -5,6 +5,7 @@ on:
     paths:
       - apps/**
       - packages/**
+      - yarn.lock
   workflow_dispatch: {}
 
 jobs:
