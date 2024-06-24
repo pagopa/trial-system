@@ -41,7 +41,7 @@ export interface ActivationRequestReader {
    */
   readonly list: (
     trialId: TrialId,
-    elementsToFetch: number,
+    limit: number,
   ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
 }
 
