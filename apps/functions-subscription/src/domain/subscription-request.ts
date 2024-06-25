@@ -1,10 +1,11 @@
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
 import * as RTE from 'fp-ts/ReaderTaskEither';
-import { TrialIdCodec, UserIdCodec } from './subscription';
+import { UserIdCodec } from './subscription';
 import { TooManyRequestsError } from './errors';
 import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from './capabilities';
+import { TrialIdCodec } from './trial';
 
 /**
  * Represents a subscription request to a trial.

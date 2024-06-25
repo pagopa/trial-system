@@ -8,7 +8,6 @@ import {
   makeSubscription,
   Subscription,
   SubscriptionId,
-  TrialId,
   UserId,
 } from '../domain/subscription';
 import { SubscriptionStoreError } from './errors';
@@ -19,6 +18,7 @@ import {
 } from '../domain/subscription-history';
 import { insertSubscriptionRequest } from '../domain/subscription-request';
 import { insertSubscription as insertSubscriptionRTE } from '../domain/subscription';
+import { TrialId } from '../domain/trial';
 
 // Maps all the requirements for this use-case
 type Env = Pick<

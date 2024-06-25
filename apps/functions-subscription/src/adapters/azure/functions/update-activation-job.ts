@@ -6,10 +6,10 @@ import { SystemEnv } from '../../../system-env';
 import { UpdateActivationJob } from '../../../generated/definitions/internal/UpdateActivationJob';
 import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
 import { parsePathParameter, parseRequestBody } from './middleware';
-import { TrialIdCodec } from '../../../domain/subscription';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { toHttpProblemJson } from './errors';
 import { toActivationJobAPI } from './codec';
+import { TrialIdCodec } from '../../../domain/trial';
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,

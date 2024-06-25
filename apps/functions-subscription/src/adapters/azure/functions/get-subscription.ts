@@ -3,11 +3,12 @@ import { pipe, flow } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
-import { TrialIdCodec, UserIdCodec } from '../../../domain/subscription';
+import { UserIdCodec } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import { parsePathParameter } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toSubscriptionAPI } from './codec';
+import { TrialIdCodec } from '../../../domain/trial';
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,

@@ -1,7 +1,8 @@
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
-import { SubscriptionId, TrialId, UserId } from '../subscription';
+import { SubscriptionId, UserId } from '../subscription';
 import { SubscriptionHistoryId } from '../subscription-history';
 import { ActivationRequestId } from '../activation-request';
+import { TrialId } from '../trial';
 
 const aSubscriptionHistoryIdV0 =
   'aSubscriptionHistoryIdV0' as SubscriptionHistoryId;

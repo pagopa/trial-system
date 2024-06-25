@@ -5,9 +5,9 @@ import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { SystemEnv } from '../../../system-env';
 import { CreateActivationJob } from '../../../generated/definitions/internal/CreateActivationJob';
 import { parsePathParameter, parseRequestBody } from './middleware';
-import { TrialIdCodec } from '../../../domain/subscription';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { toHttpProblemJson } from './errors';
+import { TrialIdCodec } from '../../../domain/trial';
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,

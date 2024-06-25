@@ -4,12 +4,13 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
 import { CreateSubscription } from '../../../generated/definitions/internal/CreateSubscription';
-import { UserId, TrialIdCodec } from '../../../domain/subscription';
+import { UserId } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
 import { parsePathParameter, parseRequestBody } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toSubscriptionAPI } from './codec';
+import { TrialIdCodec } from '../../../domain/trial';
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
