@@ -79,3 +79,21 @@ export const makeInsertActivationRequest = ({
       activated,
     })),
   );
+
+export const insertActivationRequest = (request: InsertActivationRequest) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
+    RTE.flatMapTaskEither(({ activationRequestWriter }) =>
+      activationRequestWriter.insert(request),
+    ),
+  );
+
+export const activateActivationRequests = (
+  requests: readonly ActivationRequest[],
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
+    RTE.flatMapTaskEither(({ activationRequestWriter }) =>
+      activationRequestWriter.activate(requests),
+    ),
+  );
