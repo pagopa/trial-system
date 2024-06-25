@@ -50,7 +50,6 @@ describe('processActivationJob', () => {
       fetchSize,
     );
     expect(mockEnv.activationRequestWriter.activate).toHaveBeenCalledWith(
-      activationJob,
       activationRequests,
     );
   });
@@ -88,7 +87,6 @@ describe('processActivationJob', () => {
       maxFetchSize,
     );
     expect(mockEnv.activationRequestWriter.activate).toHaveBeenCalledWith(
-      activationJob,
       activationRequests,
     );
   });
@@ -113,7 +111,6 @@ describe('processActivationJob', () => {
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.activationRequestWriter.activate).toHaveBeenNthCalledWith(
       1,
-      anActivationJob,
       activationRequests,
     );
   });
@@ -144,7 +141,6 @@ describe('processActivationJob', () => {
 
     expect(actual).toStrictEqual(expected);
     expect(mockEnv.activationRequestWriter.activate).toHaveBeenCalledWith(
-      anActivationJob,
       activationRequests,
     );
   });

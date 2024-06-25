@@ -11,7 +11,7 @@ import {
 import { SubscriptionStoreError } from './errors';
 import { ItemAlreadyExists } from '../domain/errors';
 import {
-  insertSubscription as insertSubscriptionRTE,
+  insertSubscription,
   enqueueSubscription,
 } from '../domain/subscription';
 
@@ -20,7 +20,7 @@ const handleMissingSubscription = (subscription: Subscription) =>
     enqueueSubscription(subscription),
     RTE.flatMap(() =>
       pipe(
-        insertSubscriptionRTE(subscription),
+        insertSubscription(subscription),
         RTE.mapLeft(() => new SubscriptionStoreError()),
       ),
     ),

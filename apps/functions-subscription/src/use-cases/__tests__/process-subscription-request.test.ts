@@ -42,6 +42,40 @@ describe('processSubscriptionRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
+  it('should call activate if the subscription request is ACTIVE', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    mockEnv.monotonicIdFn.mockReturnValueOnce({
+      value: anActivationRequest.id,
+    });
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
+    mockEnv.hashFn
+      .mockReturnValueOnce({ value: aSubscription.id })
+      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
+    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
+      TE.right({ ...aSubscription, state: 'ACTIVE' }),
+    );
+    mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
+      TE.right({ ...aSubscriptionHistory, state: 'ACTIVE' }),
+    );
+    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
+      TE.right({ ...anActivationRequest, activated: true }),
+    );
+    mockEnv.activationRequestWriter.activate.mockReturnValueOnce(
+      TE.right('success'),
+    );
+
+    const actual = await processSubscriptionRequest({
+      ...aSubscription,
+      state: 'ACTIVE',
+    })(testEnv)();
+
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
+    expect(mockEnv.activationRequestWriter.activate).toBeCalledWith([
+      { ...anActivationRequest, activated: true },
+    ]);
+  });
   it('should insert the first version of subscription-history if subscription already exists', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
@@ -98,7 +132,7 @@ describe('processSubscriptionRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
-  it('should succeed if the the first version of subscription-history, subscription and activation already exists', async () => {
+  it('should succeed if the first version of subscription-history, subscription and activation already exists', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 

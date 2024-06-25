@@ -36,17 +36,32 @@ export const processSubscriptionRequest = (subscription: Subscription) =>
     RTE.flatMapTaskEither(
       ({ subscriptionHistory, activationRequest, ...env }) =>
         pipe(
+          // insert subscription
           env.subscriptionWriter.insert(subscription),
           TE.orElse(recoverItemAlreadyExists(subscription)),
+          // insert subscription-history
           TE.flatMap(() =>
             env.subscriptionHistoryWriter.insert(subscriptionHistory),
           ),
           TE.orElse(recoverItemAlreadyExists(subscription)),
+          // insert activation
           TE.flatMap(() =>
-            env.activationRequestWriter.insert(activationRequest),
+            pipe(
+              env.activationRequestWriter.insert(activationRequest),
+              TE.flatMap((activation) => {
+                // this operation is required to keep the number of user activated
+                // up to date
+                if (activation.activated)
+                  return pipe(
+                    env.activationRequestWriter.activate([activation]),
+                    TE.map(() => activation),
+                  );
+                else return TE.of(activation);
+              }),
+            ),
           ),
-          TE.map(({ trialId, userId }) => ({ trialId, userId })),
           TE.orElse(recoverItemAlreadyExists(subscription)),
+          TE.map(({ trialId, userId }) => ({ trialId, userId })),
         ),
     ),
   );

@@ -4,7 +4,6 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { TrialId, TrialIdCodec, UserIdCodec } from './subscription';
-import { ActivationJob } from './activation-job';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
 
@@ -56,9 +55,9 @@ export interface ActivationRequestWriter {
    * This function is responsible to activate the activation requests.
    * If any of the activation request cannot be activated, then none of them
    * are activated.
+   * All the activation request must be of the same trialId.
    */
   readonly activate: (
-    job: ActivationJob,
     activationRequests: readonly ActivationRequest[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }

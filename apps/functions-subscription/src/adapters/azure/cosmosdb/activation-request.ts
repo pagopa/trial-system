@@ -1,6 +1,8 @@
 import * as TE from 'fp-ts/TaskEither';
+import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
+import * as RNEA from 'fp-ts/lib/ReadonlyNonEmptyArray';
 import { pipe } from 'fp-ts/lib/function';
 import {
   BulkOperationType,
@@ -64,28 +66,28 @@ export const makeActivationRequestReaderWriter = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
-    activate: ({ trialId }, activationRequests) =>
+    activate: (activationRequests) =>
       pipe(
-        activationRequests,
-        // Split in chunks
-        // Transactional batch can handle only 100 items per batch.
-        // Since one item must be the update of the job, we can handle
-        // batches of 99 items.
-        // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
-        RA.chunksOf(99),
-        RA.map(makeBatchOperations(trialId)),
-        TE.traverseArray((chunk) => {
-          if (activationRequests.length > 0)
-            return pipe(
+        RNEA.fromReadonlyArray(activationRequests),
+        O.map((rnea) =>
+          pipe(
+            // Transactional batch can handle only 100 items per batch.
+            // Since one item must be the update of the job, we can handle
+            // batches of 99 items.
+            // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
+            RA.chunksOf(99)(rnea),
+            RA.map(makeBatchOperations(RNEA.head(rnea).trialId)),
+            TE.traverseArray((chunk) =>
               TE.tryCatch(
-                () => container.items.batch([...chunk], trialId),
+                () =>
+                  container.items.batch([...chunk], RNEA.head(rnea).trialId),
                 E.toError,
               ),
-              TE.map(({ result }) => result ?? []),
-            );
-          else return TE.of([]);
-        }),
-        TE.map(RA.flatten),
+            ),
+            TE.map(RA.flatMap(({ result }) => result || [])),
+          ),
+        ),
+        O.getOrElseW(() => TE.of([])),
         TE.map(makeActivationResult),
       ),
   };
