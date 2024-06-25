@@ -12,3 +12,9 @@ export const TrialIdCodec = t.brand(
   'TrialId',
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
+
+// TODO: Complete this codec adding new properties
+export const TrialCodec = t.strict({
+  trialId: TrialIdCodec,
+});
+export type Trial = t.TypeOf<typeof TrialCodec>;
