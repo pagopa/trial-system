@@ -32,9 +32,8 @@ export const createSubscription = (
   state: Extract<Subscription['state'], 'ACTIVE' | 'SUBSCRIBED'> = 'SUBSCRIBED',
 ) =>
   pipe(
-    RTE.Do,
-    RTE.apS('subscription', makeSubscription({ userId, trialId, state })),
-    RTE.chainFirstW(({ subscription }) =>
+    makeSubscription({ userId, trialId, state }),
+    RTE.chainFirstW((subscription) =>
       pipe(
         getSubscriptionById(subscription.id),
         RTE.flatMap(
@@ -46,5 +45,4 @@ export const createSubscription = (
         ),
       ),
     ),
-    RTE.map(({ subscription }) => subscription),
   );
