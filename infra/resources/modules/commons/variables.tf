@@ -103,3 +103,17 @@ variable "function_subscription_config" {
     autoscale_default = 1
   }
 }
+
+variable "dns_config" {
+  type = object({
+    second_level             = string
+    api_external_third_level = string
+    dns_default_ttl_sec      = number
+  })
+
+  default = {
+    second_level             = "pagopa.it"
+    api_external_third_level = "api.trial"
+    dns_default_ttl_sec      = 3600
+  }
+}
