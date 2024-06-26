@@ -3,7 +3,7 @@ import { CreateSubscription } from '../../../../generated/definitions/internal/C
 import { UserId } from '../../../../generated/definitions/internal/UserId';
 import { TrialId } from '../../../../generated/definitions/internal/TrialId';
 import { CreateSubscriptionStateEnum } from '../../../../generated/definitions/internal/CreateSubscriptionState';
-import { anActivationJob } from '../../../../domain/__tests__/data';
+import { anActivationJob, aTrial } from '../../../../domain/__tests__/data';
 
 const aUserId = 'aUserId' as UserId;
 const aTrialId = 'aTrialId' as TrialId;
@@ -75,5 +75,17 @@ export const makeAValidUpdateActivationJobRequest = () =>
     },
     params: {
       trialId: anActivationJob.trialId,
+    },
+  });
+
+export const makeAValidCreateTrialRequest = () =>
+  new HttpRequest({
+    url: 'https://function/trials',
+    method: 'POST',
+    body: {
+      string: JSON.stringify({
+        name: aTrial.name,
+        description: aTrial.description,
+      }),
     },
   });

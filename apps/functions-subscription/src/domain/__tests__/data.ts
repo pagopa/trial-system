@@ -2,6 +2,7 @@ import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { SubscriptionId, TrialId, UserId } from '../subscription';
 import { SubscriptionHistoryId } from '../subscription-history';
 import { ActivationRequestId } from '../activation-request';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 const aSubscriptionHistoryIdV0 =
   'aSubscriptionHistoryIdV0' as SubscriptionHistoryId;
@@ -70,4 +71,10 @@ export const anActivationRequestActivated = {
   ...anInsertActivationRequest,
   activated: true,
   _etag: 'anEtag',
+};
+
+export const aTrial = {
+  id: 'aTrialId' as TrialId,
+  name: 'aTrialName' as NonEmptyString,
+  description: 'aTrialDescription',
 };
