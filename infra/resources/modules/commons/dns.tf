@@ -15,7 +15,7 @@ resource "azurerm_dns_zone" "api_trial_pagopa_it" {
 
 resource "azurerm_dns_a_record" "api_trial_pagopa_it" {
   name                = "api"
-  zone_name           = azurerm_dns_zone.api_trial_pagopa_it.name
+  zone_name           = azurerm_dns_zone.api_trial_pagopa_it[0].name
   resource_group_name = azurerm_resource_group.domain_rg.name
   ttl                 = var.dns_config.dns_default_ttl_sec
   records             = [azurerm_public_ip.appgateway_public_ip.ip_address]
