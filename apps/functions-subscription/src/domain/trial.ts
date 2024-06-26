@@ -1,12 +1,22 @@
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/lib/TaskEither';
-// TODO: Move this codec into this file later
-import { TrialId, TrialIdCodec } from './subscription';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
+
+// a unique brand for trialId
+interface TrialIdBrand {
+  // use `unique symbol` here to ensure uniqueness across modules / packages
+  readonly TrialId: unique symbol;
+}
+export const TrialIdCodec = t.brand(
+  NonEmptyString,
+  (str): str is t.Branded<NonEmptyString, TrialIdBrand> => str.length > 0,
+  'TrialId',
+);
+export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
 export const TrialCodec = t.intersection([
   t.strict({

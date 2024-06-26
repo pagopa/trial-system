@@ -8,13 +8,13 @@ import {
   Subscription,
   SubscriptionIdCodec,
   SubscriptionWithoutIdCodec,
-  TrialId,
   UserId,
 } from './subscription';
 import { ItemAlreadyExists } from './errors';
 import { Capabilities } from './capabilities';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { nowDate } from './clock';
+import { TrialId } from './trial';
 
 // a unique brand for subscriptionHistoryId
 interface SubscriptionHistoryIdBrand {

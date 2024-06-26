@@ -9,6 +9,7 @@ import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { ItemAlreadyExists } from './errors';
 import { nowDate } from './clock';
 import { SubscriptionHistory } from './subscription-history';
+import { TrialId, TrialIdCodec } from './trial';
 
 // a unique brand for subscriptionId
 interface SubscriptionIdBrand {
@@ -34,18 +35,6 @@ export const UserIdCodec = t.brand(
   'UserId',
 );
 export type UserId = t.TypeOf<typeof UserIdCodec>;
-
-// a unique brand for trialId
-interface TrialIdBrand {
-  // use `unique symbol` here to ensure uniqueness across modules / packages
-  readonly TrialId: unique symbol;
-}
-export const TrialIdCodec = t.brand(
-  NonEmptyString,
-  (str): str is t.Branded<NonEmptyString, TrialIdBrand> => str.length > 0,
-  'TrialId',
-);
-export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
 // this codec is useful to minimize the code duplication,
 // it is used by SubscriptionCodec and SubscriptionHistoryCodec

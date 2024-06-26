@@ -2,11 +2,11 @@ import * as t from 'io-ts';
 import * as O from 'fp-ts/lib/Option';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
-import { TrialId, TrialIdCodec } from './subscription';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { ItemAlreadyExists, ItemNotFound } from './errors';
 import { pipe } from 'fp-ts/lib/function';
 import { Capabilities } from './capabilities';
+import { TrialId, TrialIdCodec } from './trial';
 
 export const ActivationJobCodec = t.strict({
   trialId: TrialIdCodec,

@@ -1,12 +1,12 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import {
-  TrialId,
   UserId,
   makeSubscriptionId,
   getSubscriptionById,
 } from '../domain/subscription';
 import { ItemNotFound } from '../domain/errors';
+import { TrialId } from '../domain/trial';
 
 export const getSubscription = (userId: UserId, trialId: TrialId) =>
   pipe(
