@@ -119,6 +119,18 @@ resource "azurerm_private_dns_zone_virtual_network_link" "evh_link" {
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
+resource "azurerm_private_dns_zone" "privatelink_api_net" {
+  name                = "privatelink.azure-api.net"
+  resource_group_name = azurerm_resource_group.net_rg.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "apim_link" {
+  name                  = azurerm_virtual_network.vnet.name
+  resource_group_name   = azurerm_resource_group.net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_api_net.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+}
+
 data "azurerm_private_dns_zone" "privatelink_azure_websites" {
   provider            = azurerm.prodio
   name                = "privatelink.azurewebsites.net"
@@ -191,6 +203,28 @@ resource "azurerm_private_endpoint" "subscription_async_fn_staging" {
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
     private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
+  }
+
+  tags = var.tags
+}
+
+
+resource "azurerm_private_endpoint" "apim" {
+  name                = "${local.project}-apim-endpoint"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.net_rg.name
+  subnet_id           = module.pendpoints_snet.id
+
+  private_service_connection {
+    name                           = "${local.project}-apim-endpoint"
+    private_connection_resource_id = module.apim.id
+    is_manual_connection           = false
+    subresource_names              = ["Gateway"]
+  }
+
+  private_dns_zone_group {
+    name                 = "private-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_api_net.id]
   }
 
   tags = var.tags

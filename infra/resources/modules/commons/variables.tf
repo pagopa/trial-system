@@ -117,3 +117,14 @@ variable "dns_config" {
     dns_default_ttl_sec  = 3600
   }
 }
+
+
+variable "apim_subnet_cidr" {
+  type = list(string)
+}
+variable "apim_config" {
+  type = object({
+    sku = string
+    publisher_email = string
+  })
+}
