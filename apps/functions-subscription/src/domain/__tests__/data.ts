@@ -74,7 +74,7 @@ export const anActivationRequestActivated = {
 };
 
 export const aTrial = {
-  id: 'aTrialId' as TrialId,
+  id: aTrialId,
   name: 'aTrialName' as NonEmptyString,
   description: 'aTrialDescription',
 };
