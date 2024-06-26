@@ -4,7 +4,6 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { TrialId, TrialIdCodec, UserIdCodec } from './subscription';
-import { ActivationJob } from './activation-job';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
 
@@ -56,9 +55,9 @@ export interface ActivationRequestWriter {
    * This function is responsible to activate the activation requests.
    * If any of the activation request cannot be activated, then none of them
    * are activated.
+   * All the activation request must be of the same trialId.
    */
   readonly activate: (
-    job: ActivationJob,
     activationRequests: readonly ActivationRequest[],
   ) => TE.TaskEither<Error, ActivationResult>;
 }
@@ -66,7 +65,8 @@ export interface ActivationRequestWriter {
 export const makeInsertActivationRequest = ({
   trialId,
   userId,
-}: Pick<ActivationRequest, 'trialId' | 'userId'>) =>
+  activated,
+}: Pick<ActivationRequest, 'trialId' | 'userId' | 'activated'>) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
     RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
@@ -76,6 +76,24 @@ export const makeInsertActivationRequest = ({
       trialId,
       userId,
       type: 'request' as const,
-      activated: false,
+      activated,
     })),
+  );
+
+export const insertActivationRequest = (request: InsertActivationRequest) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
+    RTE.flatMapTaskEither(({ activationRequestWriter }) =>
+      activationRequestWriter.insert(request),
+    ),
+  );
+
+export const activateActivationRequests = (
+  requests: readonly ActivationRequest[],
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
+    RTE.flatMapTaskEither(({ activationRequestWriter }) =>
+      activationRequestWriter.activate(requests),
+    ),
   );

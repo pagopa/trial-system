@@ -4,12 +4,15 @@
 import { Clock } from './clock';
 import { EventWriter } from './event';
 import { HashFn } from './hash';
-import { SubscriptionReader, SubscriptionWriter } from './subscription';
+import {
+  SubscriptionReader,
+  SubscriptionWriter,
+  SubscriptionQueue,
+} from './subscription';
 import {
   SubscriptionHistoryReader,
   SubscriptionHistoryWriter,
 } from './subscription-history';
-import { SubscriptionRequestWriter } from './subscription-request';
 import {
   ActivationRequestReader,
   ActivationRequestWriter,
@@ -27,7 +30,7 @@ import { TrialWriter } from './trial';
 export interface Capabilities {
   readonly subscriptionReader: SubscriptionReader;
   readonly subscriptionWriter: SubscriptionWriter;
-  readonly subscriptionRequestWriter: SubscriptionRequestWriter;
+  readonly subscriptionQueue: SubscriptionQueue;
   readonly subscriptionHistoryReader: SubscriptionHistoryReader;
   readonly subscriptionHistoryWriter: SubscriptionHistoryWriter;
   readonly activationJobReader: ActivationJobReader;

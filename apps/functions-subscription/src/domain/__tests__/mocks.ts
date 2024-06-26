@@ -4,7 +4,7 @@ import { Capabilities } from '../capabilities';
 export const makeTestEnv = () => ({
   subscriptionReader: mock<Capabilities['subscriptionReader']>(),
   subscriptionWriter: mock<Capabilities['subscriptionWriter']>(),
-  subscriptionRequestWriter: mock<Capabilities['subscriptionRequestWriter']>(),
+  subscriptionQueue: mock<Capabilities['subscriptionQueue']>(),
   subscriptionHistoryReader: mock<Capabilities['subscriptionHistoryReader']>(),
   subscriptionHistoryWriter: mock<Capabilities['subscriptionHistoryWriter']>(),
   activationJobReader: mock<Capabilities['activationJobReader']>(),

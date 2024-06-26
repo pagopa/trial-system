@@ -11,7 +11,7 @@ export const makeFunctionContext = () =>
   }) as InvocationContext;
 
 export const makeTestSystemEnv = () => ({
-  insertSubscription: mockFn<SystemEnv['insertSubscription']>(),
+  createSubscription: mockFn<SystemEnv['createSubscription']>(),
   processSubscriptionRequest: mockFn<SystemEnv['processSubscriptionRequest']>(),
   getSubscription: mockFn<SystemEnv['getSubscription']>(),
   processActivationJob: mockFn<SystemEnv['processActivationJob']>(),
