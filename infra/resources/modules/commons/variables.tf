@@ -106,14 +106,14 @@ variable "function_subscription_config" {
 
 variable "dns_config" {
   type = object({
-    second_level             = string
-    api_external_third_level = string
-    dns_default_ttl_sec      = number
+    second_level         = string
+    external_third_level = string
+    dns_default_ttl_sec  = number
   })
 
   default = {
-    second_level             = "pagopa.it"
-    api_external_third_level = "api.trial"
-    dns_default_ttl_sec      = 3600
+    second_level         = "pagopa.it"
+    external_third_level = "trial"
+    dns_default_ttl_sec  = 3600
   }
 }
