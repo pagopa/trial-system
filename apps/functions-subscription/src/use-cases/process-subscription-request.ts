@@ -33,21 +33,16 @@ const handleActivatedRequest = (request: ActivationRequest) =>
 
 export const processSubscriptionRequest = (subscription: Subscription) =>
   pipe(
-    RTE.Do,
-    RTE.bindW('subscriptionResult', () =>
-      pipe(
-        insertSubscription(subscription),
-        RTE.orElseW(recoverItemAlreadyExists(subscription)),
-      ),
-    ),
-    RTE.bindW('subscriptionHistoryResult', () =>
+    insertSubscription(subscription),
+    RTE.orElseW(recoverItemAlreadyExists(subscription)),
+    RTE.flatMap(() =>
       pipe(
         makeSubscriptionHistory(subscription),
         RTE.flatMap(insertSubscriptionHistory),
         RTE.orElseW(recoverItemAlreadyExists(subscription)),
       ),
     ),
-    RTE.bindW('activationRequest', () =>
+    RTE.flatMap(() =>
       pipe(
         makeInsertActivationRequest({
           trialId: subscription.trialId,
