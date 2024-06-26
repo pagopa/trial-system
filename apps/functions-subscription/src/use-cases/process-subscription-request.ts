@@ -43,16 +43,18 @@ export const processSubscriptionRequest = (subscription: Subscription) =>
       ),
     ),
     RTE.flatMap(() =>
-      pipe(
-        makeInsertActivationRequest({
-          trialId: subscription.trialId,
-          userId: subscription.userId,
-          activated: subscription.state !== 'SUBSCRIBED',
-        }),
-        RTE.flatMap(insertActivationRequest),
-        RTE.flatMap(handleActivatedRequest),
-        RTE.orElseW(recoverItemAlreadyExists(subscription)),
-      ),
+      subscription.state === 'SUBSCRIBED' || subscription.state === 'ACTIVE'
+        ? pipe(
+            makeInsertActivationRequest({
+              trialId: subscription.trialId,
+              userId: subscription.userId,
+              activated: subscription.state === 'ACTIVE',
+            }),
+            RTE.flatMap(insertActivationRequest),
+            RTE.flatMap(handleActivatedRequest),
+            RTE.orElseW(recoverItemAlreadyExists(subscription)),
+          )
+        : RTE.of(subscription),
     ),
     RTE.map(() => ({
       trialId: subscription.trialId,
