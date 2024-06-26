@@ -3,17 +3,52 @@ import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { processSubscriptionRequest } from '../process-subscription-request';
 import {
-  aSubscriptionRequest,
   aSubscription,
   aSubscriptionHistory,
   anActivationRequest,
+  anInsertActivationRequest,
 } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { Capabilities } from '../../domain/capabilities';
 import { ItemAlreadyExists } from '../../domain/errors';
 
+const { userId, trialId } = aSubscription;
+
 describe('processSubscriptionRequest', () => {
-  it('should insert the first version of subscription-history, subscription and activation', async () => {
+  it('should call insert subscription, subscription-history and activation request if the subscription request is SUBSCRIBED', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    mockEnv.monotonicIdFn.mockReturnValueOnce({
+      value: anActivationRequest.id,
+    });
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
+    mockEnv.hashFn.mockReturnValueOnce({ value: aSubscriptionHistory.id });
+    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
+      TE.right(aSubscription),
+    );
+    mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
+      TE.right(aSubscriptionHistory),
+    );
+    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
+      TE.right(anActivationRequest),
+    );
+
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
+
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledWith(aSubscription);
+    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledWith(
+      aSubscriptionHistory,
+    );
+    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.activationRequestWriter.insert).toBeCalledWith(
+      anInsertActivationRequest,
+    );
+  });
+  it('should call activate if the subscription request is ACTIVE', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -25,23 +60,53 @@ describe('processSubscriptionRequest', () => {
       .mockReturnValueOnce({ value: aSubscription.id })
       .mockReturnValueOnce({ value: aSubscriptionHistory.id });
     mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
+      TE.right({ ...aSubscription, state: 'ACTIVE' }),
+    );
+    mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
+      TE.right({ ...aSubscriptionHistory, state: 'ACTIVE' }),
+    );
+    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
+      TE.right({ ...anActivationRequest, activated: true }),
+    );
+    mockEnv.activationRequestWriter.activate.mockReturnValueOnce(
+      TE.right('success'),
+    );
+
+    const actual = await processSubscriptionRequest({
+      ...aSubscription,
+      state: 'ACTIVE',
+    })(testEnv)();
+
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
+    expect(mockEnv.activationRequestWriter.activate).toBeCalledWith([
+      { ...anActivationRequest, activated: true },
+    ]);
+  });
+  it('should not call activate if the request is neither ACTIVE nor SUBSCRIBED', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    mockEnv.monotonicIdFn.mockReturnValueOnce({
+      value: anActivationRequest.id,
+    });
+    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
+    mockEnv.hashFn.mockReturnValueOnce({ value: aSubscriptionHistory.id });
+    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
       TE.right(aSubscription),
     );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionHistory),
     );
-    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
-      TE.right(anActivationRequest),
-    );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest({
+      ...aSubscription,
+      state: 'DISABLED',
+    })(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(0);
   });
   it('should insert the first version of subscription-history if subscription already exists', async () => {
     const mockEnv = makeTestEnv();
@@ -64,11 +129,9 @@ describe('processSubscriptionRequest', () => {
       TE.right(anActivationRequest),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
@@ -94,16 +157,14 @@ describe('processSubscriptionRequest', () => {
       TE.right(anActivationRequest),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
-  it('should succeed if the the first version of subscription-history, subscription and activation already exists', async () => {
+  it('should succeed if the first version of subscription-history, subscription and activation already exists', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -124,11 +185,9 @@ describe('processSubscriptionRequest', () => {
       TE.left(new ItemAlreadyExists('')),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
-    const expected = E.right(aSubscriptionRequest);
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toStrictEqual(E.right({ userId, trialId }));
     expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
@@ -152,8 +211,7 @@ describe('processSubscriptionRequest', () => {
       TE.left(unexpectedError),
     );
 
-    const actual =
-      await processSubscriptionRequest(aSubscriptionRequest)(testEnv)();
+    const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
     const expected = E.left(unexpectedError);
 
     expect(actual).toStrictEqual(expected);

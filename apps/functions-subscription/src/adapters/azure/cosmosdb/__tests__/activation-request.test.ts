@@ -113,7 +113,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
-      ).activate(anActivationJob, [])();
+      ).activate([])();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(0);
@@ -133,7 +133,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
-      ).activate(anActivationJob, activationRequests)();
+      ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
@@ -165,7 +165,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
-      ).activate(anActivationJob, activationRequests)();
+      ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenCalledTimes(
@@ -188,7 +188,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
-      ).activate(anActivationJob, activationRequests)();
+      ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.left(error));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(
@@ -211,7 +211,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
-      ).activate(anActivationJob, activationRequests)();
+      ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
       expect(mockDB.container('').items.batch).toHaveBeenNthCalledWith(

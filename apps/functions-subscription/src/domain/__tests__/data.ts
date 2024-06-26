@@ -21,11 +21,6 @@ export const aSubscription = {
   state: 'SUBSCRIBED' as const,
 };
 
-export const aSubscriptionRequest = {
-  userId: aUserId,
-  trialId: aTrialId,
-};
-
 export const aSubscriptionHistory = {
   id: aSubscriptionHistoryIdV0,
   subscriptionId: aSubscriptionId,

@@ -181,6 +181,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+  /trials:
+    post:
+      operationId: createTrial
+      description: Create a trial
+      summary: Create a trial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTrial'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trial'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+        '409':
+          description: Conflict
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
 
 components:
   securitySchemes:
@@ -258,6 +291,13 @@ components:
       type: string
       description: Unique identifier of the trial.
       minLength: 1
+    TrialName:
+      type: string
+      description: The name of the trial
+      minLength: 1
+    TrialDescription:
+      type: string
+      description: The description of the trial
     UsersToActivate:
       type: integer
       minimum: 1
@@ -329,3 +369,24 @@ components:
     SubscriptionEvent:
       type: object
       $ref: '#/components/schemas/Subscription'
+    CreateTrial:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          $ref: '#/components/schemas/TrialName'
+        description:
+          $ref: '#/components/schemas/TrialDescription'
+    Trial:
+      type: object
+      required:
+        - trialId
+        - name
+      properties:
+        trialId:
+          $ref: '#/components/schemas/TrialId'
+        name:
+          $ref: '#/components/schemas/TrialName'
+        description:
+          $ref: '#/components/schemas/TrialDescription'
