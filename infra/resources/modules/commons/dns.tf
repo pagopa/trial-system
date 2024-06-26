@@ -15,7 +15,7 @@ resource "azurerm_dns_zone" "trial_pagopa_it" {
 
 resource "azurerm_dns_caa_record" "trial_pagopa_it" {
   name                = "@"
-  zone_name           = azurerm_dns_zone.io_pagopa_it[0].name
+  zone_name           = azurerm_dns_zone.trial_pagopa_it[0].name
   resource_group_name = azurerm_resource_group.domain_rg.name
   ttl                 = var.dns_config.dns_default_ttl_sec
 
@@ -33,7 +33,7 @@ resource "azurerm_dns_caa_record" "trial_pagopa_it" {
 
   record {
     flags = 0
-    tag   = "trialdef"
+    tag   = "iodef"
     value = "mailto:security+caa@pagopa.it"
   }
 
