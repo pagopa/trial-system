@@ -1,54 +1,63 @@
 import { pipe } from 'fp-ts/lib/function';
-import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
-import { SubscriptionRequest } from '../domain/subscription-request';
-import { Capabilities } from '../domain/capabilities';
-import { Subscription, makeSubscription } from '../domain/subscription';
+import { Subscription, insertSubscription } from '../domain/subscription';
 import { ItemAlreadyExists } from '../domain/errors';
-import { makeSubscriptionHistory } from '../domain/subscription-history';
-import { makeInsertActivationRequest } from '../domain/activation-request';
-
-type Env = Pick<
-  Capabilities,
-  'subscriptionWriter' | 'subscriptionHistoryWriter' | 'activationRequestWriter'
->;
+import {
+  insertSubscriptionHistory,
+  makeSubscriptionHistory,
+} from '../domain/subscription-history';
+import {
+  ActivationRequest,
+  activateActivationRequests,
+  insertActivationRequest,
+  makeInsertActivationRequest,
+} from '../domain/activation-request';
 
 const recoverItemAlreadyExists =
   (subscription: Subscription) => (error: Error) => {
     const { trialId, userId } = subscription;
     if (error instanceof ItemAlreadyExists)
-      return TE.right({ trialId, userId });
-    else return TE.left(error);
+      return RTE.right({ trialId, userId });
+    else return RTE.left(error);
   };
 
-export const processSubscriptionRequest = ({
-  trialId,
-  userId,
-}: SubscriptionRequest) =>
+const handleActivatedRequest = (request: ActivationRequest) =>
+  request.activated
+    ? pipe(
+        // This operation is required to keep the number of activated users up to date.
+        // The assumption is that the activation job exists.
+        activateActivationRequests([request]),
+        RTE.map(() => request),
+      )
+    : RTE.of(request);
+
+export const processSubscriptionRequest = (subscription: Subscription) =>
   pipe(
-    RTE.ask<Env>(),
-    RTE.apSW('subscription', makeSubscription(trialId, userId)),
-    RTE.bindW('subscriptionHistory', ({ subscription }) =>
-      makeSubscriptionHistory(subscription),
+    insertSubscription(subscription),
+    RTE.orElseW(recoverItemAlreadyExists(subscription)),
+    RTE.flatMap(() =>
+      pipe(
+        makeSubscriptionHistory(subscription),
+        RTE.flatMap(insertSubscriptionHistory),
+        RTE.orElseW(recoverItemAlreadyExists(subscription)),
+      ),
     ),
-    RTE.apSW(
-      'activationRequest',
-      makeInsertActivationRequest({ trialId, userId }),
+    RTE.flatMap(() =>
+      subscription.state === 'SUBSCRIBED' || subscription.state === 'ACTIVE'
+        ? pipe(
+            makeInsertActivationRequest({
+              trialId: subscription.trialId,
+              userId: subscription.userId,
+              activated: subscription.state === 'ACTIVE',
+            }),
+            RTE.flatMap(insertActivationRequest),
+            RTE.flatMap(handleActivatedRequest),
+            RTE.orElseW(recoverItemAlreadyExists(subscription)),
+          )
+        : RTE.of(subscription),
     ),
-    RTE.flatMapTaskEither(
-      ({ subscription, subscriptionHistory, activationRequest, ...env }) =>
-        pipe(
-          env.subscriptionWriter.insert(subscription),
-          TE.orElse(recoverItemAlreadyExists(subscription)),
-          TE.flatMap(() =>
-            env.subscriptionHistoryWriter.insert(subscriptionHistory),
-          ),
-          TE.orElse(recoverItemAlreadyExists(subscription)),
-          TE.flatMap(() =>
-            env.activationRequestWriter.insert(activationRequest),
-          ),
-          TE.map(() => ({ trialId, userId })),
-          TE.orElse(recoverItemAlreadyExists(subscription)),
-        ),
-    ),
+    RTE.map(() => ({
+      trialId: subscription.trialId,
+      userId: subscription.userId,
+    })),
   );

@@ -16,10 +16,10 @@ const makeHandlerKitHandler: H.Handler<
   | H.HttpResponse<SubscriptionAPI, 201>
   | H.HttpResponse<unknown, 202>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
-  Pick<SystemEnv, 'insertSubscription'>
+  Pick<SystemEnv, 'createSubscription'>
 > = H.of((req: H.HttpRequest) => {
   return pipe(
-    RTE.ask<Pick<SystemEnv, 'insertSubscription'>>(),
+    RTE.ask<Pick<SystemEnv, 'createSubscription'>>(),
     RTE.apSW(
       'requestBody',
       RTE.fromEither(parseRequestBody(CreateSubscription)(req)),
@@ -28,8 +28,8 @@ const makeHandlerKitHandler: H.Handler<
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
     ),
-    RTE.flatMapTaskEither(({ insertSubscription, trialId, requestBody }) =>
-      insertSubscription(
+    RTE.flatMapTaskEither(({ createSubscription, trialId, requestBody }) =>
+      createSubscription(
         requestBody.userId as unknown as UserId,
         trialId,
         requestBody.state,
