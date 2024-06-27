@@ -192,12 +192,12 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateTrial'
       responses:
-        '201':
-          description: Created
+        '202':
+          description: Accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trial'
+                $ref: '#/components/schemas/PartialTrial'
         '400':
           description: Bad Request
           content:
@@ -391,11 +391,31 @@ components:
           $ref: '#/components/schemas/TrialName'
         description:
           $ref: '#/components/schemas/TrialDescription'
+    TrialState:
+      type: string
+      description: |-
+        - IN_PROGRESS: The Trial System is creating the resources related to the trial.
+          The configuration is not yet completed.
+        - CREATED: The Trial System created the resources for the trial.
+      enum:
+        - IN_PROGRESS
+        - CREATED
+    PartialTrial:
+      type: object
+      required:
+        - id
+        - state
+      properties:
+        id:
+          $ref: '#/components/schemas/TrialId'
+        state:
+          $ref: '#/components/schemas/TrialState'
     Trial:
       type: object
       required:
         - id
         - name
+        - state
       properties:
         id:
           $ref: '#/components/schemas/TrialId'
@@ -403,3 +423,23 @@ components:
           $ref: '#/components/schemas/TrialName'
         description:
           $ref: '#/components/schemas/TrialDescription'
+        state:
+          $ref: '#/components/schemas/TrialState'
+        queue:
+          type: object
+          description: All the information the caller must have in order to properly
+            read events from the queue.
+          required:
+            - name
+            - identity
+          properties:
+            name:
+              type: string
+              description: The name of the queue where the events are sent.
+              minLength: 1
+            identity:
+              type: string
+              description: >-
+                The identifier of the Identity to use in order to read
+                the events from the queue.
+
