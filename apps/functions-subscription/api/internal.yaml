@@ -214,6 +214,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+  /trials/{trialId}:
+    get:
+      operationId: getTrial
+      description: Get trial by id
+      summary: Get a trial
+      parameters:
+        - $ref: '#/components/parameters/pathTrialId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trial'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
 
 components:
   securitySchemes:
