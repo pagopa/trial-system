@@ -35,18 +35,13 @@ export interface TrialWriter {
   ) => TE.TaskEither<Error | ItemAlreadyExists, Trial>;
 }
 
-const makeTrialId = (name: Trial['name']) =>
-  pipe(
-    RTE.ask<Pick<Capabilities, 'hashFn'>>(),
-    RTE.map(({ hashFn }) => hashFn(name)),
-    RTE.map(({ value }) => value as TrialId),
-  );
-
 export const makeTrial = (
   name: Trial['name'],
   description: Trial['description'],
 ) =>
   pipe(
-    makeTrialId(name),
+    RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
+    RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
+    RTE.map(({ value }) => value as TrialId),
     RTE.map((id) => ({ id, name, description })),
   );

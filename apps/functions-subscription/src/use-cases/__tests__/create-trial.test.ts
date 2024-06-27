@@ -12,7 +12,7 @@ describe('createTrial', () => {
   it('should return the trial created', async () => {
     const testEnv = makeTestEnv();
 
-    testEnv.hashFn.mockReturnValueOnce({ value: aTrial.id });
+    testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial));
 
     const actual = await createTrial(name, description)(testEnv)();
@@ -26,7 +26,7 @@ describe('createTrial', () => {
     const testEnv = makeTestEnv();
     const error = new ItemAlreadyExists('Trial already exists');
 
-    testEnv.hashFn.mockReturnValueOnce({ value: aTrial.id });
+    testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
     const actual = await createTrial(name, description)(testEnv)();
@@ -38,7 +38,7 @@ describe('createTrial', () => {
     const testEnv = makeTestEnv();
     const error = new Error('Oh No!');
 
-    testEnv.hashFn.mockReturnValueOnce({ value: aTrial.id });
+    testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
     const actual = await createTrial(name, description)(testEnv)();
