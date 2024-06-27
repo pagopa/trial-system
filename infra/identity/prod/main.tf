@@ -84,7 +84,7 @@ resource "azurerm_role_assignment" "ci" {
 }
 
 resource "azurerm_role_assignment" "cd" {
-  for_each             = toset(["Reader", "Private DNS Zone Contributor"])
+  for_each             = toset(["Reader", "Private DNS Zone Contributor", "API Management Service Contributor"])
   provider             = azurerm.prodio
   scope                = data.azurerm_subscription.prodio.id
   principal_id         = module.federated_identities.federated_cd_identity.id
