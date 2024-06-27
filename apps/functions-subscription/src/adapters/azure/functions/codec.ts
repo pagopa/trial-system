@@ -25,7 +25,7 @@ export const toActivationJobAPI = (
 });
 
 export const toTrialAPI = (trial: Trial): TrialAPI => ({
-  trialId: trial.id,
+  id: trial.id,
   name: trial.name,
   description: trial.description,
 });
