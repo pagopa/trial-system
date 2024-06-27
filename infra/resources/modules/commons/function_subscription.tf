@@ -124,6 +124,8 @@ module "subscription_fn" {
   }
   subnet_id = module.subscription_snet.id
 
+  allowed_subnets = [module.subscription_snet.id]
+
   system_identity_enabled = true
 
   # Action groups for alerts
