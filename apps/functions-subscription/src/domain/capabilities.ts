@@ -19,6 +19,7 @@ import {
 } from './activation-request';
 import { MonotonicIdFn } from './monotonic-id';
 import { ActivationJobReader, ActivationJobWriter } from './activation-job';
+import { TrialWriter } from './trial';
 
 /**
  * Maps the capabilities to a given property name. Pick the capability using the
@@ -36,6 +37,7 @@ export interface Capabilities {
   readonly activationJobWriter: ActivationJobWriter;
   readonly activationRequestReader: ActivationRequestReader;
   readonly activationRequestWriter: ActivationRequestWriter;
+  readonly trialWriter: TrialWriter;
   readonly eventWriter: EventWriter;
   readonly hashFn: HashFn;
   readonly clock: Clock;

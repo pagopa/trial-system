@@ -5,7 +5,6 @@ import {
   getSubscriptionById,
   makeSubscription,
   Subscription,
-  TrialId,
   UserId,
 } from '../domain/subscription';
 import { SubscriptionStoreError } from './errors';
@@ -14,6 +13,7 @@ import {
   insertSubscription,
   enqueueSubscription,
 } from '../domain/subscription';
+import { TrialId } from '../domain/trial';
 
 const handleMissingSubscription = (subscription: Subscription) =>
   pipe(

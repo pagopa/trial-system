@@ -11,6 +11,7 @@ export const makeTestEnv = () => ({
   activationJobWriter: mock<Capabilities['activationJobWriter']>(),
   activationRequestReader: mock<Capabilities['activationRequestReader']>(),
   activationRequestWriter: mock<Capabilities['activationRequestWriter']>(),
+  trialWriter: mock<Capabilities['trialWriter']>(),
   eventWriter: mock<Capabilities['eventWriter']>(),
   clock: mock<Capabilities['clock']>(),
   hashFn: mockFn<Capabilities['hashFn']>(),

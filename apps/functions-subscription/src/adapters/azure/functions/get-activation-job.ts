@@ -4,11 +4,11 @@ import { flow, pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { SystemEnv } from '../../../system-env';
 import { parsePathParameter } from './middleware';
-import { TrialIdCodec } from '../../../domain/subscription';
 import { toHttpProblemJson } from './errors';
 import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
 import { ItemNotFound } from '../../../domain/errors';
 import { toActivationJobAPI } from './codec';
+import { TrialIdCodec } from '../../../domain/trial';
 
 type Env = Pick<SystemEnv, 'getActivationJob'>;
 

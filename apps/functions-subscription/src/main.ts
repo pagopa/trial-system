@@ -26,6 +26,8 @@ import { makePostActivationJobHandler } from './adapters/azure/functions/insert-
 import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
 import { makeGetActivationJobHandler } from './adapters/azure/functions/get-activation-job';
 import { makePutActivationJobHandler } from './adapters/azure/functions/update-activation-job';
+import { makeTrialsCosmosContainer } from './adapters/azure/cosmosdb/trial';
+import { makePostTrialHandler } from './adapters/azure/functions/create-trial';
 import { makeSubscriptionQueueEventHubProducer } from './adapters/azure/eventhubs/subscription';
 
 const config = pipe(
@@ -76,6 +78,10 @@ const eventWriter = makeEventWriterServiceBus(
   serviceBus.createSender(config.servicebus.names.event),
 );
 
+const trialWriter = makeTrialsCosmosContainer(
+  cosmosDB.database(config.cosmosdb.databaseName),
+);
+
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
@@ -86,6 +92,7 @@ const capabilities: Capabilities = {
   activationJobWriter: activationJobReaderWriter,
   activationRequestReader: activationRequestReaderWriter,
   activationRequestWriter: activationRequestReaderWriter,
+  trialWriter,
   eventWriter,
   hashFn,
   clock,
@@ -134,6 +141,13 @@ app.http('updateActivationJob', {
   authLevel: 'function',
   handler: makePutActivationJobHandler(env),
   route: 'trials/{trialId}/activation-job',
+});
+
+app.http('createTrial', {
+  methods: ['POST'],
+  authLevel: 'function',
+  handler: makePostTrialHandler(env),
+  route: 'trials',
 });
 
 if (config.subscriptionRequest.consumer === 'on')

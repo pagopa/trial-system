@@ -381,10 +381,10 @@ components:
     Trial:
       type: object
       required:
-        - trialId
+        - id
         - name
       properties:
-        trialId:
+        id:
           $ref: '#/components/schemas/TrialId'
         name:
           $ref: '#/components/schemas/TrialName'

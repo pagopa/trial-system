@@ -20,7 +20,7 @@ import {
 } from '../../../domain/activation-request';
 import { decodeFromFeed, decodeFromItem } from './decode';
 import { cosmosErrorToDomainError } from './errors';
-import { TrialId } from '../../../domain/subscription';
+import { TrialId } from '../../../domain/trial';
 
 export const makeActivationRequestReaderWriter = (
   db: Database,
