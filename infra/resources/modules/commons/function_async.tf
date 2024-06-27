@@ -131,6 +131,8 @@ module "subscription_async_fn" {
   }
   subnet_id = module.subscription_async_snet.id
 
+  allowed_subnets = [module.subscription_async_snet.id]
+
   system_identity_enabled = true
 
   # Action groups for alerts
