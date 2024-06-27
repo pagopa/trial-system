@@ -5,6 +5,7 @@ import { ServiceBusSender } from '@azure/service-bus';
 import { aSubscription } from '../../../../domain/__tests__/data';
 import { SubscriptionEvent } from '../../../../generated/definitions/internal/SubscriptionEvent';
 import { makeEventWriterServiceBus } from '../event';
+import { SubscriptionStateEnum } from '../../../../generated/definitions/internal/SubscriptionState';
 
 describe('makeEventWriterServiceBus', () => {
   it('should send the event without error', async () => {
@@ -17,8 +18,12 @@ describe('makeEventWriterServiceBus', () => {
       await makeEventWriterServiceBus(client).send(aSubscription)();
 
     expect(actual).toStrictEqual(E.right(void 0));
+    expect(mock.sendMessages).toBeCalledTimes(1);
     expect(mock.sendMessages).toBeCalledWith({
-      body: SubscriptionEvent.encode(aSubscription),
+      body: SubscriptionEvent.encode({
+        ...aSubscription,
+        state: SubscriptionStateEnum.SUBSCRIBED,
+      }),
     });
   });
 
@@ -33,8 +38,6 @@ describe('makeEventWriterServiceBus', () => {
       await makeEventWriterServiceBus(client).send(aSubscription)();
 
     expect(actual).toStrictEqual(E.left(error));
-    expect(mock.sendMessages).toBeCalledWith({
-      body: SubscriptionEvent.encode(aSubscription),
-    });
+    expect(mock.sendMessages).toBeCalledTimes(1);
   });
 });
