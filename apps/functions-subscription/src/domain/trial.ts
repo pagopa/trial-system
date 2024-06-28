@@ -56,7 +56,7 @@ export const makeTrial = (
     RTE.map((id) => ({ id, name, description, state })),
   );
 
-export const createTrial = (
+export const insertTrial = (
   name: Trial['name'],
   description: Trial['description'],
 ) =>

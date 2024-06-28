@@ -10,7 +10,7 @@ import {
   insertActivationJob,
   updateActivationJob,
 } from './domain/activation-job';
-import { createTrial, getTrialById } from './domain/trial';
+import { insertTrial, getTrialById } from './domain/trial';
 
 export const makeSystemEnv = (capabilities: Capabilities) => ({
   createSubscription: flow(createSubscription, apply(capabilities)),
@@ -24,7 +24,7 @@ export const makeSystemEnv = (capabilities: Capabilities) => ({
   insertActivationJob: flow(insertActivationJob, apply(capabilities)),
   getActivationJob: flow(getActivationJob, apply(capabilities)),
   updateActivationJob: flow(updateActivationJob, apply(capabilities)),
-  createTrial: flow(createTrial, apply(capabilities)),
+  createTrial: flow(insertTrial, apply(capabilities)),
   getTrial: flow(getTrialById, apply(capabilities)),
 });
 

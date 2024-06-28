@@ -2,20 +2,20 @@ import { aTrial } from './data';
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import { createTrial } from '../trial';
+import { insertTrial } from '../trial';
 import { ItemAlreadyExists } from '../errors';
 import { makeTestEnv } from './mocks';
 
 const { name, description } = aTrial;
 
-describe('createTrial', () => {
+describe('insertTrial', () => {
   it('should return the trial created', async () => {
     const testEnv = makeTestEnv();
 
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial));
 
-    const actual = await createTrial(name, description)(testEnv)();
+    const actual = await insertTrial(name, description)(testEnv)();
     const expected = E.right(aTrial);
 
     expect(actual).toMatchObject(expected);
@@ -29,7 +29,7 @@ describe('createTrial', () => {
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
-    const actual = await createTrial(name, description)(testEnv)();
+    const actual = await insertTrial(name, description)(testEnv)();
     const expected = E.left(error);
     expect(actual).toStrictEqual(expected);
   });
@@ -41,7 +41,7 @@ describe('createTrial', () => {
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
-    const actual = await createTrial(name, description)(testEnv)();
+    const actual = await insertTrial(name, description)(testEnv)();
     const expected = E.left(error);
     expect(actual).toMatchObject(expected);
   });
