@@ -418,11 +418,11 @@ components:
     TrialState:
       type: string
       description: |-
-        - IN_PROGRESS: The Trial System is creating the resources related to the trial.
+        - CREATING: The Trial System is creating the resources related to the trial.
           The configuration is not yet completed.
         - CREATED: The Trial System created the resources for the trial.
       enum:
-        - IN_PROGRESS
+        - CREATING
         - CREATED
     PartialTrial:
       type: object
@@ -453,6 +453,8 @@ components:
           type: object
           description: All the information the caller must have in order to properly
             read events from the queue.
+            Theis object is available when the resources have been created, so when
+            the `state` property is `CREATED`
           required:
             - name
             - identity

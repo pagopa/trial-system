@@ -24,7 +24,7 @@ export const TrialCodec = t.intersection([
     id: TrialIdCodec,
     name: NonEmptyString,
     state: t.keyof({
-      IN_PROGRESS: null,
+      CREATING: null,
       CREATED: null,
     }),
   }),
@@ -47,7 +47,7 @@ export interface TrialReader {
 export const makeTrial = (
   name: Trial['name'],
   description: Trial['description'],
-  state: Trial['state'] = 'IN_PROGRESS',
+  state: Trial['state'] = 'CREATING',
 ) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
