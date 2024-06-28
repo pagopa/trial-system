@@ -44,7 +44,7 @@ export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
 }
 
-export const makeTrial = (
+const makeTrial = (
   name: Trial['name'],
   description: Trial['description'],
   state: Trial['state'] = 'CREATING',
