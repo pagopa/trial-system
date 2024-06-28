@@ -35,6 +35,9 @@ locals {
 
     EVENTS_PRODUCER              = "off"
     EVENTS_SERVICEBUS_TOPIC_NAME = "${local.domain}-topic-events"
+
+    TRIAL_CONSUMER                 = "off"
+    TRIALS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.trials.name
   }
 }
 

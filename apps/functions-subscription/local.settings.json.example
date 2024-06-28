@@ -26,6 +26,9 @@
     "ACTIVATION_CONSUMER": "on",
     "ACTIVATIONS_COSMOSDB_CONTAINER_NAME": "activations",
     "ACTIVATION_MAX_FETCH_SIZE": "50",
-    "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>"
+    "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
+
+    "TRIAL_CONSUMER": "off",
+    "TRIALS_COSMOSDB_CONTAINER_NAME": "trials"
   }
 }

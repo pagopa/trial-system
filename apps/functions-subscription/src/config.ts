@@ -22,6 +22,9 @@ export interface Config {
   readonly events: {
     readonly producer: 'on' | 'off';
   };
+  readonly trials: {
+    readonly consumer: 'on' | 'off';
+  };
   readonly servicebus: {
     readonly namespace: string;
     readonly names: {
@@ -41,6 +44,7 @@ export interface Config {
       readonly leases: string;
       readonly subscriptionHistory: string;
       readonly activations: string;
+      readonly trials: string;
     };
   };
 }
@@ -65,6 +69,8 @@ const EnvsCodec = t.strict({
   ACTIVATIONS_COSMOSDB_CONTAINER_NAME: NonEmptyString,
   EVENTS_PRODUCER: OnOrOffCodec,
   EVENTS_SERVICEBUS_TOPIC_NAME: NonEmptyString,
+  TRIAL_CONSUMER: OnOrOffCodec,
+  TRIALS_COSMOSDB_CONTAINER_NAME: NonEmptyString,
 });
 
 export const parseConfig = (
@@ -88,6 +94,9 @@ export const parseConfig = (
         events: {
           producer: envs.EVENTS_PRODUCER,
         },
+        trials: {
+          consumer: envs.TRIAL_CONSUMER,
+        },
         servicebus: {
           namespace: envs.SERVICEBUS_NAMESPACE,
           names: {
@@ -108,6 +117,7 @@ export const parseConfig = (
             subscriptionHistory:
               envs.SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME,
             activations: envs.ACTIVATIONS_COSMOSDB_CONTAINER_NAME,
+            trials: envs.TRIALS_COSMOSDB_CONTAINER_NAME,
           },
         },
       }),
