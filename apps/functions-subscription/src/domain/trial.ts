@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/lib/TaskEither';
+import * as O from 'fp-ts/lib/Option';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
@@ -22,6 +23,10 @@ export const TrialCodec = t.intersection([
   t.strict({
     id: TrialIdCodec,
     name: NonEmptyString,
+    state: t.keyof({
+      CREATING: null,
+      CREATED: null,
+    }),
   }),
   t.partial({
     description: t.string,
@@ -35,13 +40,32 @@ export interface TrialWriter {
   ) => TE.TaskEither<Error | ItemAlreadyExists, Trial>;
 }
 
-export const makeTrial = (
-  name: Trial['name'],
-  description: Trial['description'],
-) =>
+export interface TrialReader {
+  readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
+}
+
+const makeTrial = (name: Trial['name'], description: Trial['description']) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
     RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
     RTE.map(({ value }) => value as TrialId),
-    RTE.map((id) => ({ id, name, description })),
+    RTE.map((id) => ({ id, name, description, state: 'CREATING' as const })),
+  );
+
+export const insertTrial = (
+  name: Trial['name'],
+  description: Trial['description'],
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'trialWriter'>>(),
+    RTE.apSW('trial', makeTrial(name, description)),
+    RTE.flatMapTaskEither(({ trial, trialWriter }) =>
+      trialWriter.insert(trial),
+    ),
+  );
+
+export const getTrialById = (trialId: TrialId) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'trialReader'>>(),
+    RTE.flatMapTaskEither(({ trialReader }) => trialReader.get(trialId)),
   );

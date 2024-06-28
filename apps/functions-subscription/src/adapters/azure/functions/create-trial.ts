@@ -5,15 +5,15 @@ import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { toHttpProblemJson } from './errors';
 import { SystemEnv } from '../../../system-env';
 import { parseRequestBody } from './middleware';
-import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 import { CreateTrial } from '../../../generated/definitions/internal/CreateTrial';
 import { toTrialAPI } from './codec';
+import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 
 type Env = Pick<SystemEnv, 'createTrial'>;
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
-  | H.HttpResponse<TrialAPI, 201>
+  | H.HttpResponse<TrialAPI, 202>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
   Env
 > = H.of((req: H.HttpRequest) =>
@@ -24,7 +24,10 @@ const makeHandlerKitHandler: H.Handler<
       ({ requestBody: { name, description }, createTrial }) =>
         createTrial(name, description),
     ),
-    RTE.mapBoth(toHttpProblemJson, flow(toTrialAPI, H.createdJson)),
+    RTE.mapBoth(
+      toHttpProblemJson,
+      flow(toTrialAPI, H.successJson, H.withStatusCode(202)),
+    ),
     RTE.orElseW(RTE.of),
   ),
 );
