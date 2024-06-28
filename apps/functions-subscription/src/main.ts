@@ -29,6 +29,7 @@ import { makePutActivationJobHandler } from './adapters/azure/functions/update-a
 import { makeTrialsCosmosContainer } from './adapters/azure/cosmosdb/trial';
 import { makePostTrialHandler } from './adapters/azure/functions/create-trial';
 import { makeSubscriptionQueueEventHubProducer } from './adapters/azure/eventhubs/subscription';
+import { makeTrialChangesHandler } from './adapters/azure/functions/process-trial-changes';
 
 const config = pipe(
   parseConfig(process.env),
@@ -186,4 +187,14 @@ if (config.events.producer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'eventProducer-',
     handler: makeEventsProducerCosmosDBHandler(capabilities),
+  });
+
+if (config.trials.consumer === 'on')
+  app.cosmosDB('trialConsumer', {
+    connection: 'TrialsCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.trials,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'trialConsumer-',
+    handler: makeTrialChangesHandler(capabilities),
   });
