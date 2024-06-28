@@ -44,16 +44,12 @@ export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
 }
 
-const makeTrial = (
-  name: Trial['name'],
-  description: Trial['description'],
-  state: Trial['state'] = 'CREATING',
-) =>
+const makeTrial = (name: Trial['name'], description: Trial['description']) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
     RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
     RTE.map(({ value }) => value as TrialId),
-    RTE.map((id) => ({ id, name, description, state })),
+    RTE.map((id) => ({ id, name, description, state: 'CREATING' as const })),
   );
 
 export const insertTrial = (
