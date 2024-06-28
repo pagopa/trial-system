@@ -29,6 +29,7 @@
     "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
     "TRIAL_CONSUMER": "off",
-    "TRIALS_COSMOSDB_CONTAINER_NAME": "trials"
+    "TRIALS_COSMOSDB_CONTAINER_NAME": "trials",
+    "TrialsCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>"
   }
 }
