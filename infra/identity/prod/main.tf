@@ -51,7 +51,7 @@ module "federated_identities" {
           "Storage Blob Data Contributor"
         ],
         ts-p-itn-routing-rg-01 = [
-          "Management Service Contributor"
+          "API Management Service Contributor"
         ],
       },
       subscription = [
