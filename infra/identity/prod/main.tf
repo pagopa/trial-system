@@ -43,6 +43,26 @@ module "federated_identities" {
   repositories = [local.repo_name]
   tags         = local.tags
 
+  continuos_integration = {
+    enable = true
+    roles = {
+      resource_groups = {
+        terraform-state-rg = [
+          "Storage Blob Data Contributor"
+        ],
+        ts-p-itn-routing-rg-01 = [
+          "Management Service Contributor"
+        ],
+      },
+      subscription = [
+        "Reader",
+        "Reader and Data Access",
+        "PagoPA IaC Reader",
+        "DocumentDB Account Contributor"
+      ]
+    }
+  }
+
   continuos_delivery = {
     enable = true
     roles = {
@@ -84,7 +104,7 @@ resource "azurerm_role_assignment" "ci" {
 }
 
 resource "azurerm_role_assignment" "cd" {
-  for_each             = toset(["Reader", "Private DNS Zone Contributor", "API Management Service Contributor"])
+  for_each             = toset(["Reader", "Private DNS Zone Contributor"])
   provider             = azurerm.prodio
   scope                = data.azurerm_subscription.prodio.id
   principal_id         = module.federated_identities.federated_cd_identity.id
