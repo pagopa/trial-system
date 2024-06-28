@@ -19,7 +19,7 @@ describe('makeTrialsCosmosContainer', () => {
 
       const actual = await makeTrialsCosmosContainer(
         mockDB as unknown as Database,
-      ).get(aTrial.id)();
+      ).get(id)();
 
       expect(actual).toStrictEqual(E.right(O.some(aTrial)));
       expect(mockDB.container('').item).toBeCalledWith(id, id);
@@ -34,7 +34,7 @@ describe('makeTrialsCosmosContainer', () => {
 
       const actual = await makeTrialsCosmosContainer(
         mockDB as unknown as Database,
-      ).get(aTrial.id)();
+      ).get(id)();
 
       expect(actual).toStrictEqual(E.right(O.none));
       expect(mockDB.container('').item).toBeCalledWith(id, id);
