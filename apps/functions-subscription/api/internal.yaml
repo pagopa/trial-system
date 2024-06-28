@@ -197,7 +197,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatedTrial'
+                $ref: '#/components/schemas/Trial'
         '400':
           description: Bad Request
           content:
@@ -424,16 +424,6 @@ components:
       enum:
         - CREATING
         - CREATED
-    CreatedTrial:
-      type: object
-      required:
-        - id
-        - state
-      properties:
-        id:
-          $ref: '#/components/schemas/TrialId'
-        state:
-          $ref: '#/components/schemas/TrialState'
     Trial:
       type: object
       required:
