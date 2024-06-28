@@ -8,7 +8,7 @@ import { makePostTrialHandler } from '../create-trial';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 
 describe('makePostTrialHandler', () => {
-  it('should return 202 with the id and the state of the trial', async () => {
+  it('should return 202 with the created trial', async () => {
     const env = makeTestSystemEnv();
     env.createTrial.mockReturnValueOnce(TE.right(aTrial));
 
