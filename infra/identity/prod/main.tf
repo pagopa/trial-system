@@ -43,6 +43,26 @@ module "federated_identities" {
   repositories = [local.repo_name]
   tags         = local.tags
 
+  continuos_integration = {
+    enable = true
+    roles = {
+      resource_groups = {
+        terraform-state-rg = [
+          "Storage Blob Data Contributor"
+        ],
+        ts-p-itn-routing-rg-01 = [
+          "API Management Service Contributor"
+        ],
+      },
+      subscription = [
+        "Reader",
+        "Reader and Data Access",
+        "PagoPA IaC Reader",
+        "DocumentDB Account Contributor"
+      ]
+    }
+  }
+
   continuos_delivery = {
     enable = true
     roles = {
