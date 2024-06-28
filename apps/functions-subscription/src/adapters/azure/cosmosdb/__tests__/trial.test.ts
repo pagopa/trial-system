@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as E from 'fp-ts/lib/Either';
+import * as O from 'fp-ts/lib/Option';
 import { Database, ErrorResponse } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
 import { aTrial } from '../../../../domain/__tests__/data';
@@ -7,6 +8,38 @@ import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makeTrialsCosmosContainer } from '../trial';
 
 describe('makeTrialsCosmosContainer', () => {
+  describe('get', () => {
+    const { id } = aTrial;
+    it('should return the item if found', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').item.mockReturnValueOnce({
+        read: () => Promise.resolve({ resource: aTrial }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+      ).get(aTrial.id)();
+
+      expect(actual).toStrictEqual(E.right(O.some(aTrial)));
+      expect(mockDB.container('').item).toBeCalledWith(id, id);
+    });
+
+    it('should return None if item does not exist', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').item.mockReturnValueOnce({
+        read: () => Promise.resolve({ resource: undefined }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+      ).get(aTrial.id)();
+
+      expect(actual).toStrictEqual(E.right(O.none));
+      expect(mockDB.container('').item).toBeCalledWith(id, id);
+    });
+  });
   describe('insert', () => {
     it('should insert the item if does not already exist', async () => {
       const mockDB = makeDatabaseMock();
