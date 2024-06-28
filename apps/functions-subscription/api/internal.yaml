@@ -368,7 +368,20 @@ components:
           $ref: '#/components/schemas/UsersToActivate'
     SubscriptionEvent:
       type: object
-      $ref: '#/components/schemas/Subscription'
+      required:
+        - trialId
+        - userId
+        - state
+        - updatedAt
+      properties:
+        trialId:
+          $ref: '#/components/schemas/TrialId'
+        userId:
+          $ref: '#/components/schemas/UserId'
+        state:
+          $ref: '#/components/schemas/SubscriptionState'
+        updatedAt:
+          $ref: '#/components/schemas/UpdatedAt'
     CreateTrial:
       type: object
       required:
