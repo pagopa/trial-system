@@ -73,4 +73,5 @@ export const aTrial = {
   id: aTrialId,
   name: 'aTrialName' as NonEmptyString,
   description: 'aTrialDescription',
+  state: 'IN_PROGRESS' as const,
 };

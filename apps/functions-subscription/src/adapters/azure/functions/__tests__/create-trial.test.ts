@@ -8,7 +8,7 @@ import { makePostTrialHandler } from '../create-trial';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 
 describe('makePostTrialHandler', () => {
-  it('should return 201 with the created trial', async () => {
+  it('should return 202 with the id and the state of the trial', async () => {
     const env = makeTestSystemEnv();
     env.createTrial.mockReturnValueOnce(TE.right(aTrial));
 
@@ -16,7 +16,7 @@ describe('makePostTrialHandler', () => {
       makeAValidCreateTrialRequest(),
       makeFunctionContext(),
     );
-    expect(actual.status).toStrictEqual(201);
+    expect(actual.status).toStrictEqual(202);
     expect(env.createTrial).toHaveBeenCalledWith(
       aTrial.name,
       aTrial.description,

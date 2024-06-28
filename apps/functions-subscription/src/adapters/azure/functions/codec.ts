@@ -3,8 +3,10 @@ import { Subscription } from '../../../domain/subscription';
 import { Trial } from '../../../domain/trial';
 import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
-import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
+import { TrialStateEnum } from '../../../generated/definitions/internal/TrialState';
+import { PartialTrial as PartialTrialAPI } from '../../../generated/definitions/internal/PartialTrial';
+import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 
 export const toSubscriptionAPI = (
   subscription: Subscription,
@@ -24,8 +26,15 @@ export const toActivationJobAPI = (
   usersToActivate: activationJob.usersToActivate,
 });
 
+export const toPartialTrialAPI = (trial: Trial): PartialTrialAPI => ({
+  id: trial.id,
+  state: TrialStateEnum[trial.state],
+});
+
+// TODO: Complete with missin information
 export const toTrialAPI = (trial: Trial): TrialAPI => ({
   id: trial.id,
   name: trial.name,
   description: trial.description,
+  state: TrialStateEnum[trial.state],
 });

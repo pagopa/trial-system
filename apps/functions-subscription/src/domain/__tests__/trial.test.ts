@@ -1,10 +1,10 @@
+import { aTrial } from './data';
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import { createTrial } from '../create-trial';
-import { aTrial } from '../../domain/__tests__/data';
-import { makeTestEnv } from '../../domain/__tests__/mocks';
-import { ItemAlreadyExists } from '../../domain/errors';
+import { createTrial } from '../trial';
+import { ItemAlreadyExists } from '../errors';
+import { makeTestEnv } from './mocks';
 
 const { name, description } = aTrial;
 
