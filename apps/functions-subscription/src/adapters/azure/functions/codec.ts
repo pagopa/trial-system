@@ -31,10 +31,9 @@ export const toPartialTrialAPI = (trial: Trial): PartialTrialAPI => ({
   state: TrialStateEnum[trial.state],
 });
 
-// TODO: Complete with missin information
+// TODO: Complete with missing information
 export const toTrialAPI = (trial: Trial): TrialAPI => ({
-  id: trial.id,
+  ...toPartialTrialAPI(trial),
   name: trial.name,
   description: trial.description,
-  state: TrialStateEnum[trial.state],
 });
