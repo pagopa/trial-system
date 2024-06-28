@@ -6,20 +6,27 @@ import { insertTrial } from '../trial';
 import { ItemAlreadyExists } from '../errors';
 import { makeTestEnv } from './mocks';
 
-const { name, description } = aTrial;
+const { name, description, createdAt } = aTrial;
 
 describe('insertTrial', () => {
   it('should return the trial created', async () => {
     const testEnv = makeTestEnv();
 
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
+    testEnv.clock.now.mockReturnValueOnce(createdAt);
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial));
 
+    const expectedTrial = {
+      ...aTrial,
+      createdAt: createdAt,
+      updatedAt: createdAt,
+    };
+
     const actual = await insertTrial(name, description)(testEnv)();
-    const expected = E.right(aTrial);
+    const expected = E.right(expectedTrial);
 
     expect(actual).toMatchObject(expected);
-    expect(testEnv.trialWriter.insert).toBeCalledWith(aTrial);
+    expect(testEnv.trialWriter.insert).toBeCalledWith(expectedTrial);
   });
 
   it('should return error if the trial already exists', async () => {
@@ -27,6 +34,7 @@ describe('insertTrial', () => {
     const error = new ItemAlreadyExists('Trial already exists');
 
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
+    testEnv.clock.now.mockReturnValueOnce(createdAt);
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
     const actual = await insertTrial(name, description)(testEnv)();
@@ -39,6 +47,7 @@ describe('insertTrial', () => {
     const error = new Error('Oh No!');
 
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
+    testEnv.clock.now.mockReturnValueOnce(createdAt);
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
     const actual = await insertTrial(name, description)(testEnv)();
