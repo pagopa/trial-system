@@ -449,23 +449,3 @@ components:
           $ref: '#/components/schemas/TrialDescription'
         state:
           $ref: '#/components/schemas/TrialState'
-        queue:
-          type: object
-          description: All the information the caller must have in order to properly
-            read events from the queue.
-            Theis object is available when the resources have been created, so when
-            the `state` property is `CREATED`
-          required:
-            - name
-            - identity
-          properties:
-            name:
-              type: string
-              description: The name of the queue where the events are sent.
-              minLength: 1
-            identity:
-              type: string
-              description: >-
-                The identifier of the Identity to use in order to read
-                the events from the queue.
-
