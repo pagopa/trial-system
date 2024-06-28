@@ -5,7 +5,7 @@ import { ActivationJob as ActivationJobAPI } from '../../../generated/definition
 import { Subscription as SubscriptionAPI } from '../../../generated/definitions/internal/Subscription';
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
 import { TrialStateEnum } from '../../../generated/definitions/internal/TrialState';
-import { PartialTrial as PartialTrialAPI } from '../../../generated/definitions/internal/PartialTrial';
+import { CreatedTrial as CreatedTrialAPI } from '../../../generated/definitions/internal/CreatedTrial';
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 
 export const toSubscriptionAPI = (
@@ -26,14 +26,14 @@ export const toActivationJobAPI = (
   usersToActivate: activationJob.usersToActivate,
 });
 
-export const toPartialTrialAPI = (trial: Trial): PartialTrialAPI => ({
+export const toCreatedTrialAPI = (trial: Trial): CreatedTrialAPI => ({
   id: trial.id,
   state: TrialStateEnum[trial.state],
 });
 
 // TODO: Complete with missing information
 export const toTrialAPI = (trial: Trial): TrialAPI => ({
-  ...toPartialTrialAPI(trial),
+  ...toCreatedTrialAPI(trial),
   name: trial.name,
   description: trial.description,
 });

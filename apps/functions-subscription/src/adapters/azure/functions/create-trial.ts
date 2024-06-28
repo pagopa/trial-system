@@ -6,14 +6,14 @@ import { toHttpProblemJson } from './errors';
 import { SystemEnv } from '../../../system-env';
 import { parseRequestBody } from './middleware';
 import { CreateTrial } from '../../../generated/definitions/internal/CreateTrial';
-import { toPartialTrialAPI } from './codec';
-import { PartialTrial as PartialTrialAPI } from '../../../generated/definitions/internal/PartialTrial';
+import { toCreatedTrialAPI } from './codec';
+import { CreatedTrial as CreatedTrialAPI } from '../../../generated/definitions/internal/CreatedTrial';
 
 type Env = Pick<SystemEnv, 'createTrial'>;
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
-  | H.HttpResponse<PartialTrialAPI, 202>
+  | H.HttpResponse<CreatedTrialAPI, 202>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
   Env
 > = H.of((req: H.HttpRequest) =>
@@ -26,7 +26,7 @@ const makeHandlerKitHandler: H.Handler<
     ),
     RTE.mapBoth(
       toHttpProblemJson,
-      flow(toPartialTrialAPI, H.successJson, H.withStatusCode(202)),
+      flow(toCreatedTrialAPI, H.successJson, H.withStatusCode(202)),
     ),
     RTE.orElseW(RTE.of),
   ),
