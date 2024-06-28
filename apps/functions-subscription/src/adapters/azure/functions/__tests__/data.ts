@@ -89,3 +89,12 @@ export const makeAValidCreateTrialRequest = () =>
       }),
     },
   });
+
+export const makeAValidGetTrialRequest = () =>
+  new HttpRequest({
+    url: 'https://function/trials/{trialId}',
+    method: 'GET',
+    params: {
+      trialId: aTrialId,
+    },
+  });
