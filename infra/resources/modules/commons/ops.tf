@@ -4,6 +4,8 @@ resource "azurerm_resource_group" "ops_rg" {
   tags     = var.tags
 }
 
+# This data storage should be used to contain csv files for family & friends
+# massive activations
 resource "azurerm_storage_account" "ops_data" {
   name                     = replace("${local.project}opsstdata01", "-", "")
   resource_group_name      = azurerm_resource_group.ops_rg.name
