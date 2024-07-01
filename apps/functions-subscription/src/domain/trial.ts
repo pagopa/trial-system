@@ -34,6 +34,8 @@ export const TrialCodec = t.intersection([
   }),
   t.partial({
     description: t.string,
+    identityId: t.string,
+    queueName: t.string,
   }),
 ]);
 export type Trial = t.TypeOf<typeof TrialCodec>;
@@ -42,6 +44,7 @@ export interface TrialWriter {
   readonly insert: (
     trial: Trial,
   ) => TE.TaskEither<Error | ItemAlreadyExists, Trial>;
+  readonly upsert: (trial: Trial) => TE.TaskEither<Error, Trial>;
 }
 
 export interface TrialReader {

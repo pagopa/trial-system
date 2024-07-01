@@ -78,4 +78,32 @@ describe('makeTrialsCosmosContainer', () => {
       expect(mockDB.container('').items.create).toBeCalledWith(aTrial);
     });
   });
+  describe('upsert', () => {
+    it('should call upsert as expected', async () => {
+      const mockDB = makeDatabaseMock();
+      const testDB = mockDB as unknown as Database;
+
+      mockDB
+        .container('')
+        .items.upsert.mockResolvedValueOnce({ resource: aTrial });
+
+      const actual = await makeTrialsCosmosContainer(testDB).upsert(aTrial)();
+
+      expect(actual).toStrictEqual(E.right(aTrial));
+      expect(mockDB.container('').items.upsert).toBeCalledWith(aTrial);
+    });
+
+    it('should call upsert and raise an error', async () => {
+      const mockDB = makeDatabaseMock();
+      const testDB = mockDB as unknown as Database;
+      const error = new Error('Oh No!');
+
+      mockDB.container('').items.upsert.mockRejectedValueOnce(error);
+
+      const actual = await makeTrialsCosmosContainer(testDB).upsert(aTrial)();
+
+      expect(actual).toStrictEqual(E.left(error));
+      expect(mockDB.container('').items.upsert).toBeCalledWith(aTrial);
+    });
+  });
 });

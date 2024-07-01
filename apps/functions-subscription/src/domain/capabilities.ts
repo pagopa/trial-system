@@ -2,7 +2,7 @@
  * This file is a capabilities mapper, maps a capability to a given key.
  */
 import { Clock } from './clock';
-import { EventWriter } from './event';
+import { EventQueue, EventTopic, EventWriter } from './event';
 import { HashFn } from './hash';
 import {
   SubscriptionReader,
@@ -20,6 +20,7 @@ import {
 import { MonotonicIdFn } from './monotonic-id';
 import { ActivationJobReader, ActivationJobWriter } from './activation-job';
 import { TrialReader, TrialWriter } from './trial';
+import { IdentityWriter } from '../adapters/azure/managed-identity/identity';
 
 /**
  * Maps the capabilities to a given property name. Pick the capability using the
@@ -40,6 +41,9 @@ export interface Capabilities {
   readonly trialWriter: TrialWriter;
   readonly trialReader: TrialReader;
   readonly eventWriter: EventWriter;
+  readonly eventQueue: EventQueue;
+  readonly eventTopic: EventTopic;
+  readonly identityWriter: IdentityWriter;
   readonly hashFn: HashFn;
   readonly clock: Clock;
   readonly monotonicIdFn: MonotonicIdFn;

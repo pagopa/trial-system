@@ -30,6 +30,8 @@ export interface Config {
     readonly names: {
       readonly event: string;
     };
+    readonly resourceGroup: string;
+    readonly location: string;
   };
   readonly eventhubs: {
     readonly namespace: string;
@@ -46,6 +48,9 @@ export interface Config {
       readonly activations: string;
       readonly trials: string;
     };
+  };
+  readonly azure: {
+    readonly subscriptionId: string;
   };
 }
 
@@ -71,6 +76,9 @@ const EnvsCodec = t.strict({
   EVENTS_SERVICEBUS_TOPIC_NAME: NonEmptyString,
   TRIAL_CONSUMER: OnOrOffCodec,
   TRIALS_COSMOSDB_CONTAINER_NAME: NonEmptyString,
+  SUBSCRIPTION_ID: NonEmptyString,
+  SERVICE_BUS_RESOURCE_GROUP_NAME: NonEmptyString,
+  SERVICE_BUS_LOCATION: NonEmptyString,
 });
 
 export const parseConfig = (
@@ -102,6 +110,8 @@ export const parseConfig = (
           names: {
             event: envs.EVENTS_SERVICEBUS_TOPIC_NAME,
           },
+          resourceGroup: envs.SERVICE_BUS_RESOURCE_GROUP_NAME,
+          location: envs.SERVICE_BUS_LOCATION,
         },
         eventhubs: {
           namespace: envs.EVENTHUB_NAMESPACE,
@@ -119,6 +129,9 @@ export const parseConfig = (
             activations: envs.ACTIVATIONS_COSMOSDB_CONTAINER_NAME,
             trials: envs.TRIALS_COSMOSDB_CONTAINER_NAME,
           },
+        },
+        azure: {
+          subscriptionId: envs.SUBSCRIPTION_ID,
         },
       }),
     ),

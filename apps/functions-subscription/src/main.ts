@@ -1,7 +1,10 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import { app } from '@azure/functions';
-import { ServiceBusClient } from '@azure/service-bus';
+import {
+  ServiceBusAdministrationClient,
+  ServiceBusClient,
+} from '@azure/service-bus';
 import { EventHubProducerClient } from '@azure/event-hubs';
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
@@ -20,7 +23,11 @@ import { makeSubscriptionHistoryChangesHandler } from './adapters/azure/function
 import { makeActivationsChangesHandler } from './adapters/azure/functions/process-activations-changes';
 import { makeActivationRequestReaderWriter } from './adapters/azure/cosmosdb/activation-request';
 import { makeEventsProducerCosmosDBHandler } from './adapters/azure/functions/events-producer';
-import { makeEventWriterServiceBus } from './adapters/azure/servicebus/event';
+import {
+  makeEventWriterServiceBus,
+  makeTrialEventsServiceBusQueue,
+  makeTrialEventsServiceBusTopic,
+} from './adapters/azure/servicebus/event';
 import { monotonicIdFn } from './adapters/ulid/monotonic-id';
 import { makePostActivationJobHandler } from './adapters/azure/functions/insert-activation-job';
 import { makeActivationJobCosmosContainer } from './adapters/azure/cosmosdb/activation-job';
@@ -31,6 +38,8 @@ import { makePostTrialHandler } from './adapters/azure/functions/create-trial';
 import { makeSubscriptionQueueEventHubProducer } from './adapters/azure/eventhubs/subscription';
 import { makeGetTrialHandler } from './adapters/azure/functions/get-trial';
 import { makeTrialChangesHandler } from './adapters/azure/functions/process-trial-changes';
+import { ManagedServiceIdentityClient } from '@azure/arm-msi';
+import { makeIdentityWriter } from './adapters/azure/managed-identity/identity';
 
 const config = pipe(
   parseConfig(process.env),
@@ -84,6 +93,25 @@ const trialReaderWriter = makeTrialsCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
+const serviceBusAdministrationClient = new ServiceBusAdministrationClient(
+  config.servicebus.namespace,
+  new DefaultAzureCredential(),
+);
+
+const managedServiceIdentityClient = new ManagedServiceIdentityClient(
+  new DefaultAzureCredential(),
+  config.azure.subscriptionId,
+);
+
+const eventTopic = makeTrialEventsServiceBusTopic(
+  serviceBusAdministrationClient,
+  config.servicebus.names.event,
+);
+const eventQueue = makeTrialEventsServiceBusQueue(
+  serviceBusAdministrationClient,
+);
+const identityWriter = makeIdentityWriter(managedServiceIdentityClient);
+
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
@@ -97,6 +125,9 @@ const capabilities: Capabilities = {
   trialReader: trialReaderWriter,
   trialWriter: trialReaderWriter,
   eventWriter,
+  eventQueue,
+  eventTopic,
+  identityWriter,
   hashFn,
   clock,
   monotonicIdFn,
@@ -205,5 +236,5 @@ if (config.trials.consumer === 'on')
     containerName: config.cosmosdb.containersNames.trials,
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'trialConsumer-',
-    handler: makeTrialChangesHandler(capabilities),
+    handler: makeTrialChangesHandler({ env: capabilities, config }),
   });

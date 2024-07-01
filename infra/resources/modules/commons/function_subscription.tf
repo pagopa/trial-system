@@ -16,10 +16,12 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
-    COSMOSDB_ENDPOINT      = module.cosmosdb_account.endpoint
-    COSMOSDB_DATABASE_NAME = module.cosmosdb_sql_database_trial.name
-    EVENTHUB_NAMESPACE     = "${module.event_hub.name}.servicebus.windows.net"
-    SERVICEBUS_NAMESPACE   = "${local.servicebus_namespace}.servicebus.windows.net"
+    COSMOSDB_ENDPOINT                 = module.cosmosdb_account.endpoint
+    COSMOSDB_DATABASE_NAME            = module.cosmosdb_sql_database_trial.name
+    EVENTHUB_NAMESPACE                = "${module.event_hub.name}.servicebus.windows.net"
+    SERVICEBUS_NAMESPACE              = "${local.servicebus_namespace}.servicebus.windows.net"
+    "SERVICE_BUS_RESOURCE_GROUP_NAME" = azurerm_servicebus_namespace.main.resource_group_name
+    "SERVICE_BUS_LOCATION"            = azurerm_servicebus_namespace.main.location
 
     LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
 
