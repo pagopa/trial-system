@@ -124,7 +124,7 @@ module "subscription_fn" {
   }
   subnet_id = module.subscription_snet.id
 
-  public_network_access_enabled = false
+  enable_function_app_public_network_access = false
 
   allowed_subnets = [module.subscription_snet.id]
 
@@ -182,7 +182,7 @@ module "subscription_fn_staging_slot" {
 
   subnet_id = module.subscription_snet.id
 
-  public_network_access_enabled = false
+  enable_function_app_public_network_access = false
 
   allowed_subnets = [
     module.subscription_snet.id
