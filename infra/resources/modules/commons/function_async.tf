@@ -131,7 +131,7 @@ module "subscription_async_fn" {
   }
   subnet_id = module.subscription_async_snet.id
 
-  public_network_access_enabled = false
+  enable_function_app_public_network_access = false
 
   allowed_subnets = [module.subscription_async_snet.id]
 
@@ -201,7 +201,7 @@ module "subscription_async_fn_staging_slot" {
 
   subnet_id = module.subscription_async_snet.id
 
-  public_network_access_enabled = false
+  enable_function_app_public_network_access = false
 
   system_identity_enabled = true
 
