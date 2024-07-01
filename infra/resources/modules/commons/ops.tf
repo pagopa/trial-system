@@ -5,7 +5,7 @@ resource "azurerm_resource_group" "ops_rg" {
 }
 
 resource "azurerm_storage_account" "ops_data" {
-  name                     = "${local.project}opsstdata01"
+  name                     = replace("${local.project}opsstdata01", "-", "")
   resource_group_name      = azurerm_resource_group.ops_rg.name
   location                 = azurerm_resource_group.ops_rg.location
   account_tier             = "Standard"
@@ -13,7 +13,7 @@ resource "azurerm_storage_account" "ops_data" {
 }
 
 resource "azurerm_storage_account" "ops" {
-  name                     = "${local.project}opsst01"
+  name                     = replace("${local.project}opsst01", "-", "")
   resource_group_name      = azurerm_resource_group.ops_rg.name
   location                 = azurerm_resource_group.ops_rg.location
   account_tier             = "Standard"
