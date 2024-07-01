@@ -74,4 +74,6 @@ export const aTrial = {
   name: 'aTrialName' as NonEmptyString,
   description: 'aTrialDescription',
   state: 'CREATING' as const,
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };

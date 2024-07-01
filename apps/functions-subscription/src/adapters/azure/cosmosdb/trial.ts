@@ -21,5 +21,10 @@ export const makeTrialsCosmosContainer = (
         TE.tryCatch(() => container.items.create(trial), E.toError),
         TE.mapBoth(cosmosErrorToDomainError, () => trial),
       ),
+    upsert: (trial) =>
+      pipe(
+        TE.tryCatch(() => container.items.upsert(trial), E.toError),
+        TE.mapBoth(cosmosErrorToDomainError, () => trial),
+      ),
   };
 };
