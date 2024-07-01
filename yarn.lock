@@ -75,6 +75,47 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/arm-authorization@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@azure/arm-authorization@npm:9.0.0"
+  dependencies:
+    "@azure/core-auth": "npm:^1.3.0"
+    "@azure/core-client": "npm:^1.7.0"
+    "@azure/core-paging": "npm:^1.2.0"
+    "@azure/core-rest-pipeline": "npm:^1.8.0"
+    tslib: "npm:^2.2.0"
+  checksum: 10c0/a201d65066daf61f924aa14a3a27f557a24f94c4f368560e5159eb4072cf6fef70378647f826f30b57a9aa5ee9b747b704fb3df50c734b8cdf5a335037f64746
+  languageName: node
+  linkType: hard
+
+"@azure/arm-msi@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@azure/arm-msi@npm:2.1.0"
+  dependencies:
+    "@azure/core-auth": "npm:^1.3.0"
+    "@azure/core-client": "npm:^1.6.1"
+    "@azure/core-paging": "npm:^1.2.0"
+    "@azure/core-rest-pipeline": "npm:^1.8.0"
+    tslib: "npm:^2.2.0"
+  checksum: 10c0/6b2c919b58fa283c51dbda5da14d2481cd31835fb191fad1ae8ba4ad4d057ab4de2713b8414056ee8a6e4c438fd65719eaabd65d15b3462a69e412fe3a83f702
+  languageName: node
+  linkType: hard
+
+"@azure/arm-servicebus@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@azure/arm-servicebus@npm:6.1.0"
+  dependencies:
+    "@azure/abort-controller": "npm:^1.0.0"
+    "@azure/core-auth": "npm:^1.3.0"
+    "@azure/core-client": "npm:^1.6.1"
+    "@azure/core-lro": "npm:^2.2.0"
+    "@azure/core-paging": "npm:^1.2.0"
+    "@azure/core-rest-pipeline": "npm:^1.8.0"
+    tslib: "npm:^2.2.0"
+  checksum: 10c0/5a0ca0bfd04ac0af15572dce79af76219217e0cbaf9e3b554c62a75029d394572ce0c3c636f6eb9dad0bf9ac02714f403cfe56307a44d6eebeee5a021738da6b
+  languageName: node
+  linkType: hard
+
 "@azure/core-amqp@npm:^4.0.0":
   version: 4.2.2
   resolution: "@azure/core-amqp@npm:4.2.2"
@@ -123,7 +164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-client@npm:^1.0.0, @azure/core-client@npm:^1.4.0":
+"@azure/core-client@npm:^1.0.0, @azure/core-client@npm:^1.4.0, @azure/core-client@npm:^1.6.1, @azure/core-client@npm:^1.7.0":
   version: 1.9.2
   resolution: "@azure/core-client@npm:1.9.2"
   dependencies:
@@ -138,7 +179,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-paging@npm:^1.1.1, @azure/core-paging@npm:^1.4.0":
+"@azure/core-lro@npm:^2.2.0":
+  version: 2.7.2
+  resolution: "@azure/core-lro@npm:2.7.2"
+  dependencies:
+    "@azure/abort-controller": "npm:^2.0.0"
+    "@azure/core-util": "npm:^1.2.0"
+    "@azure/logger": "npm:^1.0.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/bee809e47661b40021bbbedf88de54019715fdfcc95ac552b1d901719c29d78e293eeab51257b8f5155aac768eb4ea420715004d00d6e32109f5f97db5960d39
+  languageName: node
+  linkType: hard
+
+"@azure/core-paging@npm:^1.1.1, @azure/core-paging@npm:^1.2.0, @azure/core-paging@npm:^1.4.0":
   version: 1.6.2
   resolution: "@azure/core-paging@npm:1.6.2"
   dependencies:
@@ -181,6 +234,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/core-rest-pipeline@npm:^1.8.0":
+  version: 1.16.1
+  resolution: "@azure/core-rest-pipeline@npm:1.16.1"
+  dependencies:
+    "@azure/abort-controller": "npm:^2.0.0"
+    "@azure/core-auth": "npm:^1.4.0"
+    "@azure/core-tracing": "npm:^1.0.1"
+    "@azure/core-util": "npm:^1.9.0"
+    "@azure/logger": "npm:^1.0.0"
+    http-proxy-agent: "npm:^7.0.0"
+    https-proxy-agent: "npm:^7.0.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/73ec162dca67f3a41925548efdbd99a67fa38512fa5edd34451d44df12205573c32190a1902329e728320782bb7f083e2204ccf7318f372e8d2a472fce3739fb
+  languageName: node
+  linkType: hard
+
 "@azure/core-tracing@npm:^1.0.0, @azure/core-tracing@npm:^1.0.1":
   version: 1.1.2
   resolution: "@azure/core-tracing@npm:1.1.2"
@@ -200,7 +269,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-util@npm:^1.0.0, @azure/core-util@npm:^1.1.0, @azure/core-util@npm:^1.1.1, @azure/core-util@npm:^1.3.0, @azure/core-util@npm:^1.5.0, @azure/core-util@npm:^1.6.1, @azure/core-util@npm:^1.9.0":
+"@azure/core-util@npm:^1.0.0, @azure/core-util@npm:^1.1.0, @azure/core-util@npm:^1.1.1, @azure/core-util@npm:^1.2.0, @azure/core-util@npm:^1.3.0, @azure/core-util@npm:^1.5.0, @azure/core-util@npm:^1.6.1, @azure/core-util@npm:^1.9.0":
   version: 1.9.0
   resolution: "@azure/core-util@npm:1.9.0"
   dependencies:
@@ -4339,6 +4408,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "functions-subscription@workspace:apps/functions-subscription"
   dependencies:
+    "@azure/arm-authorization": "npm:^9.0.0"
+    "@azure/arm-msi": "npm:^2.1.0"
+    "@azure/arm-servicebus": "npm:^6.1.0"
     "@azure/cosmos": "npm:^4.0.0"
     "@azure/event-hubs": "npm:^5.11.4"
     "@azure/functions": "npm:^4.4.0"

@@ -9,6 +9,9 @@
     "EVENTHUB_NAMESPACE": "<put-here-the-the-event-hub-namespace>",
     "SERVICEBUS_NAMESPACE": "<put-here-the-the-service-bus-namespace>",
     "AzureWebJobsStorage": "<put-here-the-connection-string-to-a-storage>",
+    "SUBSCRIPTION_ID": "<put-here-azure-subscription-id>",
+    "SERVICE_BUS_RESOURCE_GROUP_NAME": "<put-here-azure-service-bus-resource-group>",
+    "SERVICE_BUS_LOCATION": "<put-here-azure-service-bus-location>",
 
     "LEASES_COSMOSDB_CONTAINER_NAME": "leases",
 

@@ -16,6 +16,9 @@
     "start": "func start --javascript"
   },
   "dependencies": {
+    "@azure/arm-authorization": "^9.0.0",
+    "@azure/arm-msi": "^2.1.0",
+    "@azure/arm-servicebus": "^6.1.0",
     "@azure/cosmos": "^4.0.0",
     "@azure/event-hubs": "^5.11.4",
     "@azure/functions": "^4.4.0",

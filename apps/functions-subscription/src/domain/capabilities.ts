@@ -20,6 +20,9 @@ import {
 import { MonotonicIdFn } from './monotonic-id';
 import { ActivationJobReader, ActivationJobWriter } from './activation-job';
 import { TrialReader, TrialWriter } from './trial';
+import { IdentityWriter } from '../adapters/azure/managed-identity/identity';
+import { UUIDFn } from '../adapters/crypto/uuid';
+import { EventQueue, EventTopic } from '../adapters/azure/servicebus/event';
 
 /**
  * Maps the capabilities to a given property name. Pick the capability using the
@@ -40,7 +43,11 @@ export interface Capabilities {
   readonly trialWriter: TrialWriter;
   readonly trialReader: TrialReader;
   readonly eventWriter: EventWriter;
+  readonly eventQueue: EventQueue;
+  readonly eventTopic: EventTopic;
+  readonly identityWriter: IdentityWriter;
   readonly hashFn: HashFn;
   readonly clock: Clock;
   readonly monotonicIdFn: MonotonicIdFn;
+  readonly uuidFn: UUIDFn;
 }

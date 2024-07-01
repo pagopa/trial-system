@@ -12,8 +12,13 @@ export const makeTestEnv = () => ({
   activationRequestReader: mock<Capabilities['activationRequestReader']>(),
   activationRequestWriter: mock<Capabilities['activationRequestWriter']>(),
   trialWriter: mock<Capabilities['trialWriter']>(),
+  trialReader: mock<Capabilities['trialReader']>(),
   eventWriter: mock<Capabilities['eventWriter']>(),
+  eventQueue: mock<Capabilities['eventQueue']>(),
+  eventTopic: mock<Capabilities['eventTopic']>(),
+  identityWriter: mock<Capabilities['identityWriter']>(),
   clock: mock<Capabilities['clock']>(),
   hashFn: mockFn<Capabilities['hashFn']>(),
   monotonicIdFn: mockFn<Capabilities['monotonicIdFn']>(),
+  uuidFn: mockFn<Capabilities['uuidFn']>(),
 });
