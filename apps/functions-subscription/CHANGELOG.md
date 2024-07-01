@@ -1,5 +1,18 @@
 # functions-subscription
 
+## 1.1.0
+
+### Minor Changes
+
+- c10257f: [IOPLT-578] - Update the number of activated users by inserting an active subscription
+- d2b8827: [IOPLT-449] - Add handler to create a trial
+- b24f9c6: Add `GET /trials/{id}` endpoint
+
+### Patch Changes
+
+- b24f9c6: Change the return status code of `POST /trials`
+- 23efc4e: [IOPLT-586] - Fix SubscriptionEvent openapi definition
+
 ## 1.0.2
 
 ### Patch Changes
