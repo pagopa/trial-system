@@ -8,9 +8,3 @@ resource "azuredevops_serviceendpoint_github" "azure-devops-github-ro" {
     ignore_changes = [description, authorization]
   }
 }
-
-
-data "azurerm_key_vault_secret" "PAT" {
-  name         = "devops-github-service-conn-pat"
-  key_vault_id = data.azurerm_key_vault.kv_prod.id
-}

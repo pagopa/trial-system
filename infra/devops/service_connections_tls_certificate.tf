@@ -1,6 +1,3 @@
-#
-# ⛩ Service connection 2 🔐 KV@PROD 🛑
-#
 #tfsec:ignore:GEN003
 module "PROD-TLS-AZDO-CERT-SERVICE-CONN" {
   source = "github.com/pagopa/azuredevops-tf-modules//azuredevops_serviceendpoint_federated?ref=v7.2.0"
@@ -24,7 +21,6 @@ resource "azurerm_key_vault_access_policy" "PROD-TLS-AZDO-CERT-SERVICE-CONN_kv_p
   certificate_permissions = ["Get", "Import"]
 }
 
-# create let's encrypt credential used to create SSL certificates
 module "letsencrypt_prod" {
   source = "github.com/pagopa/terraform-azurerm-v3//letsencrypt_credential?ref=v6.20.0"
 
