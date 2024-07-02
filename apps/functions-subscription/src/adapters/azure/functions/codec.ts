@@ -25,9 +25,24 @@ export const toActivationJobAPI = (
   usersToActivate: activationJob.usersToActivate,
 });
 
-export const toTrialAPI = (trial: Trial): TrialAPI => ({
-  id: trial.id,
-  name: trial.name,
-  state: TrialStateEnum[trial.state],
-  description: trial.description,
-});
+export const toTrialAPI = (trial: Trial): TrialAPI => {
+  const identityId = trial.identityId;
+  const trialAPI = {
+    id: trial.id,
+    name: trial.name,
+    state: TrialStateEnum[trial.state],
+    description: trial.description,
+  };
+
+  return identityId
+    ? {
+        ...trialAPI,
+        channel: {
+          azure: {
+            identityId,
+            queueName: trial.id,
+          },
+        },
+      }
+    : trialAPI;
+};

@@ -439,3 +439,23 @@ components:
           $ref: '#/components/schemas/TrialDescription'
         state:
           $ref: '#/components/schemas/TrialState'
+          description: The current state of the trial.
+        channel:
+          type: object
+          description: The channel used to connect and receive events.
+          properties:
+            azure:
+              type: object
+              description: Details for Azure channel integration.
+              required:
+                - queueName
+                - identityId
+              properties:
+                queueName:
+                  type: string
+                  description: The name of the queue where events are sent.
+                  minLength: 1
+                identityId:
+                  type: string
+                  description: The identity ID used to receive events from the queue.
+                  minLength: 1
