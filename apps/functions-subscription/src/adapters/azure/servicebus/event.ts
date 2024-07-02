@@ -16,7 +16,7 @@ export interface EventQueue {
     resourceGroup: string,
     namespace: string,
     queueName: string,
-  ) => TE.TaskEither<Error, Pick<SBQueue, 'id' | 'name'>>;
+  ) => TE.TaskEither<Error, Required<Pick<SBQueue, 'id' | 'name'>>>;
 }
 
 export interface EventTopic {
@@ -54,6 +54,13 @@ export const makeTrialEventsServiceBusQueue = (
           ),
         E.toError,
       ),
+      TE.flatMap(({ id, name }) => {
+        if (id && name) {
+          return TE.right({ id, name });
+        } else {
+          return TE.left(new Error('Something went wrong'));
+        }
+      }),
     ),
 });
 

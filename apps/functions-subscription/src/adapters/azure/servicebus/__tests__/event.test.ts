@@ -82,6 +82,24 @@ describe('makeTrialEventsServiceBusQueue', () => {
     expect(client.queues.createOrUpdate).toHaveBeenCalled();
     expect(actual).toStrictEqual(expected);
   });
+  it('should return an error when missing id and principalId', async () => {
+    const { managementClient: client } = makeServiceBusMocks();
+
+    client.queues.createOrUpdate.mockResolvedValueOnce({});
+
+    const actual = await makeTrialEventsServiceBusQueue(
+      client,
+    ).createIfNotExists(resourceGroup, namespace, queueName)();
+    const expected = E.left(new Error('Something went wrong'));
+
+    expect(client.queues.createOrUpdate).toHaveBeenCalledWith(
+      resourceGroup,
+      namespace,
+      queueName,
+      {},
+    );
+    expect(actual).toStrictEqual(expected);
+  });
 });
 
 describe('makeTrialEventsServiceBusTopic', () => {

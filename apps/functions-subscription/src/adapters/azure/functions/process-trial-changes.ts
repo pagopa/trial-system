@@ -62,22 +62,19 @@ export const makeTrialChangesHandler =
                 ),
               ),
             ),
-            TE.flatMap(({ identity, queue }) => {
-              const scope = queue.id ?? '';
-              const principalId = identity.principalId ?? '';
-
-              return pipe(
+            TE.flatMap(({ identity, queue }) =>
+              pipe(
                 env.identityWriter.assignRole(
-                  scope,
+                  queue.id,
                   env.uuidFn().value,
                   // Azure Service Bus Data Receiver Role Definition
                   // https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/integration#azure-service-bus-data-receiver
                   '/providers/Microsoft.Authorization/roleDefinitions/4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0',
-                  principalId,
+                  identity.principalId,
                 ),
                 TE.map(() => ({ identityId: identity.id })),
-              );
-            }),
+              ),
+            ),
             TE.flatMap(({ identityId }) =>
               // Update the trial, changing the state and adding reference to the created resources
               env.trialWriter.upsert({

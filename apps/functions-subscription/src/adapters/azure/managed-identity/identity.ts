@@ -1,6 +1,9 @@
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Identity, ManagedServiceIdentityClient } from '@azure/arm-msi';
-import { AuthorizationManagementClient } from '@azure/arm-authorization';
+import {
+  AuthorizationManagementClient,
+  KnownPrincipalType,
+} from '@azure/arm-authorization';
 import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/function';
 
@@ -9,7 +12,7 @@ export interface IdentityWriter {
     name: string,
     resourceGroup: string,
     location: string,
-  ) => TE.TaskEither<Error, Pick<Identity, 'id' | 'principalId'>>;
+  ) => TE.TaskEither<Error, Required<Pick<Identity, 'id' | 'principalId'>>>;
   readonly assignRole: (
     scope: string,
     roleAssignmentName: string,
@@ -35,6 +38,13 @@ export const makeIdentityWriter = (
           ),
         E.toError,
       ),
+      TE.flatMap(({ id, principalId }) => {
+        if (id && principalId) {
+          return TE.right({ id, principalId });
+        } else {
+          return TE.left(new Error('Something went wrong'));
+        }
+      }),
     ),
   assignRole: (scope, roleAssignmentName, roleDefinitionId, principalId) =>
     pipe(
@@ -46,7 +56,7 @@ export const makeIdentityWriter = (
             {
               roleDefinitionId,
               principalId,
-              principalType: 'ServicePrincipal',
+              principalType: KnownPrincipalType.ServicePrincipal,
             },
           ),
         E.toError,
