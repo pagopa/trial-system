@@ -22,11 +22,7 @@ describe('makeTrialChangesHandler', () => {
   it('should not process trials on updates', async () => {
     const env = makeTestEnv();
     const context = makeFunctionContext();
-    const trial = {
-      ...aTrial,
-      createdAt: new Date(0),
-    };
-    const messages = [trial];
+    const messages = [{ ...aTrial, state: 'CREATED' as const }];
 
     const actual = await makeTrialChangesHandler({
       env,
@@ -46,13 +42,8 @@ describe('makeTrialChangesHandler', () => {
   it('should fail if there is an error', async () => {
     const env = makeTestEnv();
     const context = makeFunctionContext();
-    const trial = {
-      ...aTrial,
-      createdAt: new Date(0),
-      updatedAt: new Date(0),
-    };
 
-    const messages = [trial];
+    const messages = [aTrial];
     const unexpectedError = new Error('Unexpected Error');
 
     env.identityWriter.createOrUpdate.mockReturnValueOnce(
@@ -70,24 +61,20 @@ describe('makeTrialChangesHandler', () => {
   it('should process the trials', async () => {
     const env = makeTestEnv();
     const context = makeFunctionContext();
-    const createdTrial0 = {
+    const creatingTrial0 = {
       ...aTrial,
       id: '0' as TrialId,
-      createdAt: new Date(0),
-      updatedAt: new Date(0),
     };
-    const createdTrial1 = {
+    const creatingTrial1 = {
       ...aTrial,
       id: '1' as TrialId,
-      createdAt: new Date(1),
-      updatedAt: new Date(1),
     };
-    const updatedTrial = {
+    const createdTrial = {
       ...aTrial,
-      createdAt: new Date(0),
+      state: 'CREATED' as const,
     };
-    const createdTrials = [createdTrial0, createdTrial1];
-    const messages = [...createdTrials, updatedTrial];
+    const creatingTrials = [creatingTrial0, creatingTrial1];
+    const messages = [...creatingTrials, createdTrial];
 
     env.identityWriter.createOrUpdate
       .mockReturnValueOnce(
@@ -107,8 +94,8 @@ describe('makeTrialChangesHandler', () => {
 
     const aQueueId = 'aQueueId';
     env.eventQueue.createIfNotExists
-      .mockReturnValueOnce(TE.right({ id: aQueueId, name: createdTrial0.id }))
-      .mockReturnValueOnce(TE.right({ id: aQueueId, name: createdTrial1.id }));
+      .mockReturnValueOnce(TE.right({ id: aQueueId, name: creatingTrial0.id }))
+      .mockReturnValueOnce(TE.right({ id: aQueueId, name: creatingTrial1.id }));
 
     const aSubscriptionId = 'aTopicSubscriptionId';
     env.eventTopic.createOrUpdateSubscription.mockReturnValue(
@@ -117,72 +104,66 @@ describe('makeTrialChangesHandler', () => {
 
     env.identityWriter.assignRole.mockReturnValue(TE.right(void 0));
 
-    const updatedAt = new Date(10);
-    env.clock.now.mockReturnValue(updatedAt);
-
     const uuid = aTrial.id;
     env.uuidFn.mockReturnValue({ value: uuid });
 
     env.trialWriter.upsert
-      .mockReturnValueOnce(TE.right({ ...createdTrial0, updatedAt }))
-      .mockReturnValueOnce(TE.right({ ...createdTrial1, updatedAt }));
+      .mockReturnValueOnce(TE.right(creatingTrial0))
+      .mockReturnValueOnce(TE.right(creatingTrial1));
 
     const actual = await makeTrialChangesHandler({
       env,
       config,
     })(messages, context);
 
-    expect(actual).toStrictEqual([
-      { ...createdTrial0, updatedAt },
-      { ...createdTrial1, updatedAt },
-    ]);
+    expect(actual).toStrictEqual([creatingTrial0, creatingTrial1]);
 
     expect(env.identityWriter.createOrUpdate).toHaveBeenCalledTimes(
-      createdTrials.length,
+      creatingTrials.length,
     );
     expect(env.identityWriter.createOrUpdate).toHaveBeenCalledWith(
-      createdTrial0.id,
+      creatingTrial0.id,
       config.servicebus.resourceGroup,
       config.servicebus.location,
     );
     expect(env.identityWriter.createOrUpdate).toHaveBeenCalledWith(
-      createdTrial1.id,
+      creatingTrial1.id,
       config.servicebus.resourceGroup,
       config.servicebus.location,
     );
 
     expect(env.eventQueue.createIfNotExists).toHaveBeenCalledTimes(
-      createdTrials.length,
+      creatingTrials.length,
     );
     expect(env.eventQueue.createIfNotExists).toHaveBeenCalledWith(
       config.servicebus.resourceGroup,
       config.servicebus.namespace,
-      createdTrial0.id,
+      creatingTrial0.id,
     );
     expect(env.eventQueue.createIfNotExists).toHaveBeenCalledWith(
       config.servicebus.resourceGroup,
       config.servicebus.namespace,
-      createdTrial1.id,
+      creatingTrial1.id,
     );
 
     expect(env.eventTopic.createOrUpdateSubscription).toHaveBeenCalledTimes(
-      createdTrials.length,
+      creatingTrials.length,
     );
     expect(env.eventTopic.createOrUpdateSubscription).toHaveBeenCalledWith(
       config.servicebus.resourceGroup,
       config.servicebus.namespace,
-      createdTrial0.id,
+      creatingTrial0.id,
     );
     expect(env.eventTopic.createOrUpdateSubscription).toHaveBeenCalledWith(
       config.servicebus.resourceGroup,
       config.servicebus.namespace,
-      createdTrial1.id,
+      creatingTrial1.id,
     );
 
-    expect(env.uuidFn).toHaveBeenCalledTimes(createdTrials.length);
+    expect(env.uuidFn).toHaveBeenCalledTimes(creatingTrials.length);
 
     expect(env.identityWriter.assignRole).toHaveBeenCalledTimes(
-      createdTrials.length,
+      creatingTrials.length,
     );
     expect(env.identityWriter.assignRole).toHaveBeenCalledWith(
       aQueueId,
@@ -197,16 +178,14 @@ describe('makeTrialChangesHandler', () => {
       'aPrincipalId-1',
     );
 
-    expect(env.trialWriter.upsert).toHaveBeenCalledTimes(createdTrials.length);
+    expect(env.trialWriter.upsert).toHaveBeenCalledTimes(creatingTrials.length);
     expect(env.trialWriter.upsert).toHaveBeenCalledWith({
-      ...createdTrial0,
-      updatedAt,
+      ...creatingTrial0,
       state: 'CREATED',
       identityId: 'anIdentityId-0',
     });
     expect(env.trialWriter.upsert).toHaveBeenCalledWith({
-      ...createdTrial1,
-      updatedAt,
+      ...creatingTrial1,
       state: 'CREATED',
       identityId: 'anIdentityId-1',
     });

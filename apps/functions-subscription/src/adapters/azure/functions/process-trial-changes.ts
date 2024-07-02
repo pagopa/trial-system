@@ -6,7 +6,6 @@ import * as t from 'io-ts';
 import { TrialCodec } from '../../../domain/trial';
 import { Capabilities } from '../../../domain/capabilities';
 import { Config } from '../../../config';
-import { nowDate } from '../../../domain/clock';
 
 export const makeTrialChangesHandler =
   ({
@@ -15,12 +14,7 @@ export const makeTrialChangesHandler =
   }: {
     readonly env: Pick<
       Capabilities,
-      | 'trialWriter'
-      | 'eventTopic'
-      | 'eventQueue'
-      | 'identityWriter'
-      | 'clock'
-      | 'uuidFn'
+      'trialWriter' | 'eventTopic' | 'eventQueue' | 'identityWriter' | 'uuidFn'
     >;
     readonly config: Pick<Config, 'servicebus'>;
   }) =>
@@ -32,8 +26,7 @@ export const makeTrialChangesHandler =
         RA.filter(
           // Keep only the documents with same createdAt and updatedAt
           // This means the document has been created
-          ({ createdAt, updatedAt }) =>
-            createdAt.getTime() === updatedAt.getTime(),
+          ({ state }) => state === 'CREATING',
         ),
       ),
       TE.flatMap(
@@ -87,16 +80,11 @@ export const makeTrialChangesHandler =
             }),
             TE.flatMap(({ identityId }) =>
               // Update the trial, changing the state and adding reference to the created resources
-              pipe(
-                nowDate()(env),
-                TE.map((updatedAt) => ({
-                  ...trial,
-                  identityId,
-                  updatedAt,
-                  state: 'CREATED' as const,
-                })),
-                TE.flatMap(env.trialWriter.upsert),
-              ),
+              env.trialWriter.upsert({
+                ...trial,
+                identityId,
+                state: 'CREATED' as const,
+              }),
             ),
           ),
         ),
