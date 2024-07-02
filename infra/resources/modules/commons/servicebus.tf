@@ -22,6 +22,5 @@ resource "azurerm_servicebus_topic" "events" {
   name         = "${local.domain}-topic-events"
   namespace_id = azurerm_servicebus_namespace.main.id
 
-  enable_partitioning = true
-  support_ordering    = true
+  support_ordering = true
 }
