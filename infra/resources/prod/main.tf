@@ -2,31 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 3.101.0"
-    }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "<= 2.33.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "<= 4.0.4"
-    }
-    local = {
-      source  = "hashicorp/local"
-      version = "<= 2.3.0"
-    }
-    null = {
-      source  = "hashicorp/null"
-      version = "<= 3.2.1"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "<= 3.4.3"
-    }
-    azapi = {
-      source  = "azure/azapi"
-      version = "<= 1.9.0"
+      version = "<= 3.108.0"
     }
   }
 
@@ -40,9 +16,6 @@ terraform {
 
 provider "azurerm" {
   features {}
-}
-
-provider "azapi" {
 }
 
 module "commons" {
@@ -73,7 +46,7 @@ module "commons" {
   apim_subnet_cidr = ["10.30.8.0/24"]
 
   apim_config = {
-    sku = "Developer_1"
+    sku             = "Developer_1"
     publisher_email = "ts-apim@pagopa.it"
   }
 
