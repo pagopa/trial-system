@@ -133,8 +133,6 @@ module "subscription_async_fn" {
 
   enable_function_app_public_network_access = false
 
-  allowed_subnets = [module.subscription_async_snet.id]
-
   system_identity_enabled = true
 
   # Action groups for alerts

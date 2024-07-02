@@ -126,8 +126,6 @@ module "subscription_fn" {
 
   enable_function_app_public_network_access = false
 
-  allowed_subnets = [module.subscription_snet.id]
-
   system_identity_enabled = true
 
   # Action groups for alerts
@@ -183,10 +181,6 @@ module "subscription_fn_staging_slot" {
   subnet_id = module.subscription_snet.id
 
   enable_function_app_public_network_access = false
-
-  allowed_subnets = [
-    module.subscription_snet.id
-  ]
 
   system_identity_enabled = true
 
