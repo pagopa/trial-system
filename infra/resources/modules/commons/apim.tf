@@ -1,14 +1,3 @@
-# APIM subnet
-module "apim_snet" {
-  source               = "git::https://github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.7.0"
-  name                 = format("%s-apim-snet-01", local.project)
-  resource_group_name  = azurerm_virtual_network.vnet.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.apim_subnet_cidr
-
-  private_endpoint_network_policies_enabled = true
-}
-
 resource "azurerm_network_security_group" "nsg_apim" {
   name                = format("%s-apim-nsg", local.project)
   resource_group_name = azurerm_resource_group.rg_routing.name
@@ -34,11 +23,8 @@ resource "azurerm_subnet_network_security_group_association" "snet_nsg" {
   network_security_group_id = azurerm_network_security_group.nsg_apim.id
 }
 
-# ###########################
-# ## Api Management (apim) ##
-# ###########################
 module "apim" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management?ref=v8.7.0"
+  source = "github.com/pagopa/terraform-azurerm-v3//api_management?ref=v8.26.0"
 
   location                  = var.location
   name                      = format("%s-apim-01", local.project)
@@ -47,10 +33,11 @@ module "apim" {
   publisher_email           = var.apim_config.publisher_email
   notification_sender_email = var.apim_config.publisher_email
   sku_name                  = var.apim_config.sku
-  virtual_network_type      = "None"
+  virtual_network_type      = "Internal"
+  subnet_id                 = module.apim_snet.id
 
   # not used at the moment
-  redis_cache_id          = null # module.redis_apim.id
+  redis_cache_id = null
 
   application_insights = {
     enabled             = true
@@ -58,5 +45,4 @@ module "apim" {
   }
 
   tags = var.tags
-
 }

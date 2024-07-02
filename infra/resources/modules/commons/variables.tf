@@ -124,7 +124,7 @@ variable "apim_subnet_cidr" {
 }
 variable "apim_config" {
   type = object({
-    sku = string
+    sku             = string
     publisher_email = string
   })
 }
