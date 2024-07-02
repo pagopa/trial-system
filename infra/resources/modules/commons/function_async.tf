@@ -79,7 +79,7 @@ module "subscription_async_snet" {
 }
 
 module "subscription_async_fn" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.9.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.25.0"
 
   resource_group_name = azurerm_resource_group.async_rg.name
   name                = format("%s-subscription-async-fn-01", local.project)
@@ -138,6 +138,8 @@ module "subscription_async_fn" {
   }
   subnet_id = module.subscription_async_snet.id
 
+  enable_function_app_public_network_access = false
+
   system_identity_enabled = true
 
   # Action groups for alerts
@@ -175,7 +177,7 @@ resource "azurerm_cosmosdb_sql_role_assignment" "subs_async_fn_to_cosmos_db" {
 }
 
 module "subscription_async_fn_staging_slot" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v8.9.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v8.25.0"
 
   name                = "staging"
   location            = var.location
@@ -203,6 +205,8 @@ module "subscription_async_fn_staging_slot" {
   )
 
   subnet_id = module.subscription_async_snet.id
+
+  enable_function_app_public_network_access = false
 
   system_identity_enabled = true
 
