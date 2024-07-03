@@ -30,14 +30,16 @@ describe('processActivationRequest', () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
-    mockEnv.hashFn
-      .mockReturnValueOnce({ value: aSubscriptionHistoryV1.subscriptionId })
+    mockEnv.hashFn.mockReturnValueOnce({
+      value: aSubscriptionHistoryV1.subscriptionId,
+    });
     mockEnv.subscriptionHistoryReader.getLatest.mockReturnValueOnce(
       TE.right(O.some(aSubscriptionHistoryV1)),
     );
 
-    const actual =
-      await processActivationRequest(anActivationRequestActivated)(testEnv)();
+    const actual = await processActivationRequest(anActivationRequestActivated)(
+      testEnv,
+    )();
 
     expect(actual).toStrictEqual(E.right(O.some(aSubscriptionHistoryV1)));
     expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledTimes(1);
