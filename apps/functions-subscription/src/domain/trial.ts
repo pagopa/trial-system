@@ -29,7 +29,7 @@ export const TrialCodec = t.intersection([
     }),
   }),
   t.partial({
-    description: NonEmptyString,
+    description: t.string,
     identityId: NonEmptyString,
   }),
 ]);

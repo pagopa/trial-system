@@ -55,13 +55,13 @@ const cosmosDB = new CosmosClient({
 });
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
-  config.eventhubs.namespace,
+  `${config.eventhubs.namespace}.servicebus.windows.net`,
   config.eventhubs.names.subscriptionRequest,
   new DefaultAzureCredential(),
 );
 
 const serviceBus = new ServiceBusClient(
-  config.servicebus.namespace,
+  `${config.servicebus.namespace}.servicebus.windows.net`,
   new DefaultAzureCredential(),
 );
 

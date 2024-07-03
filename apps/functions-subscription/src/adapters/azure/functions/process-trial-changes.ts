@@ -6,6 +6,7 @@ import * as t from 'io-ts';
 import { TrialCodec } from '../../../domain/trial';
 import { Capabilities } from '../../../domain/capabilities';
 import { Config } from '../../../config';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 export const makeTrialChangesHandler =
   ({
@@ -72,7 +73,7 @@ export const makeTrialChangesHandler =
                   '/providers/Microsoft.Authorization/roleDefinitions/4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0',
                   identity.principalId,
                 ),
-                TE.map(() => ({ identityId: identity.id })),
+                TE.map(() => ({ identityId: identity.id as NonEmptyString })),
               ),
             ),
             TE.flatMap(({ identityId }) =>
