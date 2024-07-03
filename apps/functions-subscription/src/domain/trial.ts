@@ -29,8 +29,8 @@ export const TrialCodec = t.intersection([
     }),
   }),
   t.partial({
-    description: t.string,
-    identityId: t.string,
+    description: NonEmptyString,
+    identityId: NonEmptyString,
   }),
 ]);
 export type Trial = t.TypeOf<typeof TrialCodec>;
