@@ -36,16 +36,17 @@ export const processActivationRequest = ({
             RTE.fromTaskEither,
           ),
       ),
-      RTE.bindW(
-        'subscriptionHistoryNewVersion',
-        ({ subscriptionHistoryLatest }) =>
-          makeSubscriptionHistoryNextVersion(subscriptionHistoryLatest, {
-            state: 'ACTIVE',
-          }),
-      ),
-      RTE.flatMap(({ subscriptionHistoryNewVersion }) =>
-        insertSubscriptionHistory(subscriptionHistoryNewVersion),
-      ),
+      RTE.flatMap(({ subscriptionHistoryLatest }) => {
+        // only subscription in the SUBSCRIBED state can be activated
+        if (subscriptionHistoryLatest.state === 'SUBSCRIBED')
+          return pipe(
+            makeSubscriptionHistoryNextVersion(subscriptionHistoryLatest, {
+              state: 'ACTIVE',
+            }),
+            RTE.flatMap(insertSubscriptionHistory),
+          );
+        else return RTE.of(subscriptionHistoryLatest);
+      }),
       RTE.map(O.of),
     );
   else return RTE.right(O.none);

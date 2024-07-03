@@ -26,7 +26,25 @@ describe('processActivationRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
   });
 
-  it('should create a new version of subscription-history if activated', async () => {
+  it('should return insert a new version if the latest one is not SUBSCRIBED', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    mockEnv.hashFn
+      .mockReturnValueOnce({ value: aSubscriptionHistoryV1.subscriptionId })
+    mockEnv.subscriptionHistoryReader.getLatest.mockReturnValueOnce(
+      TE.right(O.some(aSubscriptionHistoryV1)),
+    );
+
+    const actual =
+      await processActivationRequest(anActivationRequestActivated)(testEnv)();
+
+    expect(actual).toStrictEqual(E.right(O.some(aSubscriptionHistoryV1)));
+    expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
+  });
+
+  it('should create a new version of subscription-history if activated and the latest version is SUBSCRIBED', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
