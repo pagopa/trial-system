@@ -118,10 +118,10 @@ variable "dns_config" {
   }
 }
 
-
-variable "apim_subnet_cidr" {
+variable "cidr_subnet_apim" {
   type = list(string)
 }
+
 variable "apim_config" {
   type = object({
     sku             = string

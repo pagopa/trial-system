@@ -14,7 +14,7 @@ module "apim_snet" {
   name                 = format("%s-apim-snet-01", local.project)
   resource_group_name  = azurerm_virtual_network.vnet.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.apim_subnet_cidr
+  address_prefixes     = var.cidr_subnet_apim
 
   private_endpoint_network_policies_enabled = true
 }

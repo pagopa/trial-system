@@ -43,7 +43,7 @@ module "commons" {
   cidr_subnet_fnsubscription      = ["10.30.5.0/24"]
   cidr_subnet_fnsubscriptionasync = ["10.30.6.0/24"]
 
-  apim_subnet_cidr = ["10.30.8.0/24"]
+  cidr_subnet_apim = ["10.30.8.0/24"]
 
   apim_config = {
     sku             = "Developer_1"
