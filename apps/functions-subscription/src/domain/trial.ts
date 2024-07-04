@@ -19,20 +19,27 @@ export const TrialIdCodec = t.brand(
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
-export const TrialCodec = t.intersection([
+const BaseTrialCodec = t.intersection([
+  t.strict({ id: TrialIdCodec, name: NonEmptyString }),
+  t.partial({ description: t.string }),
+]);
+
+const CreatingTrialCodec = t.intersection([
+  BaseTrialCodec,
   t.strict({
-    id: TrialIdCodec,
-    name: NonEmptyString,
-    state: t.keyof({
-      CREATING: null,
-      CREATED: null,
-    }),
+    state: t.literal('CREATING'),
   }),
-  t.partial({
-    description: t.string,
+]);
+
+const CreatedTrialCodec = t.intersection([
+  BaseTrialCodec,
+  t.strict({
+    state: t.literal('CREATED'),
     identityId: NonEmptyString,
   }),
 ]);
+
+export const TrialCodec = t.union([CreatingTrialCodec, CreatedTrialCodec]);
 export type Trial = t.TypeOf<typeof TrialCodec>;
 
 export interface TrialWriter {

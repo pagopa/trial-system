@@ -2,6 +2,7 @@ import { InvocationContext } from '@azure/functions';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as RA from 'fp-ts/ReadonlyArray';
+import * as O from 'fp-ts/Option';
 import * as t from 'io-ts';
 import { TrialCodec } from '../../../domain/trial';
 import { Capabilities } from '../../../domain/capabilities';
@@ -13,7 +14,11 @@ export const makeTrialChangesHandler =
   (documents: unknown, _: InvocationContext) =>
     pipe(
       TE.fromEither(t.array(TrialCodec).decode(documents)),
-      TE.map(RA.filter(({ state }) => state === 'CREATING')),
+      TE.map(
+        RA.filterMap((trial) =>
+          trial.state === 'CREATING' ? O.some(trial) : O.none,
+        ),
+      ),
       TE.flatMap(
         TE.traverseArray((trial) =>
           pipe(

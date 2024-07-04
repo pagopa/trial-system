@@ -26,7 +26,7 @@ export const toActivationJobAPI = (
 });
 
 export const toTrialAPI = (trial: Trial): TrialAPI => {
-  const { id, name, description, identityId, state } = trial;
+  const { id, name, description, state } = trial;
   const trialAPI = {
     id,
     name,
@@ -34,12 +34,12 @@ export const toTrialAPI = (trial: Trial): TrialAPI => {
     description,
   };
 
-  return identityId
+  return state === 'CREATED'
     ? {
         ...trialAPI,
         channel: {
           azure: {
-            identityId,
+            identityId: trial.identityId,
             queueName: id,
           },
         },
