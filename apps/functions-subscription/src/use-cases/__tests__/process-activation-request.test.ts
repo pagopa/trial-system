@@ -26,7 +26,7 @@ describe('processActivationRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
   });
 
-  it('should return insert a new version if the latest one is not SUBSCRIBED', async () => {
+  it('should not insert a new version if the latest subscription-history is not SUBSCRIBED', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
