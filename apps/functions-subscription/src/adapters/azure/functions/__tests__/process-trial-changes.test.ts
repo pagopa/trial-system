@@ -49,62 +49,41 @@ describe('makeTrialChangesHandler', () => {
     const creatingTrials = [creatingTrial0, creatingTrial1];
     const messages = [...creatingTrials, aCreatedTrial];
 
+    const channel0 = {
+      identityId: 'anIdentityId-0' as NonEmptyString,
+      queueName: creatingTrial0.id as NonEmptyString,
+    };
+    const channel1 = {
+      identityId: 'anIdentityId-1' as NonEmptyString,
+      queueName: creatingTrial0.id as NonEmptyString,
+    };
+
     env.channelAdmin.create
-      .mockReturnValueOnce(
-        TE.right({
-          identityId: 'anIdentityId-0',
-          queueName: creatingTrial0.id,
-        }),
-      )
-      .mockReturnValueOnce(
-        TE.right({
-          identityId: 'anIdentityId-1',
-          queueName: creatingTrial1.id,
-        }),
-      );
+      .mockReturnValueOnce(TE.right(channel0))
+      .mockReturnValueOnce(TE.right(channel1));
+
+    const createdTrial0 = {
+      ...creatingTrial0,
+      state: aCreatedTrial.state,
+      identityId: channel0.identityId,
+    };
+    const createdTrial1 = {
+      ...creatingTrial1,
+      state: aCreatedTrial.state,
+      identityId: channel1.identityId,
+    };
     env.trialWriter.upsert
-      .mockReturnValueOnce(
-        TE.right({
-          ...creatingTrial0,
-          state: 'CREATED',
-          identityId: 'anIdentityId-0' as NonEmptyString,
-        }),
-      )
-      .mockReturnValueOnce(
-        TE.right({
-          ...creatingTrial1,
-          state: 'CREATED',
-          identityId: 'anIdentityId-1' as NonEmptyString,
-        }),
-      );
+      .mockReturnValueOnce(TE.right(createdTrial0))
+      .mockReturnValueOnce(TE.right(createdTrial1));
 
     const actual = await makeTrialChangesHandler(env)(messages, context);
 
-    const expected = [
-      {
-        ...creatingTrial0,
-        state: 'CREATED' as const,
-        identityId: 'anIdentityId-0',
-      },
-      {
-        ...creatingTrial1,
-        state: 'CREATED' as const,
-        identityId: 'anIdentityId-1',
-      },
-    ];
+    const expected = [createdTrial0, createdTrial1];
 
     expect(actual).toStrictEqual(expected);
 
     expect(env.trialWriter.upsert).toHaveBeenCalledTimes(creatingTrials.length);
-    expect(env.trialWriter.upsert).toHaveBeenCalledWith({
-      ...creatingTrial0,
-      state: 'CREATED',
-      identityId: 'anIdentityId-0',
-    });
-    expect(env.trialWriter.upsert).toHaveBeenCalledWith({
-      ...creatingTrial1,
-      state: 'CREATED',
-      identityId: 'anIdentityId-1',
-    });
+    expect(env.trialWriter.upsert).toHaveBeenCalledWith(createdTrial0);
+    expect(env.trialWriter.upsert).toHaveBeenCalledWith(createdTrial1);
   });
 });

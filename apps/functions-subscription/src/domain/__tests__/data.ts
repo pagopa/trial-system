@@ -79,5 +79,5 @@ export const aTrial = {
 export const aCreatedTrial = {
   ...aTrial,
   state: 'CREATED' as const,
-  identityId: 'anIdentityId',
+  identityId: 'anIdentityId' as NonEmptyString,
 };

@@ -6,7 +6,6 @@ import * as O from 'fp-ts/Option';
 import * as t from 'io-ts';
 import { TrialCodec } from '../../../domain/trial';
 import { Capabilities } from '../../../domain/capabilities';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 export const makeTrialChangesHandler =
   (env: Pick<Capabilities, 'channelAdmin' | 'trialWriter'>) =>
@@ -27,8 +26,8 @@ export const makeTrialChangesHandler =
               // Update the trial, changing the state and adding reference to the created resources
               env.trialWriter.upsert({
                 ...trial,
-                identityId: identityId as NonEmptyString,
-                state: 'CREATED' as const,
+                identityId,
+                state: 'CREATED',
               }),
             ),
           ),

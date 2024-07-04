@@ -11,6 +11,7 @@ import {
 import { Config } from '../../../config';
 import { uuidFn as uuidGenerator } from '../../crypto/uuid';
 import { TrialId } from '../../../domain/trial';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 interface Env {
   readonly clients: {
@@ -147,8 +148,8 @@ export const makeChannelAdminServiceBus = (
         ),
       ),
       TE.map(({ identity, queue }) => ({
-        queueName: queue.name,
-        identityId: identity.id,
+        queueName: queue.name as NonEmptyString,
+        identityId: identity.id as NonEmptyString,
       })),
     ),
 });
