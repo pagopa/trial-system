@@ -87,6 +87,31 @@ const createTopicSubscription = (
     E.toError,
   );
 
+const createFilterByTrialIdRule = (
+  trialId: TrialId,
+  client: ServiceBusManagementClient,
+  config: Env['config'],
+) =>
+  TE.tryCatch(
+    () =>
+      client.rules.createOrUpdate(
+        config.servicebus.resourceGroup,
+        config.servicebus.namespace,
+        config.servicebus.names.event,
+        trialId,
+        'FilterByTrialId',
+        {
+          filterType: 'CorrelationFilter',
+          correlationFilter: {
+            properties: {
+              trialId,
+            },
+          },
+        },
+      ),
+    E.toError,
+  );
+
 const createRoleAssignment = (
   client: AuthorizationManagementClient,
   queueId: string,
@@ -127,11 +152,20 @@ export const makeChannelAdminServiceBus = (
         ),
       ),
       TE.chainFirst(({ queue }) =>
-        createTopicSubscription(
-          trialId,
-          queue.name,
-          clients.serviceBusManagementClient,
-          config,
+        pipe(
+          createTopicSubscription(
+            trialId,
+            queue.name,
+            clients.serviceBusManagementClient,
+            config,
+          ),
+          TE.flatMap(() =>
+            createFilterByTrialIdRule(
+              trialId,
+              clients.serviceBusManagementClient,
+              config,
+            ),
+          ),
         ),
       ),
       TE.flatMap(({ queue, identity }) =>

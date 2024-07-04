@@ -46,14 +46,14 @@ describe('makeChannelAdminServiceBus', () => {
     );
 
     serviceBusManagementClient.subscriptions.createOrUpdate.mockResolvedValueOnce(
-      {
-        id: 'aSubscriptionId',
-      },
+      {},
     );
 
-    authorizationManagementClient.roleAssignments.create.mockResolvedValueOnce({
-      id: 'anId',
-    });
+    serviceBusManagementClient.rules.createOrUpdate.mockResolvedValueOnce({});
+
+    authorizationManagementClient.roleAssignments.create.mockResolvedValueOnce(
+      {},
+    );
 
     const actual = await makeChannelAdminServiceBus(
       {
@@ -93,6 +93,24 @@ describe('makeChannelAdminServiceBus', () => {
       config.servicebus.names.event,
       trialId,
       { forwardTo: queueResponse.name },
+    );
+
+    expect(
+      serviceBusManagementClient.rules.createOrUpdate,
+    ).toHaveBeenCalledWith(
+      config.servicebus.resourceGroup,
+      config.servicebus.namespace,
+      config.servicebus.names.event,
+      trialId,
+      'FilterByTrialId',
+      {
+        filterType: 'CorrelationFilter',
+        correlationFilter: {
+          properties: {
+            trialId,
+          },
+        },
+      },
     );
 
     expect(
