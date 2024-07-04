@@ -52,31 +52,8 @@ resource "azurerm_resource_group" "subscription_rg" {
   tags = var.tags
 }
 
-module "subscription_snet" {
-  source                                    = "git::https://github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.8.0"
-  name                                      = format("%s-subscription-snet-01", local.project)
-  address_prefixes                          = var.cidr_subnet_fnsubscription
-  resource_group_name                       = azurerm_virtual_network.vnet.resource_group_name
-  virtual_network_name                      = azurerm_virtual_network.vnet.name
-  private_endpoint_network_policies_enabled = false
-
-  service_endpoints = [
-    "Microsoft.Web",
-    "Microsoft.AzureCosmosDB",
-    "Microsoft.Storage",
-  ]
-
-  delegation = {
-    name = "default"
-    service_delegation = {
-      name    = "Microsoft.Web/serverFarms"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-    }
-  }
-}
-
 module "subscription_fn" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app?ref=v8.25.0"
+  source = "github.com/pagopa/terraform-azurerm-v3//function_app?ref=v8.26.0"
 
   resource_group_name = azurerm_resource_group.subscription_rg.name
   name                = format("%s-subscription-fn-01", local.project)
@@ -162,7 +139,7 @@ resource "azurerm_cosmosdb_sql_role_assignment" "subs_fn_to_cosmos_db" {
 }
 
 module "subscription_fn_staging_slot" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//function_app_slot?ref=v8.25.0"
+  source = "github.com/pagopa/terraform-azurerm-v3//function_app_slot?ref=v8.26.0"
 
   name                = "staging"
   location            = var.location

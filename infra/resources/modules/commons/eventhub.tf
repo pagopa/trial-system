@@ -1,5 +1,5 @@
 module "event_hub" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//eventhub?ref=v8.13.0"
+  source = "github.com/pagopa/terraform-azurerm-v3//eventhub?ref=v8.26.0"
 
   name                = "${local.domain}-evh"
   resource_group_name = azurerm_resource_group.data_rg.name
