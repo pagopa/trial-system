@@ -17,6 +17,10 @@ module "apim_snet" {
   address_prefixes     = var.cidr_subnet_apim
 
   private_endpoint_network_policies_enabled = true
+
+  service_endpoints = [
+    "Microsoft.Web",
+  ]
 }
 
 module "subscription_async_snet" {
