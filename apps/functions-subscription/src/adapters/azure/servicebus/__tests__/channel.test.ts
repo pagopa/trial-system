@@ -12,6 +12,7 @@ const config = {
     location: 'aLocation',
   },
 };
+const uuid = '0-0-0-0-0';
 
 describe('makeChannelAdminServiceBus', () => {
   it('should return channel information', async () => {
@@ -19,7 +20,6 @@ describe('makeChannelAdminServiceBus', () => {
       managedServiceIdentityClient,
       authorizationManagementClient,
       serviceBusManagementClient,
-      uuidFn,
     } = makeServiceBusMocks();
     const clients = {
       managedServiceIdentityClient,
@@ -38,7 +38,7 @@ describe('makeChannelAdminServiceBus', () => {
     );
 
     const queueResponse = {
-      id: aTrial.id,
+      id: trialId,
       name: 'aQueueName',
     };
     serviceBusManagementClient.queues.createOrUpdate.mockResolvedValueOnce(
@@ -51,18 +51,17 @@ describe('makeChannelAdminServiceBus', () => {
       },
     );
 
-    const uuid = 'aUUID';
-    uuidFn.mockReturnValueOnce({ value: uuid });
-
     authorizationManagementClient.roleAssignments.create.mockResolvedValueOnce({
       id: 'anId',
     });
 
-    const actual = await makeChannelAdminServiceBus({
-      clients,
-      config,
-      uuidFn,
-    }).create(trialId)();
+    const actual = await makeChannelAdminServiceBus(
+      {
+        clients,
+        config,
+      },
+      () => ({ value: uuid }),
+    ).create(trialId)();
 
     expect(actual).toStrictEqual(
       E.right({
@@ -110,7 +109,6 @@ describe('makeChannelAdminServiceBus', () => {
       managedServiceIdentityClient,
       authorizationManagementClient,
       serviceBusManagementClient,
-      uuidFn,
     } = makeServiceBusMocks();
     const clients = {
       managedServiceIdentityClient,
@@ -123,11 +121,13 @@ describe('makeChannelAdminServiceBus', () => {
       error,
     );
 
-    const actual = await makeChannelAdminServiceBus({
-      clients,
-      config,
-      uuidFn,
-    }).create(aTrial.id)();
+    const actual = await makeChannelAdminServiceBus(
+      {
+        clients,
+        config,
+      },
+      () => ({ value: uuid }),
+    ).create(aTrial.id)();
 
     expect(actual).toStrictEqual(E.left(error));
   });

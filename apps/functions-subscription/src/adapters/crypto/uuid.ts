@@ -1,11 +1,5 @@
 import crypto from 'crypto';
 
-interface UUID {
-  readonly value: string;
-}
-
-export type UUIDFn = () => UUID;
-
-export const uuidFn: UUIDFn = () => ({
+export const uuidFn = () => ({
   value: crypto.randomUUID(),
 });

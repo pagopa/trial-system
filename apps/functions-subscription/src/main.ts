@@ -35,7 +35,6 @@ import { ManagedServiceIdentityClient } from '@azure/arm-msi';
 import { AuthorizationManagementClient } from '@azure/arm-authorization';
 import { ServiceBusManagementClient } from '@azure/arm-servicebus';
 import { makeChannelAdminServiceBus } from './adapters/azure/servicebus/channel';
-import { uuidFn } from './adapters/crypto/uuid';
 
 const config = pipe(
   parseConfig(process.env),
@@ -110,7 +109,6 @@ const channelAdmin = makeChannelAdminServiceBus({
     managedServiceIdentityClient,
     authorizationManagementClient,
   },
-  uuidFn,
   config,
 });
 

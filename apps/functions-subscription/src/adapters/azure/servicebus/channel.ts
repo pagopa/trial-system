@@ -9,7 +9,7 @@ import {
   KnownPrincipalType,
 } from '@azure/arm-authorization';
 import { Config } from '../../../config';
-import { UUIDFn } from '../../crypto/uuid';
+import { uuidFn as uuidGenerator } from '../../crypto/uuid';
 import { TrialId } from '../../../domain/trial';
 
 interface Env {
@@ -19,7 +19,6 @@ interface Env {
     readonly authorizationManagementClient: AuthorizationManagementClient;
   };
   readonly config: Pick<Config, 'servicebus'>;
-  readonly uuidFn: UUIDFn;
 }
 
 const createUserAssignedIdentity = (
@@ -106,11 +105,10 @@ const createRoleAssignment = (
     E.toError,
   );
 
-export const makeChannelAdminServiceBus = ({
-  clients,
-  config,
-  uuidFn,
-}: Env): ChannelAdmin => ({
+export const makeChannelAdminServiceBus = (
+  { clients, config }: Env,
+  uuidFn = uuidGenerator,
+): ChannelAdmin => ({
   create: (trialId) =>
     pipe(
       createUserAssignedIdentity(

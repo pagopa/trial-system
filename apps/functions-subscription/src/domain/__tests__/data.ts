@@ -75,3 +75,9 @@ export const aTrial = {
   description: 'aTrialDescription',
   state: 'CREATING' as const,
 };
+
+export const aCreatedTrial = {
+  ...aTrial,
+  state: 'CREATED' as const,
+  identityId: 'anIdentityId',
+};

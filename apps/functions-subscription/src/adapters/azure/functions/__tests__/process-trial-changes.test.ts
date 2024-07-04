@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { aTrial } from '../../../../domain/__tests__/data';
+import { aCreatedTrial, aTrial } from '../../../../domain/__tests__/data';
 import { makeFunctionContext } from './mocks';
 import { makeTrialChangesHandler } from '../process-trial-changes';
 import { makeTestEnv } from '../../../../domain/__tests__/mocks';
@@ -11,7 +11,7 @@ describe('makeTrialChangesHandler', () => {
   it('should not process trials when state is CREATED', async () => {
     const env = makeTestEnv();
     const context = makeFunctionContext();
-    const messages = [{ ...aTrial, state: 'CREATED' as const }];
+    const messages = [aCreatedTrial];
 
     const actual = await makeTrialChangesHandler(env)(messages, context);
 
@@ -46,12 +46,8 @@ describe('makeTrialChangesHandler', () => {
       ...aTrial,
       id: '1' as TrialId,
     };
-    const createdTrial = {
-      ...aTrial,
-      state: 'CREATED' as const,
-    };
     const creatingTrials = [creatingTrial0, creatingTrial1];
-    const messages = [...creatingTrials, createdTrial];
+    const messages = [...creatingTrials, aCreatedTrial];
 
     env.channelAdmin.create
       .mockReturnValueOnce(
