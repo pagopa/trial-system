@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest';
 import * as E from 'fp-ts/lib/Either';
 import { makeServiceBusMocks } from './mocks';
 import { makeChannelAdminServiceBus } from '../channel';
-import { mockFn } from 'vitest-mock-extended';
-import { UUIDFn } from '../../../crypto/uuid';
 import { aTrial } from '../../../../domain/__tests__/data';
 
 const config = {
@@ -15,67 +13,104 @@ const config = {
   },
 };
 
-const uuidFn = mockFn<UUIDFn>();
-
 describe('makeChannelAdminServiceBus', () => {
   it('should return channel information', async () => {
     const {
       managedServiceIdentityClient,
       authorizationManagementClient,
       serviceBusManagementClient,
+      uuidFn,
     } = makeServiceBusMocks();
     const clients = {
       managedServiceIdentityClient,
       authorizationManagementClient,
       serviceBusManagementClient,
     };
+    const trialId = aTrial.id;
 
-    clients.managedServiceIdentityClient.userAssignedIdentities.createOrUpdate.mockResolvedValueOnce(
-      {
-        principalId: 'aPrincipalId',
-        id: 'anId',
-        location: config.servicebus.location,
-      },
+    const identityResponse = {
+      principalId: 'aPrincipalId',
+      id: 'anId',
+      location: config.servicebus.location,
+    };
+    managedServiceIdentityClient.userAssignedIdentities.createOrUpdate.mockResolvedValueOnce(
+      identityResponse,
     );
 
-    clients.serviceBusManagementClient.queues.createOrUpdate.mockResolvedValueOnce(
-      {
-        id: 'aQueueId',
-        name: 'aQueueName',
-      },
+    const queueResponse = {
+      id: aTrial.id,
+      name: 'aQueueName',
+    };
+    serviceBusManagementClient.queues.createOrUpdate.mockResolvedValueOnce(
+      queueResponse,
     );
 
-    clients.serviceBusManagementClient.subscriptions.createOrUpdate.mockResolvedValueOnce(
+    serviceBusManagementClient.subscriptions.createOrUpdate.mockResolvedValueOnce(
       {
         id: 'aSubscriptionId',
       },
     );
 
-    uuidFn.mockResolvedValueOnce({ value: 'aUUID' });
+    const uuid = 'aUUID';
+    uuidFn.mockReturnValueOnce({ value: uuid });
 
-    clients.authorizationManagementClient.roleAssignments.create.mockResolvedValueOnce(
-      {
-        id: 'anId',
-      },
-    );
+    authorizationManagementClient.roleAssignments.create.mockResolvedValueOnce({
+      id: 'anId',
+    });
 
     const actual = await makeChannelAdminServiceBus({
       clients,
       config,
-      uuidGenerator: uuidFn,
-    }).create(aTrial.id)();
+      uuidFn,
+    }).create(trialId)();
 
     expect(actual).toStrictEqual(
-      E.right({ queueName: 'aQueueName', identityId: 'anId' }),
+      E.right({
+        queueName: queueResponse.name,
+        identityId: identityResponse.id,
+      }),
     );
 
-    // TODO: Improve expectations
+    expect(
+      managedServiceIdentityClient.userAssignedIdentities.createOrUpdate,
+    ).toHaveBeenCalledWith(config.servicebus.resourceGroup, trialId, {
+      location: config.servicebus.location,
+    });
+
+    expect(
+      serviceBusManagementClient.queues.createOrUpdate,
+    ).toHaveBeenCalledWith(
+      config.servicebus.resourceGroup,
+      config.servicebus.namespace,
+      trialId,
+      {},
+    );
+
+    expect(
+      serviceBusManagementClient.subscriptions.createOrUpdate,
+    ).toHaveBeenCalledWith(
+      config.servicebus.resourceGroup,
+      config.servicebus.namespace,
+      config.servicebus.names.event,
+      trialId,
+      { forwardTo: queueResponse.name },
+    );
+
+    expect(
+      authorizationManagementClient.roleAssignments.create,
+    ).toHaveBeenCalledWith(queueResponse.id, uuid, {
+      roleDefinitionId:
+        '/providers/Microsoft.Authorization/roleDefinitions/4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0',
+      principalId: identityResponse.principalId,
+      principalType: 'ServicePrincipal',
+    });
   });
   it('should return an error on fail', async () => {
     const {
       managedServiceIdentityClient,
       authorizationManagementClient,
       serviceBusManagementClient,
+      uuidFn,
     } = makeServiceBusMocks();
     const clients = {
       managedServiceIdentityClient,
@@ -84,14 +119,14 @@ describe('makeChannelAdminServiceBus', () => {
     };
 
     const error = new Error('Oh No!');
-    clients.managedServiceIdentityClient.userAssignedIdentities.createOrUpdate.mockRejectedValueOnce(
+    managedServiceIdentityClient.userAssignedIdentities.createOrUpdate.mockRejectedValueOnce(
       error,
     );
 
     const actual = await makeChannelAdminServiceBus({
       clients,
       config,
-      uuidGenerator: uuidFn,
+      uuidFn,
     }).create(aTrial.id)();
 
     expect(actual).toStrictEqual(E.left(error));

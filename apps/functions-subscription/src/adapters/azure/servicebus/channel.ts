@@ -10,6 +10,7 @@ import {
 } from '@azure/arm-authorization';
 import { Config } from '../../../config';
 import { UUIDFn } from '../../crypto/uuid';
+import { TrialId } from '../../../domain/trial';
 
 interface Env {
   readonly clients: {
@@ -18,49 +19,108 @@ interface Env {
     readonly authorizationManagementClient: AuthorizationManagementClient;
   };
   readonly config: Pick<Config, 'servicebus'>;
-  readonly uuidGenerator: UUIDFn;
+  readonly uuidFn: UUIDFn;
 }
+
+const createUserAssignedIdentity = (
+  trialId: TrialId,
+  client: ManagedServiceIdentityClient,
+  config: Env['config'],
+) =>
+  pipe(
+    TE.tryCatch(
+      () =>
+        client.userAssignedIdentities.createOrUpdate(
+          config.servicebus.resourceGroup,
+          trialId,
+          {
+            location: config.servicebus.location,
+          },
+        ),
+      E.toError,
+    ),
+    TE.flatMap(({ id, principalId }) =>
+      id && principalId
+        ? TE.right({ id, principalId })
+        : TE.left(new Error('Something went wrong')),
+    ),
+  );
+
+const createQueue = (
+  trialId: TrialId,
+  client: ServiceBusManagementClient,
+  config: Env['config'],
+) =>
+  pipe(
+    TE.tryCatch(
+      () =>
+        client.queues.createOrUpdate(
+          config.servicebus.resourceGroup,
+          config.servicebus.namespace,
+          trialId,
+          {},
+        ),
+      E.toError,
+    ),
+    TE.flatMap(({ id, name }) =>
+      id && name
+        ? TE.right({ id: id, name: name })
+        : TE.left(new Error('Something went wrong')),
+    ),
+  );
+
+const createTopicSubscription = (
+  trialId: TrialId,
+  queueName: string,
+  client: ServiceBusManagementClient,
+  config: Env['config'],
+) =>
+  TE.tryCatch(
+    () =>
+      client.subscriptions.createOrUpdate(
+        config.servicebus.resourceGroup,
+        config.servicebus.namespace,
+        config.servicebus.names.event,
+        trialId,
+        { forwardTo: queueName },
+      ),
+    E.toError,
+  );
+
+const createRoleAssignment = (
+  client: AuthorizationManagementClient,
+  queueId: string,
+  roleName: string,
+  principalId: string,
+) =>
+  TE.tryCatch(
+    () =>
+      client.roleAssignments.create(queueId, roleName, {
+        // Azure Service Bus Data Receiver Role Definition
+        // https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/integration#azure-service-bus-data-receiver
+        roleDefinitionId:
+          '/providers/Microsoft.Authorization/roleDefinitions/4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0',
+        principalId,
+        principalType: KnownPrincipalType.ServicePrincipal,
+      }),
+    E.toError,
+  );
 
 export const makeChannelAdminServiceBus = ({
   clients,
   config,
-  uuidGenerator,
+  uuidFn,
 }: Env): ChannelAdmin => ({
   create: (trialId) =>
     pipe(
-      TE.tryCatch(
-        () =>
-          clients.managedServiceIdentityClient.userAssignedIdentities.createOrUpdate(
-            config.servicebus.resourceGroup,
-            trialId,
-            {
-              location: config.servicebus.location,
-            },
-          ),
-        E.toError,
-      ),
-      TE.flatMap(({ id, principalId }) =>
-        id && principalId
-          ? TE.right({ id, principalId })
-          : TE.left(new Error('Something went wrong')),
+      createUserAssignedIdentity(
+        trialId,
+        clients.managedServiceIdentityClient,
+        config,
       ),
       TE.flatMap((identity) =>
         pipe(
-          TE.tryCatch(
-            () =>
-              clients.serviceBusManagementClient.queues.createOrUpdate(
-                config.servicebus.resourceGroup,
-                config.servicebus.namespace,
-                trialId,
-                {},
-              ),
-            E.toError,
-          ),
-          TE.flatMap(({ id, name }) =>
-            id && name
-              ? TE.right({ id: id, name: name })
-              : TE.left(new Error('Something went wrong')),
-          ),
+          createQueue(trialId, clients.serviceBusManagementClient, config),
           TE.map((queue) => ({
             identity,
             queue,
@@ -68,38 +128,24 @@ export const makeChannelAdminServiceBus = ({
         ),
       ),
       TE.chainFirst(({ queue }) =>
-        pipe(
-          TE.tryCatch(
-            () =>
-              clients.serviceBusManagementClient.subscriptions.createOrUpdate(
-                config.servicebus.resourceGroup,
-                config.servicebus.namespace,
-                config.servicebus.names.event,
-                trialId,
-                { forwardTo: queue.name },
-              ),
-            E.toError,
-          ),
+        createTopicSubscription(
+          trialId,
+          queue.name,
+          clients.serviceBusManagementClient,
+          config,
         ),
       ),
-      TE.chainFirst(({ queue, identity }) =>
-        pipe(
-          TE.tryCatch(
-            () =>
-              clients.authorizationManagementClient.roleAssignments.create(
-                queue.id,
-                uuidGenerator().value,
-                {
-                  // Azure Service Bus Data Receiver Role Definition
-                  // https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/integration#azure-service-bus-data-receiver
-                  roleDefinitionId:
-                    '/providers/Microsoft.Authorization/roleDefinitions/4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0',
-                  principalId: identity.principalId,
-                  principalType: KnownPrincipalType.ServicePrincipal,
-                },
-              ),
-            E.toError,
-          ),
+      TE.flatMap(({ queue, identity }) =>
+        pipe(uuidFn(), (uuid) =>
+          TE.right({ queue, identity, uuid: uuid.value }),
+        ),
+      ),
+      TE.chainFirst(({ queue, identity, uuid: roleName }) =>
+        createRoleAssignment(
+          clients.authorizationManagementClient,
+          queue.id,
+          roleName,
+          identity.principalId,
         ),
       ),
       TE.map(({ identity, queue }) => ({

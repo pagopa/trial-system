@@ -110,7 +110,7 @@ const channelAdmin = makeChannelAdminServiceBus({
     managedServiceIdentityClient,
     authorizationManagementClient,
   },
-  uuidGenerator: uuidFn,
+  uuidFn,
   config,
 });
 
