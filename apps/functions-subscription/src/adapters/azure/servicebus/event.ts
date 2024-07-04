@@ -13,6 +13,14 @@ export const makeEventWriterServiceBus = (
     // explicitly use SubscriptionEvent encoder, which is the one
     // used by the consumer to decode events
     const body = SubscriptionEvent.encode({ ...event, state });
-    return TE.tryCatch(() => client.sendMessages({ body }), E.toError);
+    const { trialId } = body;
+    return TE.tryCatch(
+      () =>
+        client.sendMessages({
+          body,
+          applicationProperties: { trialId },
+        }),
+      E.toError,
+    );
   },
 });
