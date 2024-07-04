@@ -8,7 +8,7 @@ import { TrialId } from '../../../../domain/trial';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 describe('makeTrialChangesHandler', () => {
-  it('should not process trials on updates', async () => {
+  it('should not process trials when state is CREATED', async () => {
     const env = makeTestEnv();
     const context = makeFunctionContext();
     const messages = [{ ...aTrial, state: 'CREATED' as const }];
@@ -21,7 +21,7 @@ describe('makeTrialChangesHandler', () => {
     expect(actual).toStrictEqual([]);
   });
 
-  it('should fail if there is an error', async () => {
+  it('should fail when there is an error', async () => {
     const env = makeTestEnv();
     const context = makeFunctionContext();
 
