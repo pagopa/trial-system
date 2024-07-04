@@ -1,9 +1,9 @@
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as E from 'fp-ts/lib/Either';
-import { EventWriter } from '../../../domain/event';
 import { ServiceBusSender } from '@azure/service-bus';
 import { SubscriptionEvent } from '../../../generated/definitions/internal/SubscriptionEvent';
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
+import { EventWriter } from '../../../domain/event';
 
 export const makeEventWriterServiceBus = (
   client: ServiceBusSender,

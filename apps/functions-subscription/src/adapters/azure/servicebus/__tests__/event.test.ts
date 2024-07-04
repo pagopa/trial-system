@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as E from 'fp-ts/lib/Either';
-import { makeServiceBusMock } from './mocks';
-import { ServiceBusSender } from '@azure/service-bus';
+import { makeServiceBusMocks } from './mocks';
 import { aSubscription } from '../../../../domain/__tests__/data';
 import { SubscriptionEvent } from '../../../../generated/definitions/internal/SubscriptionEvent';
 import { makeEventWriterServiceBus } from '../event';
@@ -9,17 +8,16 @@ import { SubscriptionStateEnum } from '../../../../generated/definitions/interna
 
 describe('makeEventWriterServiceBus', () => {
   it('should send the event without error', async () => {
-    const mock = makeServiceBusMock();
-    const client = mock as unknown as ServiceBusSender;
+    const { sender: client } = makeServiceBusMocks();
 
-    mock.sendMessages.mockResolvedValueOnce(void 0);
+    client.sendMessages.mockResolvedValueOnce(void 0);
 
     const actual =
       await makeEventWriterServiceBus(client).send(aSubscription)();
 
     expect(actual).toStrictEqual(E.right(void 0));
-    expect(mock.sendMessages).toBeCalledTimes(1);
-    expect(mock.sendMessages).toBeCalledWith({
+    expect(client.sendMessages).toBeCalledTimes(1);
+    expect(client.sendMessages).toBeCalledWith({
       body: SubscriptionEvent.encode({
         ...aSubscription,
         state: SubscriptionStateEnum.SUBSCRIBED,
@@ -28,16 +26,15 @@ describe('makeEventWriterServiceBus', () => {
   });
 
   it('should return an error in case of failure', async () => {
-    const mock = makeServiceBusMock();
-    const client = mock as unknown as ServiceBusSender;
+    const { sender: client } = makeServiceBusMocks();
     const error = new Error('Oh No!');
 
-    mock.sendMessages.mockRejectedValueOnce(error);
+    client.sendMessages.mockRejectedValueOnce(error);
 
     const actual =
       await makeEventWriterServiceBus(client).send(aSubscription)();
 
     expect(actual).toStrictEqual(E.left(error));
-    expect(mock.sendMessages).toBeCalledTimes(1);
+    expect(client.sendMessages).toBeCalledTimes(1);
   });
 });
