@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 1.1.1
+
+### Patch Changes
+
+- 0d17625: [IOPLT-601] - Activate only subscriptions that are in the subscribed state
+
 ## 1.1.0
 
 ### Minor Changes
