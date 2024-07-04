@@ -22,6 +22,9 @@ describe('makeEventWriterServiceBus', () => {
         ...aSubscription,
         state: SubscriptionStateEnum.SUBSCRIBED,
       }),
+      applicationProperties: {
+        trialId: aSubscription.trialId,
+      },
     });
   });
 
