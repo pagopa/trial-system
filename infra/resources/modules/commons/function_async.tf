@@ -43,8 +43,9 @@ locals {
     EVENTS_PRODUCER              = "on"
     EVENTS_SERVICEBUS_TOPIC_NAME = "${local.domain}-topic-events"
 
-    TRIAL_CONSUMER                 = "on"
-    TRIALS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.trials.name
+    TRIAL_CONSUMER                          = "on"
+    TRIALS_COSMOSDB_CONTAINER_NAME          = azurerm_cosmosdb_sql_container.trials.name
+    TrialsCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
   }
 }
 
