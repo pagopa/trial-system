@@ -19,7 +19,7 @@ locals {
     COSMOSDB_ENDPOINT                 = module.cosmosdb_account.endpoint
     COSMOSDB_DATABASE_NAME            = module.cosmosdb_sql_database_trial.name
     EVENTHUB_NAMESPACE                = module.event_hub.name
-    SERVICEBUS_NAMESPACE              = local.servicebus_namespace
+    SERVICEBUS_NAMESPACE              = azurerm_servicebus_namespace.main.name
     "SERVICE_BUS_RESOURCE_GROUP_NAME" = azurerm_servicebus_namespace.main.resource_group_name
     "SERVICE_BUS_LOCATION"            = azurerm_servicebus_namespace.main.location
 
@@ -152,6 +152,91 @@ resource "azurerm_cosmosdb_sql_role_assignment" "subs_async_fn_to_cosmos_db" {
   account_name        = module.cosmosdb_account.name
   role_definition_id  = "${module.cosmosdb_account.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
   principal_id        = module.subscription_async_fn.system_identity_principal
+}
+
+# Enables the subscription_async_fn to create user assigned identities in a resource group
+resource "azurerm_role_definition" "subs_asyn_create_user_assigned_identity" {
+  name  = "Create User Assigned Identity"
+  scope = azurerm_resource_group.data_rg.id
+
+  permissions {
+    actions = ["Microsoft.ManagedIdentity/userAssignedIdentities/write"]
+  }
+}
+
+resource "azurerm_role_assignment" "subs_asyn_create_user_assigned_identity" {
+  scope              = azurerm_role_definition.subs_asyn_create_user_assigned_identity.scope
+  role_definition_id = azurerm_role_definition.subs_asyn_create_user_assigned_identity.role_definition_resource_id
+  principal_id       = module.subscription_async_fn.system_identity_principal
+}
+
+# Enables the subscription_async_fn to create queues in the service bus' namespace
+resource "azurerm_role_definition" "subs_asyn_create_queue" {
+  name  = "Service Bus Create Queue"
+  scope = azurerm_servicebus_namespace.main.id
+
+  permissions {
+    actions = ["Microsoft.ServiceBus/namespaces/queues/write"]
+  }
+}
+
+resource "azurerm_role_assignment" "subs_asyn_create_queue" {
+  scope              = azurerm_role_definition.subs_asyn_create_queue.scope
+  role_definition_id = azurerm_role_definition.subs_asyn_create_queue.role_definition_resource_id
+  principal_id       = module.subscription_async_fn.system_identity_principal
+}
+
+# Enables the subscription_async_fn to create topic subscriptions
+resource "azurerm_role_definition" "subs_asyn_create_subscription" {
+  name  = "Service Bus Create Subscription"
+  scope = azurerm_servicebus_topic.events.id
+
+  permissions {
+    actions = [
+      "Microsoft.ServiceBus/namespaces/topics/subscriptions/write",
+    ]
+  }
+}
+
+resource "azurerm_role_assignment" "subs_asyn_create_subscription" {
+  scope              = azurerm_role_definition.subs_asyn_create_subscription.scope
+  role_definition_id = azurerm_role_definition.subs_asyn_create_subscription.role_definition_resource_id
+  principal_id       = module.subscription_async_fn.system_identity_principal
+}
+
+# Enables the subscription_async_fn to create filters on topic subscriptions
+resource "azurerm_role_definition" "subs_asyn_create_filter_rule" {
+  name  = "Service Bus Create Filter Rule"
+  scope = azurerm_role_definition.subs_asyn_create_subscription.scope
+
+  permissions {
+    actions = [
+      "Microsoft.ServiceBus/namespaces/topics/subscriptions/rules/write"
+    ]
+  }
+}
+
+resource "azurerm_role_assignment" "subs_asyn_create_filter_rule" {
+  scope              = azurerm_role_definition.subs_asyn_create_filter_rule.scope
+  role_definition_id = azurerm_role_definition.subs_asyn_create_filter_rule.role_definition_resource_id
+  principal_id       = module.subscription_async_fn.system_identity_principal
+}
+
+# Enables the subscription_async_fn to create role assignments
+resource "azurerm_role_definition" "subs_asyn_create_role_assignment" {
+  name  = "Service Bus Create Role Assignment"
+  scope = azurerm_role_definition.subs_asyn_create_queue.scope
+
+  permissions {
+    actions = ["Microsoft.Authorization/roleAssignments/write"]
+  }
+}
+
+# Enables the subscription_async_fn to create a filter rule
+resource "azurerm_role_assignment" "subs_asyn_create_role_assignment" {
+  scope              = azurerm_role_definition.subs_asyn_create_role_assignment.scope
+  role_definition_id = azurerm_role_definition.subs_asyn_create_role_assignment.role_definition_resource_id
+  principal_id       = module.subscription_async_fn.system_identity_principal
 }
 
 module "subscription_async_fn_staging_slot" {
