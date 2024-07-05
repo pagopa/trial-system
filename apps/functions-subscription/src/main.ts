@@ -30,6 +30,11 @@ import { makeTrialsCosmosContainer } from './adapters/azure/cosmosdb/trial';
 import { makePostTrialHandler } from './adapters/azure/functions/create-trial';
 import { makeSubscriptionQueueEventHubProducer } from './adapters/azure/eventhubs/subscription';
 import { makeGetTrialHandler } from './adapters/azure/functions/get-trial';
+import { makeTrialChangesHandler } from './adapters/azure/functions/process-trial-changes';
+import { ManagedServiceIdentityClient } from '@azure/arm-msi';
+import { AuthorizationManagementClient } from '@azure/arm-authorization';
+import { ServiceBusManagementClient } from '@azure/arm-servicebus';
+import { makeChannelAdminServiceBus } from './adapters/azure/servicebus/channel';
 
 const config = pipe(
   parseConfig(process.env),
@@ -45,13 +50,13 @@ const cosmosDB = new CosmosClient({
 });
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
-  config.eventhubs.namespace,
+  `${config.eventhubs.namespace}.servicebus.windows.net`,
   config.eventhubs.names.subscriptionRequest,
   new DefaultAzureCredential(),
 );
 
 const serviceBus = new ServiceBusClient(
-  config.servicebus.namespace,
+  `${config.servicebus.namespace}.servicebus.windows.net`,
   new DefaultAzureCredential(),
 );
 
@@ -83,6 +88,30 @@ const trialReaderWriter = makeTrialsCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
 );
 
+const serviceBusManagementClient = new ServiceBusManagementClient(
+  new DefaultAzureCredential(),
+  config.azure.subscriptionId,
+);
+
+const managedServiceIdentityClient = new ManagedServiceIdentityClient(
+  new DefaultAzureCredential(),
+  config.azure.subscriptionId,
+);
+
+const authorizationManagementClient = new AuthorizationManagementClient(
+  new DefaultAzureCredential(),
+  config.azure.subscriptionId,
+);
+
+const channelAdmin = makeChannelAdminServiceBus({
+  clients: {
+    serviceBusManagementClient,
+    managedServiceIdentityClient,
+    authorizationManagementClient,
+  },
+  config,
+});
+
 const capabilities: Capabilities = {
   subscriptionReader: subscriptionReaderWriter,
   subscriptionWriter: subscriptionReaderWriter,
@@ -96,6 +125,7 @@ const capabilities: Capabilities = {
   trialReader: trialReaderWriter,
   trialWriter: trialReaderWriter,
   eventWriter,
+  channelAdmin,
   hashFn,
   clock,
   monotonicIdFn,
@@ -195,4 +225,14 @@ if (config.events.producer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'eventProducer-',
     handler: makeEventsProducerCosmosDBHandler(capabilities),
+  });
+
+if (config.trials.consumer === 'on')
+  app.cosmosDB('trialConsumer', {
+    connection: 'TrialsCosmosConnection',
+    databaseName: config.cosmosdb.databaseName,
+    containerName: config.cosmosdb.containersNames.trials,
+    leaseContainerName: config.cosmosdb.containersNames.leases,
+    leaseContainerPrefix: 'trialConsumer-',
+    handler: makeTrialChangesHandler(capabilities),
   });

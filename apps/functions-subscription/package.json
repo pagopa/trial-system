@@ -2,7 +2,7 @@
   "name": "functions-subscription",
   "private": true,
   "main": "./dist/main.js",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The Azure function that let users to subscribe to a trial and to provide information about the subscriptions.",
   "scripts": {
     "clean": "rimraf ./dist ./src/generated/definitions/internal",
@@ -16,6 +16,9 @@
     "start": "func start --javascript"
   },
   "dependencies": {
+    "@azure/arm-authorization": "^9.0.0",
+    "@azure/arm-msi": "^2.1.0",
+    "@azure/arm-servicebus": "^6.1.0",
     "@azure/cosmos": "^4.0.0",
     "@azure/event-hubs": "^5.11.4",
     "@azure/functions": "^4.4.0",

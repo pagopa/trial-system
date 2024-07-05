@@ -126,19 +126,30 @@ variable "dns_config" {
 variable "appgw_config" {
   type = object({
     api_certificate_name = string
-    alerts_enabled  = boolean
-    scaling         = object({
+    alerts_enabled       = bool
+    scaling = object({
       min_capacity = string
       max_capacity = string
     })
   })
 
   default = {
-   api_certificate_name = "api-trial-pagopa-it"
-    alerts_enabled  = true
-    scaling         = object({
+    api_certificate_name = "api-trial-pagopa-it"
+    alerts_enabled       = true
+    scaling = {
       min_capacity = "1"
       max_capacity = "10"
-    })
+    }
   }
+}
+
+variable "cidr_subnet_apim" {
+  type = list(string)
+}
+
+variable "apim_config" {
+  type = object({
+    sku             = string
+    publisher_email = string
+  })
 }

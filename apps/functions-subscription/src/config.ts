@@ -22,11 +22,16 @@ export interface Config {
   readonly events: {
     readonly producer: 'on' | 'off';
   };
+  readonly trials: {
+    readonly consumer: 'on' | 'off';
+  };
   readonly servicebus: {
     readonly namespace: string;
     readonly names: {
       readonly event: string;
     };
+    readonly resourceGroup: string;
+    readonly location: string;
   };
   readonly eventhubs: {
     readonly namespace: string;
@@ -41,7 +46,11 @@ export interface Config {
       readonly leases: string;
       readonly subscriptionHistory: string;
       readonly activations: string;
+      readonly trials: string;
     };
+  };
+  readonly azure: {
+    readonly subscriptionId: string;
   };
 }
 
@@ -65,6 +74,11 @@ const EnvsCodec = t.strict({
   ACTIVATIONS_COSMOSDB_CONTAINER_NAME: NonEmptyString,
   EVENTS_PRODUCER: OnOrOffCodec,
   EVENTS_SERVICEBUS_TOPIC_NAME: NonEmptyString,
+  TRIAL_CONSUMER: OnOrOffCodec,
+  TRIALS_COSMOSDB_CONTAINER_NAME: NonEmptyString,
+  SUBSCRIPTION_ID: NonEmptyString,
+  SERVICE_BUS_RESOURCE_GROUP_NAME: NonEmptyString,
+  SERVICE_BUS_LOCATION: NonEmptyString,
 });
 
 export const parseConfig = (
@@ -88,11 +102,16 @@ export const parseConfig = (
         events: {
           producer: envs.EVENTS_PRODUCER,
         },
+        trials: {
+          consumer: envs.TRIAL_CONSUMER,
+        },
         servicebus: {
           namespace: envs.SERVICEBUS_NAMESPACE,
           names: {
             event: envs.EVENTS_SERVICEBUS_TOPIC_NAME,
           },
+          resourceGroup: envs.SERVICE_BUS_RESOURCE_GROUP_NAME,
+          location: envs.SERVICE_BUS_LOCATION,
         },
         eventhubs: {
           namespace: envs.EVENTHUB_NAMESPACE,
@@ -108,7 +127,11 @@ export const parseConfig = (
             subscriptionHistory:
               envs.SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME,
             activations: envs.ACTIVATIONS_COSMOSDB_CONTAINER_NAME,
+            trials: envs.TRIALS_COSMOSDB_CONTAINER_NAME,
           },
+        },
+        azure: {
+          subscriptionId: envs.SUBSCRIPTION_ID,
         },
       }),
     ),

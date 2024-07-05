@@ -19,37 +19,56 @@ export const TrialIdCodec = t.brand(
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
-export const TrialCodec = t.intersection([
+const BaseTrialCodec = t.intersection([
+  t.strict({ id: TrialIdCodec, name: NonEmptyString }),
+  t.partial({ description: t.string }),
+]);
+
+const CreatingTrialCodec = t.intersection([
+  BaseTrialCodec,
   t.strict({
-    id: TrialIdCodec,
-    name: NonEmptyString,
-    state: t.keyof({
-      CREATING: null,
-      CREATED: null,
-    }),
-  }),
-  t.partial({
-    description: t.string,
+    state: t.literal('CREATING'),
   }),
 ]);
+
+const CreatedTrialCodec = t.intersection([
+  BaseTrialCodec,
+  t.strict({
+    state: t.literal('CREATED'),
+    identityId: NonEmptyString,
+  }),
+]);
+
+export const TrialCodec = t.union([CreatingTrialCodec, CreatedTrialCodec]);
 export type Trial = t.TypeOf<typeof TrialCodec>;
 
 export interface TrialWriter {
   readonly insert: (
     trial: Trial,
   ) => TE.TaskEither<Error | ItemAlreadyExists, Trial>;
+  readonly upsert: (trial: Trial) => TE.TaskEither<Error, Trial>;
 }
 
 export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
 }
 
-const makeTrial = (name: Trial['name'], description: Trial['description']) =>
+const makeTrialId = () =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
     RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
     RTE.map(({ value }) => value as TrialId),
-    RTE.map((id) => ({ id, name, description, state: 'CREATING' as const })),
+  );
+
+const makeTrial = (name: Trial['name'], description: Trial['description']) =>
+  pipe(
+    makeTrialId(),
+    RTE.map((id) => ({
+      id,
+      name,
+      description,
+      state: 'CREATING' as const,
+    })),
   );
 
 export const insertTrial = (

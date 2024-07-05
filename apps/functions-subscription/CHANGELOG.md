@@ -1,5 +1,21 @@
 # functions-subscription
 
+## 1.2.0
+
+### Minor Changes
+
+- c4a3b1f: [IOPLT-583] Create trials consumer
+
+### Patch Changes
+
+- 49a5763: Topic subscription only filter messages with their `trialId` parameter
+
+## 1.1.1
+
+### Patch Changes
+
+- 0d17625: [IOPLT-601] - Activate only subscriptions that are in the subscribed state
+
 ## 1.1.0
 
 ### Minor Changes

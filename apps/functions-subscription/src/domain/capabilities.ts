@@ -20,6 +20,7 @@ import {
 import { MonotonicIdFn } from './monotonic-id';
 import { ActivationJobReader, ActivationJobWriter } from './activation-job';
 import { TrialReader, TrialWriter } from './trial';
+import { ChannelAdmin } from './channel';
 
 /**
  * Maps the capabilities to a given property name. Pick the capability using the
@@ -40,6 +41,7 @@ export interface Capabilities {
   readonly trialWriter: TrialWriter;
   readonly trialReader: TrialReader;
   readonly eventWriter: EventWriter;
+  readonly channelAdmin: ChannelAdmin;
   readonly hashFn: HashFn;
   readonly clock: Clock;
   readonly monotonicIdFn: MonotonicIdFn;

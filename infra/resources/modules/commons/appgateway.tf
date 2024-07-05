@@ -1,5 +1,5 @@
-resource "azurerm_resource_group" "rg_external" {
-  name     = format("%s-rg-external-01", local.project)
+resource "azurerm_resource_group" "rg_routing" {
+  name     = format("%s-routing-rg-01", local.project)
   location = var.location
 
   tags = var.tags
@@ -7,8 +7,8 @@ resource "azurerm_resource_group" "rg_external" {
 
 resource "azurerm_public_ip" "appgateway_public_ip" {
   name                = format("%s-appgateway-pip-01", local.project)
-  resource_group_name = azurerm_resource_group.rg_external.name
-  location            = azurerm_resource_group.rg_external.location
+  resource_group_name = azurerm_resource_group.rg_routing.name
+  location            = azurerm_resource_group.rg_routing.location
   sku                 = "Standard"
   allocation_method   = "Static"
   zones               = [1, 2, 3]
@@ -18,25 +18,21 @@ resource "azurerm_public_ip" "appgateway_public_ip" {
 
 # Subnet to host the application gateway
 module "appgateway_snet" {
-  source                                    = "git::https://github.com/pagopa/terraform-azurerm-v3.git//subnet?ref=v8.20.0"
-  name                                      = format("%s-appgateway-snet", local.project)
+  source                                    = "github.com/pagopa/terraform-azurerm-v3//subnet?ref=v8.20.0"
+  name                                      = format("%s-agw-snet-01", local.project)
   address_prefixes                          = var.cidr_subnet_appgateway
-  resource_group_name                       = azurerm_resource_group.rg_external.name
-  virtual_network_name                      = module.vnet.name
+  resource_group_name                       = azurerm_resource_group.rg_routing.name
+  virtual_network_name                      = azurerm_virtual_network.vnet.name
   private_endpoint_network_policies_enabled = true
-
-  service_endpoints = [
-    "Microsoft.Web",
-  ]
 }
 
 ## Application gateway ##
 module "app_gw" {
   source = "github.com/pagopa/terraform-azurerm-v3.git//app_gateway?ref=v8.20.0"
 
-  resource_group_name = azurerm_resource_group.rg_external.name
-  location            = azurerm_resource_group.rg_external.location
-  name                = format("%s-appgateway", local.project)
+  resource_group_name = azurerm_resource_group.rg_routing.name
+  location            = azurerm_resource_group.rg_routing.location
+  name                = format("%s-agw-01", local.project)
   zones               = [1, 2, 3]
 
   # SKU
@@ -52,11 +48,11 @@ module "app_gw" {
 
     apim = {
       protocol                    = "Https"
-      host                        = "google.com"
+      host                        = module.apim.gateway_hostname
       port                        = 443
       ip_addresses                = null # with null value use fqdns
-      fqdns                       = ["google.com"]
-      probe                       = "/"
+      fqdns                       = [module.apim.gateway_url]
+      probe                       = "/status-0123456789abcdef"
       probe_name                  = "probe-apim"
       request_timeout             = 180
       pick_host_name_from_backend = false
@@ -101,6 +97,8 @@ module "app_gw" {
     }
   }
 
+  trusted_client_certificates = []
+
   # maps listener to backend
   routes = {
 
@@ -139,8 +137,8 @@ module "app_gw" {
   identity_ids = [azurerm_user_assigned_identity.appgateway.id]
 
   # Scaling
-  app_gateway_min_capacity = var.appgw_config.scale.min_capacity
-  app_gateway_max_capacity = var.appgw_config.scale.max_capacity
+  app_gateway_min_capacity = var.appgw_config.scaling.min_capacity
+  app_gateway_max_capacity = var.appgw_config.scaling.max_capacity
 
   alerts_enabled = var.appgw_config.alerts_enabled
 
@@ -168,7 +166,7 @@ module "app_gw" {
           aggregation              = "Average"
           metric_name              = "ComputeUnits"
           operator                 = "GreaterOrLessThan"
-          alert_sensitivity        = "Low" # todo after api app migration change to High
+          alert_sensitivity        = "High" # todo after api app migration change to High
           evaluation_total_count   = 3
           evaluation_failure_count = 3
           dimension                = []
