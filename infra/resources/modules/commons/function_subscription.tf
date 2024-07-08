@@ -124,7 +124,7 @@ module "subscription_fn" {
 }
 
 resource "azurerm_role_assignment" "evh_subs_publisher" {
-  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  scope                = module.event_hub.hub_ids["${local.project}-sr-evh-01"]
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = module.subscription_fn.system_identity_principal
 }
@@ -172,7 +172,7 @@ module "subscription_fn_staging_slot" {
 }
 
 resource "azurerm_role_assignment" "evh_subs_publisher_staging" {
-  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  scope                = module.event_hub.hub_ids["${local.project}-sr-evh-01"]
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = module.subscription_fn_staging_slot.system_identity_principal
 }
