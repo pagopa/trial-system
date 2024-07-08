@@ -166,7 +166,7 @@ module "app_gw" {
           aggregation              = "Average"
           metric_name              = "ComputeUnits"
           operator                 = "GreaterOrLessThan"
-          alert_sensitivity        = "High" # todo after api app migration change to High
+          alert_sensitivity        = "High"
           evaluation_total_count   = 3
           evaluation_failure_count = 3
           dimension                = []
