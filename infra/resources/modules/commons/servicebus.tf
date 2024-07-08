@@ -11,12 +11,8 @@ resource "azurerm_servicebus_namespace" "main" {
 
   public_network_access_enabled = false
   network_rule_set {
-    default_action                = "Deny"
+    default_action                = "Allow"
     public_network_access_enabled = false
-
-    network_rules {
-      subnet_id = module.pendpoints_snet.id
-    }
   }
 
   tags = var.tags
