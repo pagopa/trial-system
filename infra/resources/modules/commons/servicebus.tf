@@ -9,8 +9,10 @@ resource "azurerm_servicebus_namespace" "main" {
   capacity                     = 1
   premium_messaging_partitions = 1
 
+  public_network_access_enabled = false
   network_rule_set {
-    default_action = "Allow"
+    default_action                = "Deny"
+    public_network_access_enabled = false
   }
 
   tags = var.tags
