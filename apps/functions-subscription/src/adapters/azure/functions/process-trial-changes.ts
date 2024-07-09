@@ -6,9 +6,19 @@ import * as O from 'fp-ts/Option';
 import * as t from 'io-ts';
 import { TrialCodec } from '../../../domain/trial';
 import { Capabilities } from '../../../domain/capabilities';
+import { makeActivationJob } from '../../../domain/activation-job';
+import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 
 export const makeTrialChangesHandler =
-  (env: Pick<Capabilities, 'channelAdmin' | 'trialWriter'>) =>
+  (
+    env: Pick<
+      Capabilities,
+      | 'channelAdmin'
+      | 'trialWriter'
+      | 'activationJobReader'
+      | 'activationJobWriter'
+    >,
+  ) =>
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (documents: unknown, _: InvocationContext) =>
     pipe(
@@ -22,6 +32,24 @@ export const makeTrialChangesHandler =
         TE.traverseArray((trial) =>
           pipe(
             env.channelAdmin.create(trial.id),
+            TE.chainFirst(() =>
+              pipe(
+                env.activationJobReader.get(trial.id),
+                TE.flatMap(
+                  O.fold(
+                    () =>
+                      pipe(
+                        makeActivationJob({
+                          trialId: trial.id,
+                          usersToActivate: 0 as NonNegativeInteger,
+                        }),
+                        env.activationJobWriter.insert,
+                      ),
+                    TE.right,
+                  ),
+                ),
+              ),
+            ),
             TE.flatMap(({ identityId }) =>
               // Update the trial, changing the state and adding reference to the created resources
               env.trialWriter.upsert({

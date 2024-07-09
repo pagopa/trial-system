@@ -1,11 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/lib/TaskEither';
-import { aCreatedTrial, aTrial } from '../../../../domain/__tests__/data';
+import * as O from 'fp-ts/lib/Option';
+import {
+  aCreatedTrial,
+  anActivationJob,
+  aTrial,
+} from '../../../../domain/__tests__/data';
 import { makeFunctionContext } from './mocks';
 import { makeTrialChangesHandler } from '../process-trial-changes';
 import { makeTestEnv } from '../../../../domain/__tests__/mocks';
 import { TrialId } from '../../../../domain/trial';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 
 describe('makeTrialChangesHandler', () => {
   it('should not process trials when state is CREATED', async () => {
@@ -62,6 +68,16 @@ describe('makeTrialChangesHandler', () => {
       .mockReturnValueOnce(TE.right(channel0))
       .mockReturnValueOnce(TE.right(channel1));
 
+    env.activationJobReader.get
+      .mockReturnValueOnce(TE.right(O.none))
+      .mockReturnValueOnce(
+        TE.right(O.some({ ...anActivationJob, trialId: creatingTrial1.id })),
+      );
+
+    env.activationJobWriter.insert.mockReturnValueOnce(
+      TE.right({ ...anActivationJob, trialId: creatingTrial1.id }),
+    );
+
     const createdTrial0 = {
       ...creatingTrial0,
       state: aCreatedTrial.state,
@@ -81,6 +97,16 @@ describe('makeTrialChangesHandler', () => {
     const expected = [createdTrial0, createdTrial1];
 
     expect(actual).toStrictEqual(expected);
+
+    expect(env.activationJobReader.get).toHaveBeenCalledWith(createdTrial0.id);
+    expect(env.activationJobReader.get).toHaveBeenCalledWith(createdTrial1.id);
+
+    expect(env.activationJobWriter.insert).toHaveBeenCalledWith({
+      trialId: createdTrial0.id,
+      type: 'job' as const,
+      usersToActivate: 0,
+      usersActivated: 0 as NonNegativeInteger,
+    });
 
     expect(env.trialWriter.upsert).toHaveBeenCalledTimes(creatingTrials.length);
     expect(env.trialWriter.upsert).toHaveBeenCalledWith(createdTrial0);
