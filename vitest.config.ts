@@ -19,6 +19,8 @@ export default defineConfig({
         '**/coverage/**',
         '.yarn',
         'vitest.workspace.ts',
+        'infra/**',
+        'packages/eslint-config/**'
       ]
     },
   },
