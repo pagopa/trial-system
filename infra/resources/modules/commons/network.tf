@@ -190,13 +190,13 @@ resource "azurerm_private_endpoint" "subscription_async_fn_staging" {
 }
 
 resource "azurerm_private_endpoint" "servicebus" {
-  name                = "${local.project}-pep-01"
+  name                = "${local.project}-sbns-pep-01"
   location            = var.location
   resource_group_name = azurerm_resource_group.net_rg.name
   subnet_id           = module.pendpoints_snet.id
 
   private_service_connection {
-    name                           = "${local.project}-pep-01"
+    name                           = "${local.project}-sbns-pep-01"
     private_connection_resource_id = azurerm_servicebus_namespace.main.id
     is_manual_connection           = false
     subresource_names              = ["namespace"]
