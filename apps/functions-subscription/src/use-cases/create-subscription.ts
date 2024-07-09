@@ -8,12 +8,12 @@ import {
   UserId,
 } from '../domain/subscription';
 import { SubscriptionStoreError } from './errors';
-import { ItemAlreadyExists } from '../domain/errors';
+import { ItemAlreadyExists, ItemNotFound } from '../domain/errors';
 import {
   insertSubscription,
   enqueueSubscription,
 } from '../domain/subscription';
-import { TrialId } from '../domain/trial';
+import { getTrialById, TrialId } from '../domain/trial';
 
 const handleMissingSubscription = (subscription: Subscription) =>
   pipe(
@@ -32,8 +32,13 @@ export const createSubscription = (
   state: Extract<Subscription['state'], 'ACTIVE' | 'SUBSCRIBED'> = 'SUBSCRIBED',
 ) =>
   pipe(
-    makeSubscription({ userId, trialId, state }),
-    RTE.chainFirstW((subscription) =>
+    getTrialById(trialId),
+    RTE.flatMapOption(
+      (some) => some,
+      () => new ItemNotFound('Trial not found'),
+    ),
+    RTE.flatMap(() => makeSubscription({ userId, trialId, state })),
+    RTE.flatMap((subscription) =>
       pipe(
         getSubscriptionById(subscription.id),
         RTE.flatMap(
