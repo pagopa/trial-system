@@ -1,7 +1,7 @@
 module "event_hub" {
   source = "github.com/pagopa/terraform-azurerm-v3//eventhub?ref=v8.26.0"
 
-  name                = "${local.domain}-evh"
+  name                = "${local.project}-main-evhns-01"
   resource_group_name = azurerm_resource_group.data_rg.name
   location            = var.location
   sku                 = "Standard"
@@ -9,7 +9,7 @@ module "event_hub" {
   eventhubs = [
     // EventHub that collects users' subscription requests
     {
-      name              = "${local.domain}-subscription-requests"
+      name              = local.subscription_request_eventhub_name
       partitions        = 1
       message_retention = 7
       consumers         = []

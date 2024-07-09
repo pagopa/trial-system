@@ -189,6 +189,25 @@ resource "azurerm_private_endpoint" "subscription_async_fn_staging" {
   tags = var.tags
 }
 
+resource "azurerm_private_endpoint" "servicebus" {
+  name                = "${local.project}-sbns-pep-01"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.net_rg.name
+  subnet_id           = module.pendpoints_snet.id
+
+  private_service_connection {
+    name                           = "${local.project}-sbns-pep-01"
+    private_connection_resource_id = azurerm_servicebus_namespace.main.id
+    is_manual_connection           = false
+    subresource_names              = ["namespace"]
+  }
+
+  private_dns_zone_group {
+    name                 = "private-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_servicebus.id]
+  }
+}
+
 ##################################################
 ## VNET Peering
 #################################################
