@@ -16,14 +16,14 @@ locals {
     FETCH_KEEPALIVE_FREE_SOCKET_TIMEOUT = "30000"
     FETCH_KEEPALIVE_TIMEOUT             = "60000"
 
-    COSMOSDB_ENDPOINT                 = module.cosmosdb_account.endpoint
-    COSMOSDB_DATABASE_NAME            = module.cosmosdb_sql_database_trial.name
-    EVENTHUB_NAMESPACE                = module.event_hub.name
-    SERVICEBUS_NAMESPACE              = local.servicebus_namespace
-    "SERVICE_BUS_RESOURCE_GROUP_NAME" = azurerm_servicebus_namespace.main.resource_group_name
-    "SERVICE_BUS_LOCATION"            = azurerm_servicebus_namespace.main.location
+    COSMOSDB_ENDPOINT               = module.cosmosdb_account.endpoint
+    COSMOSDB_DATABASE_NAME          = module.cosmosdb_sql_database_trial.name
+    EVENTHUB_NAMESPACE              = module.event_hub.name
+    SERVICEBUS_NAMESPACE            = azurerm_servicebus_namespace.main.name
+    SERVICE_BUS_RESOURCE_GROUP_NAME = azurerm_servicebus_namespace.main.resource_group_name
+    SERVICE_BUS_LOCATION            = azurerm_servicebus_namespace.main.location
 
-    "SUBSCRIPTION_ID" = data.azurerm_subscription.current.subscription_id
+    SUBSCRIPTION_ID = data.azurerm_subscription.current.subscription_id
 
     LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
 
@@ -31,14 +31,14 @@ locals {
     SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.subscription_history.name
 
     SUBSCRIPTION_REQUEST_CONSUMER      = "off"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = local.subscription_request_eventhub_name
 
     ACTIVATION_CONSUMER                 = "off"
     ACTIVATION_MAX_FETCH_SIZE           = "999"
     ACTIVATIONS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.activations.name
 
     EVENTS_PRODUCER              = "off"
-    EVENTS_SERVICEBUS_TOPIC_NAME = "${local.domain}-topic-events"
+    EVENTS_SERVICEBUS_TOPIC_NAME = azurerm_servicebus_topic.events.name
 
     TRIAL_CONSUMER                 = "off"
     TRIALS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.trials.name
@@ -124,7 +124,7 @@ module "subscription_fn" {
 }
 
 resource "azurerm_role_assignment" "evh_subs_publisher" {
-  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = module.subscription_fn.system_identity_principal
 }
@@ -172,7 +172,7 @@ module "subscription_fn_staging_slot" {
 }
 
 resource "azurerm_role_assignment" "evh_subs_publisher_staging" {
-  scope                = module.event_hub.hub_ids["${local.domain}-subscription-requests"]
+  scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = module.subscription_fn_staging_slot.system_identity_principal
 }
