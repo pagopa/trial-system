@@ -282,7 +282,7 @@ module "app_gw" {
 resource "azurerm_user_assigned_identity" "appgateway" {
   resource_group_name = azurerm_resource_group.sec_rg.name
   location            = azurerm_resource_group.sec_rg.location
-  name                = format("%s-appgateway-identity", local.project)
+  name                = format("%s-agw-id-01", local.project)
 
   tags = var.tags
 }
