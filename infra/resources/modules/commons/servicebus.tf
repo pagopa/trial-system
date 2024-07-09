@@ -13,6 +13,7 @@ resource "azurerm_servicebus_namespace" "main" {
   network_rule_set {
     default_action                = "Allow"
     public_network_access_enabled = false
+    trusted_services_allowed      = true
   }
 
   tags = var.tags
