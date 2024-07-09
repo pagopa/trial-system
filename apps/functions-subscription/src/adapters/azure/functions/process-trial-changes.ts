@@ -8,15 +8,13 @@ import { TrialCodec } from '../../../domain/trial';
 import { Capabilities } from '../../../domain/capabilities';
 import { makeActivationJob } from '../../../domain/activation-job';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
+import { ItemAlreadyExists } from '../../../domain/errors';
 
 export const makeTrialChangesHandler =
   (
     env: Pick<
       Capabilities,
-      | 'channelAdmin'
-      | 'trialWriter'
-      | 'activationJobReader'
-      | 'activationJobWriter'
+      'channelAdmin' | 'trialWriter' | 'activationJobWriter'
     >,
   ) =>
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,19 +32,15 @@ export const makeTrialChangesHandler =
             env.channelAdmin.create(trial.id),
             TE.chainFirst(() =>
               pipe(
-                env.activationJobReader.get(trial.id),
-                TE.flatMap(
-                  O.fold(
-                    () =>
-                      pipe(
-                        makeActivationJob({
-                          trialId: trial.id,
-                          usersToActivate: 0 as NonNegativeInteger,
-                        }),
-                        env.activationJobWriter.insert,
-                      ),
-                    TE.right,
-                  ),
+                makeActivationJob({
+                  trialId: trial.id,
+                  usersToActivate: 0 as NonNegativeInteger,
+                }),
+                env.activationJobWriter.insert,
+                TE.orElseW((err) =>
+                  err instanceof ItemAlreadyExists
+                    ? TE.right(void 0)
+                    : TE.left(err),
                 ),
               ),
             ),
