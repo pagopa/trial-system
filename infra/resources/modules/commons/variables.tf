@@ -57,6 +57,11 @@ variable "cidr_subnet_fnsubscription" {
   description = "The subscription function address space"
 }
 
+variable "cidr_subnet_appgateway" {
+  type        = list(string)
+  description = "The app gateway address space"
+}
+
 variable "vnet_common" {
   type = object({
     id                  = string
@@ -108,13 +113,35 @@ variable "dns_config" {
   type = object({
     second_level         = string
     external_third_level = string
+    internal_third_level = string
     dns_default_ttl_sec  = number
   })
 
   default = {
     second_level         = "pagopa.it"
     external_third_level = "trial"
+    internal_third_level = "internal"
     dns_default_ttl_sec  = 3600
+  }
+}
+
+variable "appgw_config" {
+  type = object({
+    api_certificate_name = string
+    alerts_enabled       = bool
+    scaling = object({
+      min_capacity = string
+      max_capacity = string
+    })
+  })
+
+  default = {
+    api_certificate_name = "api-trial-pagopa-it"
+    alerts_enabled       = true
+    scaling = {
+      min_capacity = "1"
+      max_capacity = "10"
+    }
   }
 }
 

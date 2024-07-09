@@ -43,11 +43,21 @@ module "commons" {
   cidr_subnet_fnsubscription      = ["10.30.5.0/24"]
   cidr_subnet_fnsubscriptionasync = ["10.30.6.0/24"]
 
-  cidr_subnet_apim = ["10.30.8.0/24"]
+  cidr_subnet_appgateway = ["10.30.10.0/24"]
+  cidr_subnet_apim       = ["10.30.8.0/24"]
 
   apim_config = {
     sku             = "Developer_1"
     publisher_email = "ts-apim@pagopa.it"
+  }
+
+  appgw_config = {
+    api_certificate_name = "api-trial-pagopa-it"
+    alerts_enabled       = true
+    scaling = {
+      min_capacity = "1"
+      max_capacity = "10"
+    }
   }
 
 }
