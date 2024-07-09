@@ -31,7 +31,7 @@ locals {
     SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.subscription_history.name
 
     SUBSCRIPTION_REQUEST_CONSUMER      = "off"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.project}-sr-evh-01"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = local.subscription_request_eventhub_name
 
     ACTIVATION_CONSUMER                 = "off"
     ACTIVATION_MAX_FETCH_SIZE           = "999"
@@ -124,7 +124,7 @@ module "subscription_fn" {
 }
 
 resource "azurerm_role_assignment" "evh_subs_publisher" {
-  scope                = module.event_hub.hub_ids["${local.project}-sr-evh-01"]
+  scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = module.subscription_fn.system_identity_principal
 }
@@ -172,7 +172,7 @@ module "subscription_fn_staging_slot" {
 }
 
 resource "azurerm_role_assignment" "evh_subs_publisher_staging" {
-  scope                = module.event_hub.hub_ids["${local.project}-sr-evh-01"]
+  scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = module.subscription_fn_staging_slot.system_identity_principal
 }

@@ -32,7 +32,7 @@ locals {
     SubscriptionHistoryCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
 
     SUBSCRIPTION_REQUEST_CONSUMER                                  = "on"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = "${local.project}-sr-evh-01"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = local.subscription_request_eventhub_name
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
 
     ACTIVATION_CONSUMER                                   = "on"
@@ -140,7 +140,7 @@ resource "azurerm_role_assignment" "subs_asyn_write_to_sbt" {
 
 # Enables the subscription_async_fn to read from the event-hub
 resource "azurerm_role_assignment" "subs_asyn_receive_from_evh" {
-  scope                = module.event_hub.hub_ids["${local.project}-sr-evh-01"]
+  scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = module.subscription_async_fn.system_identity_principal
 }
@@ -285,7 +285,7 @@ resource "azurerm_role_assignment" "subs_asyn_staging_write_to_sbt" {
 
 # Enables the subscription_async_fn_staging to read from the event-hub
 resource "azurerm_role_assignment" "subs_asyn_staging_receive_from_evh" {
-  scope                = module.event_hub.hub_ids["${local.project}-sr-evh-01"]
+  scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = module.subscription_async_fn_staging_slot.system_identity_principal
 }

@@ -9,7 +9,7 @@ module "event_hub" {
   eventhubs = [
     // EventHub that collects users' subscription requests
     {
-      name              = "${local.project}-sr-evh-01"
+      name              = local.subscription_request_eventhub_name
       partitions        = 1
       message_retention = 7
       consumers         = []
