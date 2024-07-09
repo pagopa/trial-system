@@ -21,7 +21,7 @@ module "appgateway_snet" {
   source                                    = "github.com/pagopa/terraform-azurerm-v3//subnet?ref=v8.20.0"
   name                                      = format("%s-agw-snet-01", local.project)
   address_prefixes                          = var.cidr_subnet_appgateway
-  resource_group_name                       = azurerm_resource_group.rg_routing.name
+  resource_group_name                       = azurerm_virtual_network.vnet.resource_group_name
   virtual_network_name                      = azurerm_virtual_network.vnet.name
   private_endpoint_network_policies_enabled = true
 }
@@ -51,7 +51,7 @@ module "app_gw" {
       host                        = module.apim.gateway_hostname
       port                        = 443
       ip_addresses                = null # with null value use fqdns
-      fqdns                       = [module.apim.gateway_url]
+      fqdns                       = [module.apim.gateway_hostname]
       probe                       = "/status-0123456789abcdef"
       probe_name                  = "probe-apim"
       request_timeout             = 180
