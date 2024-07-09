@@ -41,3 +41,24 @@ resource "azurerm_dns_a_record" "api_trial_pagopa_it" {
 
   tags = var.tags
 }
+
+resource "azurerm_private_dns_zone" "internal_trial_pagopa_it" {
+  count               = (var.dns_config == null) ? 0 : 1
+  name                = join(".", [var.dns_config.internal_third_level, var.dns_config.external_third_level, var.dns_config.second_level])
+  resource_group_name = azurerm_resource_group.net_rg.name
+
+  tags = var.tags
+}
+
+resource "azurerm_private_dns_a_record" "apim_internal_trial_pagopa_it" {
+  name                = "apim"
+  zone_name           = azurerm_private_dns_zone.internal_trial_pagopa_it[0].name
+  resource_group_name = azurerm_resource_group.net_rg.name
+  ttl                 = var.dns_config.dns_default_ttl_sec
+  records             = [module.apim.private_ip_addresses[0]]
+
+  depends_on = [
+    azurerm_private_dns_zone.internal_trial_pagopa_it
+  ]
+  tags = var.tags
+}
