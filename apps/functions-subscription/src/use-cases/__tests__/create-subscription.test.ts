@@ -2,19 +2,29 @@ import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import { aSubscription } from '../../domain/__tests__/data';
+import { aSubscription, aTrial } from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { SubscriptionStoreError } from '../errors';
-import { ItemAlreadyExists } from '../../domain/errors';
+import { ItemAlreadyExists, ItemNotFound } from '../../domain/errors';
 import { createSubscription } from '../create-subscription';
 
 const { userId, trialId } = aSubscription;
 
 describe('createSubscription', () => {
+  it('should return ItemNotFound if the trial does not exist', async () => {
+    const env = makeTestEnv();
+
+    env.trialReader.get.mockReturnValueOnce(TE.right(O.none));
+
+    const actual = await createSubscription(userId, trialId)(env)();
+
+    expect(actual).toStrictEqual(E.left(new ItemNotFound('Trial not found')));
+  });
   it('should return ItemAlreadyExists if the subscription already exists', async () => {
     const env = makeTestEnv();
     const error = new ItemAlreadyExists('Subscription already exists');
 
+    env.trialReader.get.mockReturnValueOnce(TE.right(O.some(aTrial)));
     env.subscriptionReader.get.mockReturnValueOnce(
       TE.right(O.some(aSubscription)),
     );
@@ -28,6 +38,7 @@ describe('createSubscription', () => {
   it('should return the subscription created', async () => {
     const testEnv = makeTestEnv();
 
+    testEnv.trialReader.get.mockReturnValueOnce(TE.right(O.some(aTrial)));
     testEnv.clock.now.mockReturnValue(aSubscription.createdAt);
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
     testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
@@ -59,6 +70,7 @@ describe('createSubscription', () => {
       state: 'ACTIVE' as const,
     };
 
+    testEnv.trialReader.get.mockReturnValueOnce(TE.right(O.some(aTrial)));
     testEnv.clock.now.mockReturnValue(anActiveSubscription.createdAt);
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
     testEnv.hashFn.mockReturnValueOnce({ value: anActiveSubscription.id });
@@ -86,6 +98,7 @@ describe('createSubscription', () => {
     const testEnv = makeTestEnv();
     const error = new Error('Oh No!');
 
+    testEnv.trialReader.get.mockReturnValueOnce(TE.right(O.some(aTrial)));
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.right(O.none));
     testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
     testEnv.subscriptionWriter.insert.mockReturnValueOnce(TE.left(error));
@@ -107,6 +120,7 @@ describe('createSubscription', () => {
     const testEnv = makeTestEnv();
     const error = new Error('Oh No!');
 
+    testEnv.trialReader.get.mockReturnValueOnce(TE.right(O.some(aTrial)));
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.left(error));
     testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
 
