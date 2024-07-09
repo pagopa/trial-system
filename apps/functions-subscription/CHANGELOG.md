@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 1.3.1
+
+### Patch Changes
+
+- b89e510: [IOPLT-610] - Check trial exists when creating a subscription
+
 ## 1.3.0
 
 ### Minor Changes
