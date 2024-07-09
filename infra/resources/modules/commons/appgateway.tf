@@ -278,7 +278,7 @@ module "app_gw" {
   tags = var.tags
 }
 
-## user assined identity: (application gateway) ##
+## user assigned identity: (application gateway) ##
 resource "azurerm_user_assigned_identity" "appgateway" {
   resource_group_name = azurerm_resource_group.sec_rg.name
   location            = azurerm_resource_group.sec_rg.location
