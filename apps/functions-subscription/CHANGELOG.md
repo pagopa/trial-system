@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 1.3.0
+
+### Minor Changes
+
+- d48c7f1: [IOPLT-609] Create the activation job when creating a trial
+
 ## 1.2.0
 
 ### Minor Changes
