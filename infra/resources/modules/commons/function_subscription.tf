@@ -31,14 +31,14 @@ locals {
     SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.subscription_history.name
 
     SUBSCRIPTION_REQUEST_CONSUMER      = "off"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.domain}-subscription-requests"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = "${local.project}-sr-evh-01"
 
     ACTIVATION_CONSUMER                 = "off"
     ACTIVATION_MAX_FETCH_SIZE           = "999"
     ACTIVATIONS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.activations.name
 
     EVENTS_PRODUCER              = "off"
-    EVENTS_SERVICEBUS_TOPIC_NAME = "${local.domain}-topic-events"
+    EVENTS_SERVICEBUS_TOPIC_NAME = azurerm_servicebus_topic.events.name
 
     TRIAL_CONSUMER                 = "off"
     TRIALS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.trials.name

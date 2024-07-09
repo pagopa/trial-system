@@ -32,7 +32,7 @@ locals {
     SubscriptionHistoryCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
 
     SUBSCRIPTION_REQUEST_CONSUMER                                  = "on"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = "${local.domain}-subscription-requests"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = "${local.project}-sr-evh-01"
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
 
     ACTIVATION_CONSUMER                                   = "on"
@@ -41,7 +41,7 @@ locals {
     ActivationConsumerCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
 
     EVENTS_PRODUCER              = "on"
-    EVENTS_SERVICEBUS_TOPIC_NAME = "${local.domain}-topic-events"
+    EVENTS_SERVICEBUS_TOPIC_NAME = azurerm_servicebus_topic.events.name
 
     TRIAL_CONSUMER                          = "on"
     TRIALS_COSMOSDB_CONTAINER_NAME          = azurerm_cosmosdb_sql_container.trials.name
