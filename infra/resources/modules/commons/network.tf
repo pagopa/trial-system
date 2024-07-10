@@ -102,25 +102,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "scm_apim_link" {
 # Private endpoints
 #
 
-resource "azurerm_private_endpoint" "sql" {
-  name                = "${local.project}-cosno-pep-02"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.net_rg.name
-  subnet_id           = module.pendpoints_snet.id
-
-  private_service_connection {
-    name                           = "${local.project}-cosno-psc-pep-02"
-    private_connection_resource_id = module.cosmosdb_account.id
-    is_manual_connection           = false
-    subresource_names              = ["Sql"]
-  }
-
-  private_dns_zone_group {
-    name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink_documents.id]
-  }
-}
-
 resource "azurerm_private_dns_zone" "privatelink_servicebus" {
   name                = "privatelink.servicebus.windows.net"
   resource_group_name = azurerm_resource_group.net_rg.name
