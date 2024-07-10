@@ -40,7 +40,7 @@ module "apim_product_ts_management" {
 }
 
 module "apim_trial_manager_api_v1" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3//api_management_api?ref=v7.62.0"
+  source = "github.com/pagopa/terraform-azurerm-v3//api_management_api?ref=v8.26.0"
 
   name                  = "trial-manager-api"
   api_management_name   = module.apim.name
@@ -51,7 +51,7 @@ module "apim_trial_manager_api_v1" {
 
   description  = "TRIAL MANAGER API"
   display_name = "TRIAL Manager API"
-  path         = "api/v1"
+  path         = "manage/api/v1"
   protocols    = ["https"]
 
   content_format = "openapi"
