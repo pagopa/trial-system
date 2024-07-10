@@ -102,15 +102,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "scm_apim_link" {
 # Private endpoints
 #
 
-
 resource "azurerm_private_endpoint" "sql" {
-  name                = format("%s-private-endpoint-sql-01", local.project)
+  name                = "${local.project}-cosno-pep-02"
   location            = var.location
   resource_group_name = azurerm_resource_group.net_rg.name
   subnet_id           = module.pendpoints_snet.id
 
   private_service_connection {
-    name                           = format("%s-private-endpoint-sql", local.project)
+    name                           = "${local.project}-cosno-psc-pep-02"
     private_connection_resource_id = module.cosmosdb_account.id
     is_manual_connection           = false
     subresource_names              = ["Sql"]
@@ -149,13 +148,13 @@ resource "azurerm_private_dns_zone_virtual_network_link" "websites_link" {
 }
 
 resource "azurerm_private_endpoint" "subscription_fn" {
-  name                = "${local.project}-subscription-fn-endpoint"
+  name                = "${local.project}-subscription-fn-pep-01"
   location            = var.location
   resource_group_name = azurerm_resource_group.net_rg.name
   subnet_id           = module.pendpoints_snet.id
 
   private_service_connection {
-    name                           = "${local.project}-subscription-fn-endpoint"
+    name                           = "${local.project}-subscription-fn-pep-01"
     private_connection_resource_id = module.subscription_fn.id
     is_manual_connection           = false
     subresource_names              = ["sites"]
@@ -170,13 +169,13 @@ resource "azurerm_private_endpoint" "subscription_fn" {
 }
 
 resource "azurerm_private_endpoint" "subscription_fn_staging" {
-  name                = "${local.project}-subscription-fn-staging-endpoint"
+  name                = "${local.project}-subscription-fn-staging-pep-01"
   location            = var.location
   resource_group_name = azurerm_resource_group.net_rg.name
   subnet_id           = module.pendpoints_snet.id
 
   private_service_connection {
-    name                           = "${local.project}-subscription-fn-staging-endpoint"
+    name                           = "${local.project}-subscription-fn-staging-pep-01"
     private_connection_resource_id = module.subscription_fn.id
     is_manual_connection           = false
     subresource_names              = ["sites-${module.subscription_fn_staging_slot.name}"]
@@ -191,13 +190,13 @@ resource "azurerm_private_endpoint" "subscription_fn_staging" {
 }
 
 resource "azurerm_private_endpoint" "subscription_async_fn_staging" {
-  name                = "${local.project}-subscription-async-fn-staging-endpoint"
+  name                = "${local.project}-subscription-async-fn-staging-pep-01"
   location            = var.location
   resource_group_name = azurerm_resource_group.net_rg.name
   subnet_id           = module.pendpoints_snet.id
 
   private_service_connection {
-    name                           = "${local.project}-subscription-async-fn-staging-endpoint"
+    name                           = "${local.project}-subscription-async-fn-staging-pep-01"
     private_connection_resource_id = module.subscription_async_fn.id
     is_manual_connection           = false
     subresource_names              = ["sites-${module.subscription_async_fn_staging_slot.name}"]
