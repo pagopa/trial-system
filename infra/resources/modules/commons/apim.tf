@@ -23,7 +23,7 @@ module "apim" {
 }
 
 module "apim_product_ts_management" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
+  source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
 
   product_id   = "ts-manager-api"
   display_name = "TRIAL SYSTEM MANAGEMENT API"
