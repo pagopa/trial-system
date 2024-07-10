@@ -36,5 +36,5 @@ module "apim_product_ts_management" {
   subscription_required = true
   approval_required     = false
 
-  policy_xml = file("./api_product/ts_management/_base_policy.xml")
+  policy_xml = file("../modules/commons/api_product/ts_management/_base_policy.xml")
 }
