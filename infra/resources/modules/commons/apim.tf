@@ -38,3 +38,44 @@ module "apim_product_ts_management" {
 
   policy_xml = file("../modules/commons/api_product/ts_management/_base_policy.xml")
 }
+
+####################################################################################
+# TRIAL MANAGERS GROUPS
+####################################################################################
+resource "azurerm_api_management_group" "api_trial_manager" {
+  name                = "apitrialmanager"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ApiTrialManager"
+  description         = "A group that enables Trial Managers to mange its own trials"
+}
+
+####################################################################################
+# IO Wallet User
+####################################################################################
+resource "azurerm_api_management_user" "wallet_user" {
+  user_id             = "iowalletuser"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  first_name          = "Wallet"
+  last_name           = "PagoPA"
+  email               = "io-wallet-pagopa@pagopa.it"
+  state               = "active"
+}
+
+resource "azurerm_api_management_group_user" "wallet_manager_group" {
+  user_id             = azurerm_api_management_user.wallet_user.user_id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  group_name          = azurerm_api_management_group.api_trial_manager.name
+}
+
+resource "azurerm_api_management_subscription" "wallet" {
+  user_id             = azurerm_api_management_user.wallet_user.id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  product_id          = module.apim_product_ts_management.id
+  display_name        = "WALLET TRIAL MANAGER API"
+  state               = "active"
+  allow_tracing       = false
+}
