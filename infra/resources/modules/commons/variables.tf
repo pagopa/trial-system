@@ -129,3 +129,12 @@ variable "function_management_config" {
     autoscale_default = 1
   }
 }
+
+variable "trial_database" {
+  type = map(
+    object({
+      max_throughput = number
+      ttl            = number
+    })
+  )
+}
