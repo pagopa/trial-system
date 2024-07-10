@@ -22,15 +22,19 @@ module "apim" {
   tags = var.tags
 }
 
-#resource "azurerm_api_management_custom_domain" "api_custom_domain" {
-#  api_management_id = module.apim.id
-#
-#  gateway {
-#    host_name = local.api_domain
-#    key_vault_id = replace(
-#      data.azurerm_key_vault_certificate.app_gw_platform.secret_id,
-#      "/${data.azurerm_key_vault_certificate.app_gw_platform.version}",
-#      ""
-#    )
-#  }
-#}
+module "apim_product_ts_management" {
+  source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
+
+  product_id   = "ts-manager-api"
+  display_name = "TRIAL SYSTEM MANAGEMENT API"
+  description  = "Product for Trial system managers"
+
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+
+  published             = true
+  subscription_required = true
+  approval_required     = false
+
+  policy_xml = file("../modules/commons/api_product/ts_management/_base_policy.xml")
+}
