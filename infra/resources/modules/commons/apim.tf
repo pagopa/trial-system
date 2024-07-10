@@ -39,6 +39,50 @@ module "apim_product_ts_management" {
   policy_xml = file("../modules/commons/api_product/ts_management/_base_policy.xml")
 }
 
+module "apim_trial_manager_api_v1" {
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3//api_management_api?ref=v7.62.0"
+
+  name                  = "trial-manager-api"
+  api_management_name   = module.apim.name
+  resource_group_name   = module.apim.resource_group_name
+  product_ids           = [module.apim_product_ts_management.product_id]
+  subscription_required = true
+  service_url           = null
+
+  description  = "TRIAL MANAGER API"
+  display_name = "TRIAL Manager API"
+  path         = "api/v1"
+  protocols    = ["https"]
+
+  content_format = "openapi"
+
+  content_value = file("../modules/commons/api/ts_management/v1/_openapi.yaml")
+
+  xml_content = file("../modules/commons/api/ts_management/v1/policy.xml")
+}
+
+resource "azurerm_api_management_named_value" "ts_subscription_fn_url" {
+  name                = "ts-subscription-fn-url"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ts-subscription-fn-url"
+  value               = "https://${module.subscription_fn.default_hostname}"
+}
+
+data "azurerm_key_vault_secret" "ts_subscription_fn_key_secret" {
+  name         = "ts-subscription-fn-key-KEY-APIM"
+  key_vault_id = module.key_vault.id
+}
+
+resource "azurerm_api_management_named_value" "ts_subscription_fn_key" {
+  name                = "ts-subscription-fn-key"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ts-subscription-fn-key"
+  value               = data.azurerm_key_vault_secret.ts_subscription_fn_key_secret.value
+  secret              = "true"
+}
+
 ####################################################################################
 # TRIAL MANAGERS GROUPS
 ####################################################################################
