@@ -4,6 +4,7 @@ locals {
 
   location_short = "weu"
   location       = "westeurope"
+  location_it    = "italynorth"
   domain         = "trial-system"
   project        = "${local.prefix}-${local.env_short}"
 
