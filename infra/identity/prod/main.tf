@@ -33,6 +33,11 @@ resource "azurerm_resource_group" "identity" {
   location = local.location
 }
 
+resource "azurerm_resource_group" "dashboards" {
+  name     = "dashboards"
+  location = local.location_it
+}
+
 module "federated_identities" {
   source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
 
@@ -116,4 +121,51 @@ resource "azurerm_role_assignment" "app_cd" {
   scope                = data.azurerm_subscription.prodio.id
   principal_id         = module.app_federated_identities.federated_cd_identity.id
   role_definition_name = "Reader"
+}
+
+module "opex_federated_identities" {
+  source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
+
+  prefix       = local.prefix
+  env_short    = local.env_short
+  env          = "opex-prod"
+  domain       = "${local.domain}-opex"
+  repositories = [local.repo_name]
+
+  continuos_integration = {
+    enable = true
+    roles = {
+      subscription = ["Reader"]
+      resource_groups = {
+        dashboards = [
+          "Reader"
+        ],
+        terraform-state-rg = [
+          "Storage Blob Data Reader",
+          "Reader and Data Access"
+        ]
+      }
+    }
+  }
+
+  continuos_delivery = {
+    enable = true
+
+    roles = {
+      subscription = ["Reader"]
+      resource_groups = {
+        dashboards = [
+          "Contributor"
+        ],
+        terraform-state-rg = [
+          "Storage Blob Data Contributor",
+          "Reader and Data Access"
+        ]
+      }
+    }
+  }
+
+  depends_on = [azurerm_resource_group.dashboards]
+
+  tags = local.tags
 }

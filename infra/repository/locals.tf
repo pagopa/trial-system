@@ -29,4 +29,22 @@ locals {
       "ARM_CLIENT_ID" = data.azurerm_user_assigned_identity.identity_app_prod_cd.client_id
     }
   }
+
+  # -------------------------
+  # Opex CI
+  # -------------------------
+
+  opex_ci = {
+    secrets = {
+      "ARM_CLIENT_ID" = data.azurerm_user_assigned_identity.opex_identity_prod_ci.client_id,
+    },
+  }
+  # -------------------------
+  # Opex CD
+  # -------------------------
+  opex_cd = {
+    secrets = {
+      "ARM_CLIENT_ID" = data.azurerm_user_assigned_identity.opex_identity_prod_cd.client_id,
+    },
+  }
 }
