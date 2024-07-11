@@ -7,7 +7,7 @@ resource "azurerm_resource_group" "data_rg" {
 module "cosmosdb_account" {
   source = "github.com/pagopa/terraform-azurerm-v3//cosmosdb_account?ref=v8.26.0"
 
-  name                = "${local.project}-trial-account-01"
+  name                = "${local.project}-cosno-01"
   domain              = upper(local.domain)
   location            = azurerm_resource_group.data_rg.location
   resource_group_name = azurerm_resource_group.data_rg.name
@@ -17,8 +17,8 @@ module "cosmosdb_account" {
 
   public_network_access_enabled       = false
   private_endpoint_enabled            = true
-  private_endpoint_sql_name           = "${local.project}-trial-cosmosdb-account"
-  private_service_connection_sql_name = "${local.project}-trial-cosmosdb-account-private-endpoint"
+  private_endpoint_sql_name           = "${local.project}-cosno-pep-01"
+  private_service_connection_sql_name = "${local.project}-cosno-psc-pep-01"
   private_dns_zone_sql_ids            = [azurerm_private_dns_zone.privatelink_documents.id]
   subnet_id                           = module.pendpoints_snet.id
   is_virtual_network_filter_enabled   = false
@@ -53,7 +53,6 @@ module "cosmosdb_sql_database_trial" {
   resource_group_name = azurerm_resource_group.data_rg.name
   account_name        = module.cosmosdb_account.name
 }
-
 
 // ----------------------------------------------------
 // Alerts
