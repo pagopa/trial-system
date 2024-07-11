@@ -19,7 +19,8 @@
   "packageManager": "yarn@4.1.1",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "load_tests/*"
   ],
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
