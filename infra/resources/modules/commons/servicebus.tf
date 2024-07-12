@@ -27,3 +27,65 @@ resource "azurerm_servicebus_topic" "events" {
 
   support_ordering = true
 }
+
+resource "azurerm_monitor_autoscale_setting" "service_bus" {
+  name                = "${local.project}-events-sbns-as-01"
+  resource_group_name = azurerm_resource_group.async_rg.name
+  location            = var.location
+  target_resource_id  = azurerm_servicebus_namespace.main.id
+
+  profile {
+    name = "default"
+
+    capacity {
+      default = 1
+      minimum = 1
+      maximum = 2
+    }
+
+    rule {
+      metric_trigger {
+        metric_name              = "NamespaceCpuUsage"
+        metric_resource_id       = azurerm_servicebus_namespace.main.id
+        metric_namespace         = "microsoft.servicebus/namespaces"
+        time_grain               = "PT1M"
+        statistic                = "Average"
+        time_window              = "PT5M"
+        time_aggregation         = "Average"
+        operator                 = "GreaterThan"
+        threshold                = 70
+        divide_by_instance_count = false
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ServiceAllowedNextValue"
+        value     = "1"
+        cooldown  = "PT2M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name              = "NamespaceCpuUsage"
+        metric_resource_id       = azurerm_servicebus_namespace.main.id
+        metric_namespace         = "microsoft.servicebus/namespaces"
+        time_grain               = "PT1M"
+        statistic                = "Average"
+        time_window              = "PT5M"
+        time_aggregation         = "Average"
+        operator                 = "LessThan"
+        threshold                = 20
+        divide_by_instance_count = false
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ServiceAllowedNextValue"
+        value     = "1"
+        cooldown  = "PT3M"
+      }
+    }
+  }
+}
+
