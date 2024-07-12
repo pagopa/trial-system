@@ -1,0 +1,26 @@
+{
+    "name": "trial-system-ops-scripts",
+    "version": "1.0.0",
+    "description": "Ops scripts for Trial System scenarios",
+    "scripts": {
+        "start:massive-activation": "npm run build && dotenv -e .env src/massive_activation.ts",
+        "generate": "rimraf ./src/generated/definitions/trial && shx mkdir -p ./src/generated/definitions/trial && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/trial-system/main/apps/functions-subscription/api/public.yaml --no-strict --out-dir ./src/generated/definitions/trial --request-types --response-decoders --client",
+        "build": "npm run generate && tsc"
+    },
+    "devDependencies": {
+        "@pagopa/openapi-codegen-ts": "^13.1.0",
+        "dotenv": "^8.2.0",
+        "dotenv-cli": "^7.3.0",
+        "process": "^0.11.10",
+        "rimraf": "^6.0.1",
+        "shx": "^0.3.4",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.5.3"
+    },
+    "dependencies": {
+        "@pagopa/ts-commons": "^13.1.1",
+        "csv-parse": "^5.5.6",
+        "fp-ts": "^2.16.1",
+        "io-ts": "^2.2.21"
+    }
+}
