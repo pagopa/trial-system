@@ -7,7 +7,7 @@ resource "azurerm_cosmosdb_sql_container" "subscription" {
   partition_key_version = 2
 
   autoscale_settings {
-    max_throughput = 1000
+    max_throughput = 10000
   }
 }
 
@@ -20,7 +20,7 @@ resource "azurerm_cosmosdb_sql_container" "subscription_history" {
   partition_key_version = 2
 
   autoscale_settings {
-    max_throughput = 1000
+    max_throughput = 10000
   }
 
   indexing_policy {
@@ -51,7 +51,7 @@ resource "azurerm_cosmosdb_sql_container" "activations" {
   partition_key_version = 2
 
   autoscale_settings {
-    max_throughput = 1000
+    max_throughput = 10000
   }
 
   indexing_policy {
@@ -111,7 +111,7 @@ resource "azurerm_cosmosdb_sql_container" "trials" {
   partition_key_version = 2
 
   autoscale_settings {
-    max_throughput = 1000
+    max_throughput = 10000
   }
 
   indexing_policy {

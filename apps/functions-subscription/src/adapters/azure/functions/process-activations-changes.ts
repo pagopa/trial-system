@@ -43,6 +43,7 @@ export const makeActivationsChangesHandler =
               TE.mapBoth(
                 (error) => {
                   // TODO: Remove this log
+                  // eslint-disable-next-line functional/no-expression-statements
                   context.error(
                     `Error on processActivationRequest processing document: ${JSON.stringify(document, null, 2)}`,
                   );
