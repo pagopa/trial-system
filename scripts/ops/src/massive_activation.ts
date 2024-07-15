@@ -25,7 +25,7 @@ const ScriptConfig = t.type({
 });
 type ScriptConfig = t.TypeOf<typeof ScriptConfig>;
 
-const UsersArray = t.readonlyArray(NonEmptyString);
+const UsersArray = t.readonlyArray(t.readonlyArray(NonEmptyString));
 type UsersArray = t.TypeOf<typeof UsersArray>;
 
 const config = getConfigOrThrow(ScriptConfig, process.env);
@@ -41,13 +41,14 @@ const trialClient = createClient<"ApiKeyAuth">({
     })
 });
 
-export const run = pipe(
-  fs.readFileSync(config.USER_FILE_PATH),
+export const runMassiveActivation = pipe(
+  console.log(`Read CSV users file from ${config.USER_FILE_PATH}`),
+  () => fs.readFileSync(config.USER_FILE_PATH),
   userFileBuffer =>
     parse(userFileBuffer, {
       skip_empty_lines: true,
-      columns: true,
-      from_line: 1
+      columns: false,
+      from_line: 2
     }),
   UsersArray.decode,
   E.mapLeft(errs => Error(errorsToReadableMessages(errs).join("|"))),
@@ -56,6 +57,7 @@ export const run = pipe(
       Error("No users to activate from user's file")
     )
   ),
+  E.map(RA.flatten),
   E.bindTo("users"),
   E.bind("trialClient", () => E.of(trialClient)),
   E.map(({ trialClient, users }) =>
@@ -92,16 +94,23 @@ export const run = pipe(
               E.toError
             ),
           TE.chain(TE.fromEither),
-          TE.chain(res => TE.fromTask(T.delay(200)(T.of(res))))
+          TE.chain(res => TE.fromTask(T.delay(200)(T.of(res)))),
+          TE.map(res => {
+            console.log(
+              `Activating user ${userId} on trial ${config.TRIAL_ID} => response ${res.status}`
+            );
+            return res;
+          })
         )
       ),
-      RA.sequence(TE.ApplicativeSeq)
+      RA.sequence(TE.ApplicativeSeq),
+      TE.map(() => "Success!")
     )
   ),
   E.getOrElseW(() => TE.of(void 0)),
   TE.toUnion
 );
 
-run()
+runMassiveActivation()
   .then(console.log)
   .catch(console.error);

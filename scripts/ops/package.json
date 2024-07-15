@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Ops scripts for Trial System scenarios",
     "scripts": {
-        "start:massive-activation": "npm run build && dotenv -e .env src/massive_activation.ts",
+        "start:massive-activation": "npm run build && dotenv -e .env ts-node src/massive_activation.ts",
         "generate": "rimraf ./src/generated/definitions/trial && shx mkdir -p ./src/generated/definitions/trial && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/trial-system/main/apps/functions-subscription/api/public.yaml --no-strict --out-dir ./src/generated/definitions/trial --request-types --response-decoders --client",
         "build": "npm run generate && tsc"
     },
