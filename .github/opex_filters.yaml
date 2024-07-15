@@ -1,0 +1,9 @@
+plan-action:
+  - ".github/workflows/pr_opex_api_session_manager.yaml"
+  - ".github/workflows/call_pr_opex_api.yml"
+apply-action:
+  - ".github/workflows/opex_api_session_manager.yaml"
+  - ".github/workflows/call_opex_api.yml"
+management:
+  - "apps/functions-subscription/api/public.yaml"
+  - "apps/functions-subscription/.opex/management/**"
