@@ -223,7 +223,7 @@ resource "azurerm_virtual_network_peering" "vnet_to_vnet_common" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = false
   allow_gateway_transit        = false
-  use_remote_gateways          = true
+  use_remote_gateways          = false
 }
 
 resource "azurerm_virtual_network_peering" "vnet_common_to_vnet" {
@@ -235,6 +235,6 @@ resource "azurerm_virtual_network_peering" "vnet_common_to_vnet" {
 
   allow_virtual_network_access = true
   allow_forwarded_traffic      = false
-  allow_gateway_transit        = true
+  allow_gateway_transit        = false
   use_remote_gateways          = false
 }
