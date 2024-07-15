@@ -194,7 +194,7 @@ const retry = {
   maxRetryCount: -1,
   delayInterval: {
     milliseconds: 100,
-  }
+  },
 };
 
 if (config.subscriptionRequest.consumer === 'on')

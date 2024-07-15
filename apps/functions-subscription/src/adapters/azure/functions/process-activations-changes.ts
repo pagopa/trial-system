@@ -20,7 +20,7 @@ export const makeActivationsChangesHandler =
   }) =>
   (
     documents: unknown,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     context: InvocationContext,
   ): Promise<unknown> =>
     pipe(
@@ -40,11 +40,16 @@ export const makeActivationsChangesHandler =
           else
             return pipe(
               env.processActivationRequest(document),
-              TE.mapBoth((error) => {
-                // TODO: Remove this log
-                context.error(`Error on processActivationRequest processing document: ${JSON.stringify(document, null, 2)}`);
-                return error;
-              }, () => 'success' as const),
+              TE.mapBoth(
+                (error) => {
+                  // TODO: Remove this log
+                  context.error(
+                    `Error on processActivationRequest processing document: ${JSON.stringify(document, null, 2)}`,
+                  );
+                  return error;
+                },
+                () => 'success' as const,
+              ),
             );
         }),
       ),
