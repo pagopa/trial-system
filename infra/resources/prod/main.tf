@@ -33,9 +33,17 @@ module "commons" {
   }
 
   vnet_common = {
-    id                  = "/subscriptions/ec285037-c673-4f58-b594-d7c480da4e8b/resourceGroups/io-p-rg-common/providers/Microsoft.Network/virtualNetworks/io-p-vnet-common"
-    name                = "io-p-vnet-common"
-    resource_group_name = "io-p-rg-common"
+    weu = {
+      id                  = "/subscriptions/ec285037-c673-4f58-b594-d7c480da4e8b/resourceGroups/io-p-rg-common/providers/Microsoft.Network/virtualNetworks/io-p-vnet-common"
+      name                = "io-p-vnet-common"
+      resource_group_name = "io-p-rg-common"
+    }
+
+    itn = {
+      id                  = "/subscriptions/ec285037-c673-4f58-b594-d7c480da4e8b/resourceGroups/io-p-itn-common-rg-01/providers/Microsoft.Network/virtualNetworks/io-p-itn-common-vnet-01"
+      name                = "io-p-itn-common-vnet-01"
+      resource_group_name = "io-p-itn-common-rg-01"
+    }
   }
 
   vnet_address_space              = ["10.30.0.0/20"]

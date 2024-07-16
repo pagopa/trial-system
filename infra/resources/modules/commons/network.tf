@@ -117,13 +117,13 @@ resource "azurerm_private_dns_zone_virtual_network_link" "evh_link" {
 data "azurerm_private_dns_zone" "privatelink_azure_websites" {
   provider            = azurerm.prodio
   name                = "privatelink.azurewebsites.net"
-  resource_group_name = var.vnet_common.resource_group_name
+  resource_group_name = var.vnet_common.weu.resource_group_name
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "websites_link" {
   provider              = azurerm.prodio
   name                  = azurerm_virtual_network.vnet.name
-  resource_group_name   = var.vnet_common.resource_group_name
+  resource_group_name   = var.vnet_common.weu.resource_group_name
   private_dns_zone_name = data.azurerm_private_dns_zone.privatelink_azure_websites.name
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
@@ -211,14 +211,14 @@ resource "azurerm_private_endpoint" "servicebus" {
 }
 
 ##################################################
-## VNET Peering
+## VNET Peering WEU
 #################################################
 
 resource "azurerm_virtual_network_peering" "vnet_to_vnet_common" {
-  name                      = format("%s-to-%s", azurerm_virtual_network.vnet.name, var.vnet_common.name)
+  name                      = format("%s-to-%s", azurerm_virtual_network.vnet.name, var.vnet_common.weu.name)
   resource_group_name       = azurerm_resource_group.net_rg.name
   virtual_network_name      = azurerm_virtual_network.vnet.name
-  remote_virtual_network_id = var.vnet_common.id
+  remote_virtual_network_id = var.vnet_common.weu.id
 
   allow_virtual_network_access = true
   allow_forwarded_traffic      = false
@@ -228,9 +228,38 @@ resource "azurerm_virtual_network_peering" "vnet_to_vnet_common" {
 
 resource "azurerm_virtual_network_peering" "vnet_common_to_vnet" {
   provider                  = azurerm.prodio
-  name                      = format("%s-to-%s", var.vnet_common.name, azurerm_virtual_network.vnet.name)
-  resource_group_name       = var.vnet_common.resource_group_name
-  virtual_network_name      = var.vnet_common.name
+  name                      = format("%s-to-%s", var.vnet_common.weu.name, azurerm_virtual_network.vnet.name)
+  resource_group_name       = var.vnet_common.weu.resource_group_name
+  virtual_network_name      = var.vnet_common.weu.name
+  remote_virtual_network_id = azurerm_virtual_network.vnet.id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+##################################################
+## VNET Peering ITN
+#################################################
+
+resource "azurerm_virtual_network_peering" "vnet_to_vnet_itn_common" {
+  name                      = format("%s-to-%s", azurerm_virtual_network.vnet.name, var.vnet_common.itn.name)
+  resource_group_name       = azurerm_resource_group.net_rg.name
+  virtual_network_name      = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id = var.vnet_common.itn.id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+resource "azurerm_virtual_network_peering" "vnet_itn_common_to_vnet" {
+  provider                  = azurerm.prodio
+  name                      = format("%s-to-%s", var.vnet_common.itn.name, azurerm_virtual_network.vnet.name)
+  resource_group_name       = var.vnet_common.itn.resource_group_name
+  virtual_network_name      = var.vnet_common.itn.name
   remote_virtual_network_id = azurerm_virtual_network.vnet.id
 
   allow_virtual_network_access = true
