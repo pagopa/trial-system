@@ -64,9 +64,17 @@ variable "cidr_subnet_appgateway" {
 
 variable "vnet_common" {
   type = object({
-    id                  = string
-    name                = string
-    resource_group_name = string
+    weu = object({
+      id                  = string
+      name                = string
+      resource_group_name = string
+    })
+
+    itn = object({
+      id                  = string
+      name                = string
+      resource_group_name = string
+    })
   })
   description = "Th VNET Common variable references for PROD-IO subscription"
 }
