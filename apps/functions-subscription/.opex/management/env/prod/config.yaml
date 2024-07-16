@@ -1,0 +1,10 @@
+oa3_spec: apps/functions-subscription/api/public.yaml
+name: opex_trial_api_public
+location: Italy North
+timespan: 5m
+evaluation_frequency: 10
+evaluation_time_window: 30
+event_occurrences: 4 # After 5*4=20 min
+data_source: /subscriptions/a2124115-ba74-462f-832a-9192cbd03649/resourceGroups/ts-p-itn-routing-rg-01/providers/Microsoft.Network/applicationGateways/ts-p-itn-agw-01
+action_groups:
+  - /subscriptions/a2124115-ba74-462f-832a-9192cbd03649/resourceGroups/ts-p-itn-monitor-rg-01/providers/Microsoft.Insights/actiongroups/tsperror01
