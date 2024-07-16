@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "apps/functions-subscription/api/*.yaml"
-      - ".github/workflows/opex_api_session_manager.yaml"
-      - ".github/workflows/call_opex_api.yml"
-      - "apps/functions-subscription/.opex/**"
+      - IOPLT-618_add_opex_dashboard_pipelines
+    # paths:
+    #   - "apps/functions-subscription/api/*.yaml"
+    #   - ".github/workflows/opex_api_session_manager.yaml"
+    #   - ".github/workflows/call_opex_api.yml"
+    #   - "apps/functions-subscription/.opex/**"
 
   workflow_dispatch:
 
