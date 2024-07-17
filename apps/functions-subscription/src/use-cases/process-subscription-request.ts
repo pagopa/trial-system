@@ -1,6 +1,6 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
-import { Subscription, insertSubscription } from '../domain/subscription';
+import { Subscription } from '../domain/subscription';
 import { ItemAlreadyExists } from '../domain/errors';
 import {
   insertSubscriptionHistory,
@@ -33,15 +33,9 @@ const handleActivatedRequest = (request: ActivationRequest) =>
 
 export const processSubscriptionRequest = (subscription: Subscription) =>
   pipe(
-    insertSubscription(subscription),
+    makeSubscriptionHistory(subscription),
+    RTE.flatMap(insertSubscriptionHistory),
     RTE.orElseW(recoverItemAlreadyExists(subscription)),
-    RTE.flatMap(() =>
-      pipe(
-        makeSubscriptionHistory(subscription),
-        RTE.flatMap(insertSubscriptionHistory),
-        RTE.orElseW(recoverItemAlreadyExists(subscription)),
-      ),
-    ),
     RTE.flatMap(() =>
       subscription.state === 'SUBSCRIBED' || subscription.state === 'ACTIVE'
         ? pipe(

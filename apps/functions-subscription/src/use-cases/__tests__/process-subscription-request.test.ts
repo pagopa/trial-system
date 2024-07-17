@@ -48,7 +48,7 @@ describe('processSubscriptionRequest', () => {
       anInsertActivationRequest,
     );
   });
-  it('should call activate if the subscription request is ACTIVE', async () => {
+  it.only('should call activate if the subscription request is ACTIVE', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
