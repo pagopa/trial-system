@@ -10,7 +10,7 @@
       "routePrefix": ""
     },
     "eventHubs": {
-      "maxEventBatchSize": 100
+      "maxEventBatchSize": 10
     },
   },
   "extensionBundle": {
