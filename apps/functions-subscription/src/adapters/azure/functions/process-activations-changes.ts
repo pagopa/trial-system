@@ -1,36 +1,11 @@
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as RA from 'fp-ts/lib/ReadonlyArray';
-import { flow, pipe } from 'fp-ts/lib/function';
+import { pipe } from 'fp-ts/lib/function';
 import { InvocationContext } from '@azure/functions';
-import {
-  ActivationRequest,
-  ActivationRequestCodec,
-} from '../../../domain/activation-request';
-import {
-  ActivationJob,
-  ActivationJobCodec,
-} from '../../../domain/activation-job';
+import { ActivationRequestCodec } from '../../../domain/activation-request';
+import { ActivationJobCodec } from '../../../domain/activation-job';
 import { SystemEnv } from '../../../system-env';
 import { Config } from '../../../config';
-
-const processDocument =
-  (
-    env: Pick<SystemEnv, 'processActivationJob' | 'processActivationRequest'>,
-    config: Pick<Config, 'activations'>,
-  ) =>
-  (document: ActivationRequest | ActivationJob) => {
-    if (document.type === 'job')
-      return env.processActivationJob(
-        document,
-        config.activations.maxFetchSize,
-      );
-    else
-      return pipe(
-        env.processActivationRequest(document),
-        TE.map(() => 'success' as const),
-      );
-  };
 
 export const makeActivationsChangesHandler =
   ({
@@ -43,8 +18,11 @@ export const makeActivationsChangesHandler =
     >;
     readonly config: Pick<Config, 'activations'>;
   }) =>
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (documents: unknown, context: InvocationContext): Promise<unknown> =>
+  (
+    documents: unknown,
+
+    context: InvocationContext,
+  ): Promise<unknown> =>
     pipe(
       // documents is an array of documents of the activations container
       TE.fromEither(
@@ -53,10 +31,28 @@ export const makeActivationsChangesHandler =
           .decode(documents),
       ),
       TE.flatMap(
-        flow(
-          RA.map(processDocument(env, config)),
-          RA.sequence(TE.ApplicativePar),
-        ),
+        TE.traverseArray((document) => {
+          if (document.type === 'job')
+            return env.processActivationJob(
+              document,
+              config.activations.maxFetchSize,
+            );
+          else
+            return pipe(
+              env.processActivationRequest(document),
+              TE.mapBoth(
+                (error) => {
+                  // TODO: Remove this log
+                  // eslint-disable-next-line functional/no-expression-statements
+                  context.error(
+                    `Error on processActivationRequest processing document: ${JSON.stringify(document, null, 2)}`,
+                  );
+                  return error;
+                },
+                () => 'success' as const,
+              ),
+            );
+        }),
       ),
       TE.getOrElse((error) => {
         // if an error occurs, the retry policy will be applied if it is defined
