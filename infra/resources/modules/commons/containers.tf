@@ -7,7 +7,7 @@ resource "azurerm_cosmosdb_sql_container" "subscription" {
   partition_key_version = 2
 
   autoscale_settings {
-    max_throughput = 25000
+    max_throughput = 10000
   }
 }
 
