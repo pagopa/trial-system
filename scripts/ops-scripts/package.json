@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "shx rm -rf ./dist",
     "build": "npm run generate && tsc",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run generate && tsc --noEmit",
     "lint": "eslint --fix",
     "lint:check": "eslint",
     "generate": "shx rm -rf ./src/generated/definitions/trial && shx mkdir -p ./src/generated/definitions/trial && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/trial-system/main/apps/functions-subscription/api/public.yaml --no-strict --out-dir ./src/generated/definitions/trial --request-types --response-decoders --client",
