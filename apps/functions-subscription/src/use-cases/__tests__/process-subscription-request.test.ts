@@ -15,7 +15,7 @@ import { ItemAlreadyExists } from '../../domain/errors';
 const { userId, trialId } = aSubscription;
 
 describe('processSubscriptionRequest', () => {
-  it('should call insert subscription, subscription-history and activation request if the subscription request is SUBSCRIBED', async () => {
+  it('should call insert subscription-history and activation request if the subscription request is SUBSCRIBED', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -24,9 +24,6 @@ describe('processSubscriptionRequest', () => {
     });
     mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
     mockEnv.hashFn.mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.right(aSubscription),
-    );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionHistory),
     );
@@ -37,8 +34,7 @@ describe('processSubscriptionRequest', () => {
     const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
     expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledWith(aSubscription);
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(0);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledWith(
       aSubscriptionHistory,
@@ -59,9 +55,6 @@ describe('processSubscriptionRequest', () => {
     mockEnv.hashFn
       .mockReturnValueOnce({ value: aSubscription.id })
       .mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.right({ ...aSubscription, state: 'ACTIVE' }),
-    );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.right({ ...aSubscriptionHistory, state: 'ACTIVE' }),
     );
@@ -91,9 +84,6 @@ describe('processSubscriptionRequest', () => {
     });
     mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
     mockEnv.hashFn.mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.right(aSubscription),
-    );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionHistory),
     );
@@ -104,7 +94,7 @@ describe('processSubscriptionRequest', () => {
     })(testEnv)();
 
     expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(0);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(0);
   });
@@ -119,9 +109,6 @@ describe('processSubscriptionRequest', () => {
     mockEnv.hashFn
       .mockReturnValueOnce({ value: aSubscription.id })
       .mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.left(new ItemAlreadyExists('')),
-    );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.right(aSubscriptionHistory),
     );
@@ -132,7 +119,7 @@ describe('processSubscriptionRequest', () => {
     const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
     expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(0);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
@@ -147,9 +134,6 @@ describe('processSubscriptionRequest', () => {
     mockEnv.hashFn
       .mockReturnValueOnce({ value: aSubscription.id })
       .mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.right(aSubscription),
-    );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('')),
     );
@@ -160,7 +144,7 @@ describe('processSubscriptionRequest', () => {
     const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
     expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(0);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
@@ -175,9 +159,6 @@ describe('processSubscriptionRequest', () => {
     mockEnv.hashFn
       .mockReturnValueOnce({ value: aSubscription.id })
       .mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.left(new ItemAlreadyExists('')),
-    );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.left(new ItemAlreadyExists('')),
     );
@@ -188,7 +169,7 @@ describe('processSubscriptionRequest', () => {
     const actual = await processSubscriptionRequest(aSubscription)(testEnv)();
 
     expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(0);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(1);
   });
@@ -204,9 +185,6 @@ describe('processSubscriptionRequest', () => {
     mockEnv.hashFn
       .mockReturnValueOnce({ value: aSubscription.id })
       .mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionWriter.insert.mockReturnValueOnce(
-      TE.right(aSubscription),
-    );
     mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
       TE.left(unexpectedError),
     );
@@ -215,7 +193,7 @@ describe('processSubscriptionRequest', () => {
     const expected = E.left(unexpectedError);
 
     expect(actual).toStrictEqual(expected);
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(1);
+    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(0);
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
     expect(mockEnv.activationRequestWriter.insert).not.toHaveBeenCalled();
   });

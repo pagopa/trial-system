@@ -189,12 +189,21 @@ app.http('getTrial', {
   route: 'trials/{trialId}',
 });
 
+const retry = {
+  strategy: 'fixedDelay' as const,
+  maxRetryCount: -1,
+  delayInterval: {
+    milliseconds: 100,
+  },
+};
+
 if (config.subscriptionRequest.consumer === 'on')
   app.eventHub('subscriptionRequestConsumer', {
     connection: 'SubscriptionRequestEventHubConnection',
     eventHubName: config.eventhubs.names.subscriptionRequest,
     cardinality: 'many',
     handler: makeSubscriptionRequestConsumerHandler(env),
+    retry,
   });
 
 if (config.subscriptionHistory.consumer === 'on')
@@ -205,6 +214,7 @@ if (config.subscriptionHistory.consumer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'subscriptionHistoryConsumer-',
     handler: makeSubscriptionHistoryChangesHandler(capabilities),
+    retry,
   });
 
 if (config.activations.consumer === 'on')
@@ -215,6 +225,7 @@ if (config.activations.consumer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'activationConsumer-',
     handler: makeActivationsChangesHandler({ env, config }),
+    retry,
   });
 
 if (config.events.producer === 'on')
@@ -225,6 +236,7 @@ if (config.events.producer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'eventProducer-',
     handler: makeEventsProducerCosmosDBHandler(capabilities),
+    retry,
   });
 
 if (config.trials.consumer === 'on')
@@ -235,4 +247,5 @@ if (config.trials.consumer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'trialConsumer-',
     handler: makeTrialChangesHandler(capabilities),
+    retry,
   });
