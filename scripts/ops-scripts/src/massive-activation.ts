@@ -44,7 +44,7 @@ export const runMassiveActivation = pipe(
     parse(userFileBuffer, {
       skip_empty_lines: true,
       columns: false,
-      from_line: 2,
+      from_line: 1,
     }),
   UserListCodec.decode,
   E.mapLeft((errs) => Error(errorsToReadableMessages(errs).join('|'))),
