@@ -3353,6 +3353,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^20.14.11":
+  version: 20.14.11
+  resolution: "@types/node@npm:20.14.11"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/5306becc0ff41d81b1e31524bd376e958d0741d1ce892dffd586b9ae0cb6553c62b0d62abd16da8bea6b9a2c17572d360450535d7c073794b0cef9cb4e39691e
+  languageName: node
+  linkType: hard
+
 "@types/normalize-package-data@npm:^2.4.0":
   version: 2.4.4
   resolution: "@types/normalize-package-data@npm:2.4.4"
@@ -5214,6 +5223,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-parse@npm:^5.5.6":
+  version: 5.5.6
+  resolution: "csv-parse@npm:5.5.6"
+  checksum: 10c0/b4f6e9b885e4488829356455157bd009f3fed4119c5fbaadab1a879e85f0a9a1b62cd01e6de68ff77a50f820a6261722bce1b799da1ace2e2126e0b7c8d86760
+  languageName: node
+  linkType: hard
+
 "csv-stringify@npm:^5.6.5":
   version: 5.6.5
   resolution: "csv-stringify@npm:5.6.5"
@@ -6593,6 +6609,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fp-ts@npm:^2.16.1":
+  version: 2.16.8
+  resolution: "fp-ts@npm:2.16.8"
+  checksum: 10c0/57e39db2b6ec336cdaaacde831b5e830e9194794028de088b0489a22e741a61ba5ecb4d886e2f308dd823471a159c4d6e790917a2c03c92f86ff65f45f31e766
+  languageName: node
+  linkType: hard
+
 "fs-extra@npm:^6.0.0":
   version: 6.0.1
   resolution: "fs-extra@npm:6.0.1"
@@ -7366,7 +7389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"io-ts@npm:^2.2.16, io-ts@npm:^2.2.19, io-ts@npm:^2.2.20":
+"io-ts@npm:^2.2.16, io-ts@npm:^2.2.19, io-ts@npm:^2.2.20, io-ts@npm:^2.2.21":
   version: 2.2.21
   resolution: "io-ts@npm:2.2.21"
   peerDependencies:
@@ -9165,6 +9188,25 @@ __metadata:
   checksum: 10c0/b08ea872597dd2fcd047f3eb3baa47ca74e5784bdaec8e5ea69e6a05dbd80cbc0d21b431958fb6a228df00f2652a1aff2322cba9dd49ab1d40ded1172a5c259c
   languageName: node
   linkType: hard
+
+"ops-scripts@workspace:scripts/ops-scripts":
+  version: 0.0.0-use.local
+  resolution: "ops-scripts@workspace:scripts/ops-scripts"
+  dependencies:
+    "@pagopa/openapi-codegen-ts": "npm:^13.1.0"
+    "@pagopa/ts-commons": "npm:^13.0.0"
+    "@tsconfig/node20": "npm:^20.1.4"
+    "@types/node": "npm:^20.14.11"
+    csv-parse: "npm:^5.5.6"
+    dotenv: "npm:^8.2.0"
+    eslint: "npm:^9.2.0"
+    eslint-config-rules: "workspace:^"
+    fp-ts: "npm:^2.16.1"
+    io-ts: "npm:^2.2.21"
+    shx: "npm:^0.3.4"
+    typescript: "npm:^5.4.5"
+  languageName: unknown
+  linkType: soft
 
 "optionator@npm:^0.9.3":
   version: 0.9.4
