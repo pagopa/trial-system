@@ -5,8 +5,12 @@
   "main": "/dist/index.js",
   "private": true,
   "scripts": {
-    "start": "npm run build && dotenv -e .env k6 run --http-debug=\"full\" dist/index.js",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.config.js --mode=production"
+    "clean": "rimraf ./dist ./src/generated/definitions/internal",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.config.js --mode=production",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --fix",
+    "lint:check": "eslint",
+    "exec": "npm run build && dotenv -e .env k6 run --http-debug=\"full\" dist/index.js"
   },
   "devDependencies": {
     "@babel/core": "7.13.16",
