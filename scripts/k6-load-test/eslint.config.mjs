@@ -10,4 +10,8 @@ export default [
       'functional/no-expression-statements': 'off',
     },
   },
+  {
+    // Ignore webpack.config.js
+    ignores: ['webpack.config.js'],
+  },
 ];
