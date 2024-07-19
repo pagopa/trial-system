@@ -20,7 +20,8 @@ export default defineConfig({
         '.yarn',
         'vitest.workspace.ts',
         'infra/**',
-        'packages/eslint-config/**'
+        'packages/eslint-config/**',
+        'scripts/**',
       ]
     },
   },
