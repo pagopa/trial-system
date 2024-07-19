@@ -109,11 +109,14 @@ resource "azurerm_role_assignment" "ci" {
 }
 
 resource "azurerm_role_assignment" "cd" {
-  for_each             = toset(["Reader", "Private DNS Zone Contributor"])
+  for_each             = toset(["Reader", "Private DNS Zone Contributor", "PagoPA VNet Peering Admin Role"])
   provider             = azurerm.prodio
   scope                = data.azurerm_subscription.prodio.id
   principal_id         = module.federated_identities.federated_cd_identity.id
   role_definition_name = each.value
+  depends_on = [
+    azurerm_role_definition.rw_peering_role
+  ]
 }
 
 resource "azurerm_role_assignment" "app_cd" {
@@ -168,4 +171,24 @@ module "opex_federated_identities" {
   depends_on = [azurerm_resource_group.dashboards]
 
   tags = local.tags
+}
+
+resource "azurerm_role_definition" "rw_peering_role" {
+  name        = "PagoPA VNet Peering Admin Role"
+  scope       = data.azurerm_subscription.prodio.id
+  description = "Custom role used by Trial System CI/CD to create and read VNET peerings with PROD-IO subscription"
+
+  permissions {
+    actions = [
+      "Microsoft.Network/virtualNetworks/virtualNetworkPeerings/write",
+      "Microsoft.Network/virtualNetworks/peer/action",
+      "Microsoft.ClassicNetwork/virtualNetworks/peer/action",
+      "Microsoft.Network/virtualNetworks/virtualNetworkPeerings/read",
+      "Microsoft.Network/virtualNetworks/virtualNetworkPeerings/delete"
+    ]
+  }
+
+  assignable_scopes = [
+    data.azurerm_subscription.prodio.id
+  ]
 }
