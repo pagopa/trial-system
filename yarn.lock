@@ -9199,6 +9199,8 @@ __metadata:
     "@types/node": "npm:^20.14.11"
     csv-parse: "npm:^5.5.6"
     dotenv: "npm:^8.2.0"
+    eslint: "npm:^9.2.0"
+    eslint-config-rules: "workspace:^"
     fp-ts: "npm:^2.16.1"
     io-ts: "npm:^2.2.21"
     shx: "npm:^0.3.4"

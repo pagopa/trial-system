@@ -17,6 +17,8 @@
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.14.11",
     "dotenv": "^8.2.0",
+    "eslint": "^9.2.0",
+    "eslint-config-rules": "workspace:^",
     "shx": "^0.3.4",
     "typescript": "^5.4.5"
   },
