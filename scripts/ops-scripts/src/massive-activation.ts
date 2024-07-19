@@ -1,7 +1,7 @@
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { createClient } from './generated/definitions/trial/client';
 import * as t from 'io-ts';
-import { getConfigOrThrow } from './utils/config';
+import { parseConfigOrThrow } from './parse-config';
 import { flow, pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
@@ -24,7 +24,7 @@ const EnvsCodec = t.type({
 
 const UserListCodec = t.readonlyArray(t.readonlyArray(NonEmptyString));
 
-const config = getConfigOrThrow(EnvsCodec, process.env);
+const config = parseConfigOrThrow(EnvsCodec, process.env);
 
 const trialClient = createClient<'ApiKeyAuth'>({
   basePath: '',

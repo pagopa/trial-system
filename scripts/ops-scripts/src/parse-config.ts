@@ -3,9 +3,9 @@ import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as t from 'io-ts';
 
-export const getConfigOrThrow = <A, O>(
+export const parseConfigOrThrow = <A, O>(
   configType: t.Type<A, O>,
-  environment: Record<string, string> | NodeJS.ProcessEnv,
+  environment: Record<string, string | undefined>,
 ) =>
   pipe(
     environment,
