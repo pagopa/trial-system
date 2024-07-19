@@ -1,6 +1,6 @@
 {
   "name": "k6-load-test",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Load test for Trial System scenarios",
   "main": "/dist/index.js",
   "private": true,
