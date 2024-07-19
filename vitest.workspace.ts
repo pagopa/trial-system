@@ -1,1 +1,1 @@
-export default ["apps/**", "packages/**", "load_tests/**"];
+export default ["apps/**", "packages/**"];
