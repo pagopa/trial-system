@@ -109,14 +109,11 @@ resource "azurerm_role_assignment" "ci" {
 }
 
 resource "azurerm_role_assignment" "cd" {
-  for_each             = toset(["Reader", "Private DNS Zone Contributor", "PagoPA VNet Peering Admin Role"])
+  for_each             = toset(["Reader", "Private DNS Zone Contributor", azurerm_role_definition.rw_peering_role.name])
   provider             = azurerm.prodio
   scope                = data.azurerm_subscription.prodio.id
   principal_id         = module.federated_identities.federated_cd_identity.id
   role_definition_name = each.value
-  depends_on = [
-    azurerm_role_definition.rw_peering_role
-  ]
 }
 
 resource "azurerm_role_assignment" "app_cd" {
