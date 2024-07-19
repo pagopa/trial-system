@@ -50,7 +50,7 @@
       "outputMode": "errors-only"
     },
     "//#test:coverage": {
-      "inputs": ["apps/**/src/**/*.ts", "packages/**/src/**/*.ts", "load_tests/**/src/**/*.ts"],
+      "inputs": ["apps/**/src/**/*.ts", "packages/**/src/**/*.ts"],
       "outputs": ["coverage"],
       "outputMode": "errors-only"
     }
