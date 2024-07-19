@@ -20,7 +20,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "load_tests/*"
+    "scripts/*"
   ],
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

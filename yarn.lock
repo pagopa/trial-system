@@ -8350,6 +8350,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"k6-load-test@workspace:scripts/k6-load-test":
+  version: 0.0.0-use.local
+  resolution: "k6-load-test@workspace:scripts/k6-load-test"
+  dependencies:
+    "@babel/core": "npm:7.13.16"
+    "@babel/plugin-proposal-class-properties": "npm:7.13.0"
+    "@babel/plugin-proposal-object-rest-spread": "npm:7.13.8"
+    "@babel/preset-env": "npm:^7.23.3"
+    "@babel/preset-typescript": "npm:^7.23.3"
+    "@faker-js/faker": "npm:^8.4.1"
+    "@mattrglobal/http-signatures": "npm:^4.1.0"
+    "@pagopa/openapi-codegen-ts": "npm:^13.1.0"
+    "@pagopa/ts-commons": "npm:^12.3.0"
+    "@types/express": "npm:^4.17.21"
+    "@types/k6": "npm:~0.45.0"
+    "@types/webpack": "npm:5.28.0"
+    babel-loader: "npm:8.2.2"
+    clean-webpack-plugin: "npm:4.0.0-alpha.0"
+    copy-webpack-plugin: "npm:^9.0.1"
+    date-fns: "npm:^2.30.0"
+    dotenv: "npm:^8.2.0"
+    dotenv-cli: "npm:^7.3.0"
+    fp-ts: "npm:^2.16.1"
+    io-ts: "npm:^2.2.21"
+    io-ts-types: "npm:^0.5.19"
+    monocle-ts: "npm:^2.3.13"
+    newtype-ts: "npm:^0.3.5"
+    process: "npm:^0.11.10"
+    shx: "npm:^0.3.4"
+    stream-browserify: "npm:^3.0.0"
+    ts-node: "npm:^10.9.1"
+    typescript: "npm:4.2.4"
+    util: "npm:^0.12.5"
+    webpack: "npm:5.35.1"
+    webpack-cli: "npm:4.6.0"
+    webpack-glob-entries: "npm:^1.0.1"
+  languageName: unknown
+  linkType: soft
+
 "kebab-case@npm:^1.0.0":
   version: 1.0.2
   resolution: "kebab-case@npm:1.0.2"
@@ -11321,45 +11360,6 @@ __metadata:
   checksum: 10c0/7b1b7c7f17608a8f8d20a162e7957ac1ef6cd1636db1aba92f4e072dc31818c2ff0efac1e3d91064ede67ed5dc57c565420531a8134090a12ac10cf792ab14d2
   languageName: node
   linkType: hard
-
-"trial-system-load-test@workspace:load_tests/k6":
-  version: 0.0.0-use.local
-  resolution: "trial-system-load-test@workspace:load_tests/k6"
-  dependencies:
-    "@babel/core": "npm:7.13.16"
-    "@babel/plugin-proposal-class-properties": "npm:7.13.0"
-    "@babel/plugin-proposal-object-rest-spread": "npm:7.13.8"
-    "@babel/preset-env": "npm:^7.23.3"
-    "@babel/preset-typescript": "npm:^7.23.3"
-    "@faker-js/faker": "npm:^8.4.1"
-    "@mattrglobal/http-signatures": "npm:^4.1.0"
-    "@pagopa/openapi-codegen-ts": "npm:^13.1.0"
-    "@pagopa/ts-commons": "npm:^12.3.0"
-    "@types/express": "npm:^4.17.21"
-    "@types/k6": "npm:~0.45.0"
-    "@types/webpack": "npm:5.28.0"
-    babel-loader: "npm:8.2.2"
-    clean-webpack-plugin: "npm:4.0.0-alpha.0"
-    copy-webpack-plugin: "npm:^9.0.1"
-    date-fns: "npm:^2.30.0"
-    dotenv: "npm:^8.2.0"
-    dotenv-cli: "npm:^7.3.0"
-    fp-ts: "npm:^2.16.1"
-    io-ts: "npm:^2.2.21"
-    io-ts-types: "npm:^0.5.19"
-    monocle-ts: "npm:^2.3.13"
-    newtype-ts: "npm:^0.3.5"
-    process: "npm:^0.11.10"
-    shx: "npm:^0.3.4"
-    stream-browserify: "npm:^3.0.0"
-    ts-node: "npm:^10.9.1"
-    typescript: "npm:4.2.4"
-    util: "npm:^0.12.5"
-    webpack: "npm:5.35.1"
-    webpack-cli: "npm:4.6.0"
-    webpack-glob-entries: "npm:^1.0.1"
-  languageName: unknown
-  linkType: soft
 
 "trial-system@workspace:.":
   version: 0.0.0-use.local

@@ -1,5 +1,5 @@
 {
-  "name": "trial-system-load-test",
+  "name": "k6-load-test",
   "version": "1.0.0",
   "description": "Load test for Trial System scenarios",
   "main": "/dist/index.js",
