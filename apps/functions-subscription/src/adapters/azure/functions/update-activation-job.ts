@@ -5,7 +5,11 @@ import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { SystemEnv } from '../../../system-env';
 import { UpdateActivationJob } from '../../../generated/definitions/internal/UpdateActivationJob';
 import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
-import { parsePathParameter, parseRequestBody } from './middleware';
+import {
+  parsePathParameter,
+  parseRequestBody,
+  verifyUserGroup,
+} from './middleware';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { toHttpProblemJson } from './errors';
 import { toActivationJobAPI } from './codec';
@@ -19,6 +23,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Pick<SystemEnv, 'updateActivationJob'>>(),
+    RTE.apFirst(RTE.fromEither(verifyUserGroup('ApiTrialManager')(req))),
     RTE.apSW(
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),

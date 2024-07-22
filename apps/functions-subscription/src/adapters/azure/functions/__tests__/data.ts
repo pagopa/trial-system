@@ -45,6 +45,7 @@ export const makeAValidGetActivationJobRequest = () =>
   new HttpRequest({
     url: 'https://function/trials/{trialId}/activation-job',
     method: 'GET',
+    headers: { 'x-user-groups': 'ApiTrialManager' },
     params: {
       trialId: aTrialId,
     },
@@ -54,6 +55,7 @@ export const makeAValidUpdateActivationJobRequest = () =>
   new HttpRequest({
     url: 'https://function/trials/{trialId}/activation-job',
     method: 'PUT',
+    headers: { 'x-user-groups': 'ApiTrialManager' },
     body: {
       string: JSON.stringify({
         usersToActivate: anActivationJob.usersToActivate,
@@ -68,6 +70,7 @@ export const makeAValidCreateTrialRequest = () =>
   new HttpRequest({
     url: 'https://function/trials',
     method: 'POST',
+    headers: { 'x-user-groups': 'ApiTrialManager' },
     body: {
       string: JSON.stringify({
         name: aTrial.name,
@@ -80,6 +83,7 @@ export const makeAValidGetTrialRequest = () =>
   new HttpRequest({
     url: 'https://function/trials/{trialId}',
     method: 'GET',
+    headers: { 'x-user-groups': 'ApiTrialManager' },
     params: {
       trialId: aTrialId,
     },

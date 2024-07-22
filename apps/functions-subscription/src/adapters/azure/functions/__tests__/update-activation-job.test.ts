@@ -8,6 +8,25 @@ import { ItemNotFound } from '../../../../domain/errors';
 import { makePutActivationJobHandler } from '../update-activation-job';
 
 describe('makePutActivationJobHandler', () => {
+  it('should return 403 if x-user-groups header does not contain the correct group', async () => {
+    const request = new HttpRequest({
+      url: makeAValidUpdateActivationJobRequest().url,
+      method: makeAValidUpdateActivationJobRequest().method,
+      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      body: { string: await makeAValidUpdateActivationJobRequest().text() },
+    });
+    const env = makeTestSystemEnv();
+    const actual = await makePutActivationJobHandler(env)(
+      request,
+      makeFunctionContext(),
+    );
+    expect(actual.status).toStrictEqual(403);
+    expect(await actual.json()).toMatchObject({
+      status: 403,
+      detail: 'Missing required groups: ApiTrialManager',
+    });
+  });
+
   it('should return 200 if updateActivationJob succeeds', async () => {
     const env = makeTestSystemEnv();
     const { trialId, usersToActivate } = anActivationJob;
@@ -29,6 +48,7 @@ describe('makePutActivationJobHandler', () => {
     const aRequestWithInvalidBody = new HttpRequest({
       url: 'https://function/trials/{trialId}/activation-job',
       method: 'PUT',
+      headers: { 'x-user-groups': 'ApiTrialManager' },
       body: { string: '{}' },
       params: {
         trialId: 'aTrialId',

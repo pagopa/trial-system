@@ -1,3 +1,4 @@
+import * as t from 'io-ts';
 import { Decoder } from 'io-ts';
 import * as H from '@pagopa/handler-kit';
 import { pipe } from 'fp-ts/function';
@@ -31,3 +32,31 @@ export const parsePathParameter =
       H.parse(schema, `Invalid format of ${paramName} parameter`),
       E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
     );
+
+/**
+ * Parses a specific header parameter of an HTTP request using the provided schema.
+ */
+export const parseHeaderParameter =
+  <T>(schema: Decoder<unknown, T>, headerName: string) =>
+  (req: H.HttpRequest) =>
+    pipe(
+      req.headers[headerName],
+      H.parse(schema, `Invalid format of ${headerName} header`),
+      E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
+    );
+
+/**
+ * Checks if the given group is contained in the groups provided in the
+ * x-user-groups header.
+ */
+export const verifyUserGroup = (group: string) => (req: H.HttpRequest) =>
+  pipe(
+    parseHeaderParameter(t.string, 'x-user-groups')(req),
+    E.mapLeft(
+      () => new H.HttpForbiddenError(`Missing required groups: ${group}`),
+    ),
+    E.filterOrElse(
+      (stringGroups) => stringGroups.split(',').includes(group),
+      () => new H.HttpForbiddenError(`Missing required groups: ${group}`),
+    ),
+  );
