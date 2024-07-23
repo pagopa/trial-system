@@ -44,24 +44,34 @@ const config = pipe(
   }),
 );
 
+const aadCredentials = new DefaultAzureCredential();
+
 const cosmosDB = new CosmosClient({
   endpoint: config.cosmosdb.endpoint,
-  aadCredentials: new DefaultAzureCredential(),
+  aadCredentials,
+});
+const replicaPreferredCosmosDB = new CosmosClient({
+  endpoint: config.cosmosdb.endpoint,
+  aadCredentials,
+  connectionPolicy: {
+    // Define the order of the locations where fetching the data
+    preferredLocations: ['Germany West Central', 'Italy North'],
+  },
 });
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
   `${config.eventhubs.namespace}.servicebus.windows.net`,
   config.eventhubs.names.subscriptionRequest,
-  new DefaultAzureCredential(),
+  aadCredentials,
 );
 
 const serviceBus = new ServiceBusClient(
   `${config.servicebus.namespace}.servicebus.windows.net`,
-  new DefaultAzureCredential(),
+  aadCredentials,
 );
 
 const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
-  cosmosDB.database(config.cosmosdb.databaseName),
+  replicaPreferredCosmosDB.database(config.cosmosdb.databaseName),
 );
 
 const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
@@ -89,17 +99,17 @@ const trialReaderWriter = makeTrialsCosmosContainer(
 );
 
 const serviceBusManagementClient = new ServiceBusManagementClient(
-  new DefaultAzureCredential(),
+  aadCredentials,
   config.azure.subscriptionId,
 );
 
 const managedServiceIdentityClient = new ManagedServiceIdentityClient(
-  new DefaultAzureCredential(),
+  aadCredentials,
   config.azure.subscriptionId,
 );
 
 const authorizationManagementClient = new AuthorizationManagementClient(
-  new DefaultAzureCredential(),
+  aadCredentials,
   config.azure.subscriptionId,
 );
 
