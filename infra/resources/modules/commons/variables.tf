@@ -53,7 +53,7 @@ variable "cidr_subnet_fnsubscriptionasync" {
 }
 
 variable "cidr_subnet_fnsubscription" {
-  type        = list(string)
+  type        = string
   description = "The subscription function address space"
 }
 

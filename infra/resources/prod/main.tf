@@ -48,7 +48,7 @@ module "commons" {
 
   vnet_address_space              = ["10.30.0.0/20"]
   snet_pendpoints_address_space   = ["10.30.2.0/23"]
-  cidr_subnet_fnsubscription      = ["10.30.5.0/24"]
+  cidr_subnet_fnsubscription      = "10.30.5.0/24"
   cidr_subnet_fnsubscriptionasync = ["10.30.6.0/24"]
 
   cidr_subnet_appgateway = ["10.30.10.0/24"]

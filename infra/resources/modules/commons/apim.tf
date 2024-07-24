@@ -96,7 +96,7 @@ resource "azurerm_api_management_named_value" "ts_subscription_fn_url" {
   api_management_name = module.apim.name
   resource_group_name = module.apim.resource_group_name
   display_name        = "ts-subscription-fn-url"
-  value               = "https://${module.subscription_fn.default_hostname}"
+  value               = "https://${module.func_subscription.function_app.function_app.default_hostname}"
 }
 
 data "azurerm_key_vault_secret" "ts_subscription_fn_key_secret" {

@@ -83,7 +83,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "azure_api_link" {
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
-
 resource "azurerm_private_dns_zone_virtual_network_link" "management_api_link" {
   name                  = azurerm_virtual_network.vnet.name
   resource_group_name   = azurerm_resource_group.net_rg.name
@@ -126,48 +125,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "websites_link" {
   resource_group_name   = var.vnet_common.weu.resource_group_name
   private_dns_zone_name = data.azurerm_private_dns_zone.privatelink_azure_websites.name
   virtual_network_id    = azurerm_virtual_network.vnet.id
-}
-
-resource "azurerm_private_endpoint" "subscription_fn" {
-  name                = "${local.project}-subscription-fn-pep-01"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.net_rg.name
-  subnet_id           = module.pendpoints_snet.id
-
-  private_service_connection {
-    name                           = "${local.project}-subscription-fn-pep-01"
-    private_connection_resource_id = module.subscription_fn.id
-    is_manual_connection           = false
-    subresource_names              = ["sites"]
-  }
-
-  private_dns_zone_group {
-    name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
-  }
-
-  tags = var.tags
-}
-
-resource "azurerm_private_endpoint" "subscription_fn_staging" {
-  name                = "${local.project}-subscription-fn-staging-pep-01"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.net_rg.name
-  subnet_id           = module.pendpoints_snet.id
-
-  private_service_connection {
-    name                           = "${local.project}-subscription-fn-staging-pep-01"
-    private_connection_resource_id = module.subscription_fn.id
-    is_manual_connection           = false
-    subresource_names              = ["sites-${module.subscription_fn_staging_slot.name}"]
-  }
-
-  private_dns_zone_group {
-    name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [data.azurerm_private_dns_zone.privatelink_azure_websites.id]
-  }
-
-  tags = var.tags
 }
 
 resource "azurerm_private_endpoint" "subscription_async_fn_staging" {
