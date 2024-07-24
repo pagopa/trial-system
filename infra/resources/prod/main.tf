@@ -55,7 +55,7 @@ module "commons" {
   cidr_subnet_apim       = ["10.30.8.0/24"]
 
   apim_config = {
-    sku             = "Developer_1"
+    sku             = "Premium_2"
     publisher_email = "ts-apim@pagopa.it"
   }
 
@@ -67,5 +67,4 @@ module "commons" {
       max_capacity = "10"
     }
   }
-
 }

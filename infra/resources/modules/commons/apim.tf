@@ -1,3 +1,16 @@
+resource "azurerm_public_ip" "apim" {
+  name                = format("%s-apim-pip-01", local.project)
+  resource_group_name = azurerm_resource_group.rg_routing.name
+  location            = azurerm_resource_group.rg_routing.location
+  sku                 = "Standard"
+  allocation_method   = "Static"
+  zones               = [1, 2, 3]
+
+  domain_name_label = lower(format("%s-apim-01", local.project))
+
+  tags = var.tags
+}
+
 module "apim" {
   source = "github.com/pagopa/terraform-azurerm-v3//api_management?ref=v8.26.0"
 
@@ -11,8 +24,25 @@ module "apim" {
   virtual_network_type      = "Internal"
   subnet_id                 = module.apim_snet.id
 
-  # not used at the moment
   redis_cache_id = null
+
+  zones                = [1, 2]
+  public_ip_address_id = azurerm_public_ip.apim.id
+
+  autoscale = {
+    enabled                       = true
+    default_instances             = 2
+    minimum_instances             = 2
+    maximum_instances             = 6
+    scale_out_capacity_percentage = 50
+    scale_out_time_window         = "PT10M"
+    scale_out_value               = "2"
+    scale_out_cooldown            = "PT30M"
+    scale_in_capacity_percentage  = 15
+    scale_in_time_window          = "PT30M"
+    scale_in_value                = "2"
+    scale_in_cooldown             = "PT15M"
+  }
 
   application_insights = {
     enabled             = true
