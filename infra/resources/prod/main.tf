@@ -63,8 +63,8 @@ module "commons" {
     api_certificate_name = "api-trial-pagopa-it"
     alerts_enabled       = true
     scaling = {
-      min_capacity = "1"
-      max_capacity = "10"
+      min_capacity = "2"
+      max_capacity = "15"
     }
   }
 }
