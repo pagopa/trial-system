@@ -131,38 +131,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-    post:
-      operationId: createActivationJob
-      description: Create the job to activate users for a given trial
-      summary: Create the activation job
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateActivationJob'
-      responses:
-        '202':
-          description: Accepted
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemJson'
-        '401':
-          description: Unauthorized
-        '404':
-          description: Trial not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemJson'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemJson'
   /trials:
     post:
       operationId: createTrial
