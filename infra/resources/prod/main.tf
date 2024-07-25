@@ -46,10 +46,10 @@ module "commons" {
     }
   }
 
-  vnet_address_space              = ["10.30.0.0/20"]
-  snet_pendpoints_address_space   = ["10.30.2.0/23"]
-  cidr_subnet_fnsubscription      = ["10.30.5.0/24"]
-  cidr_subnet_fnsubscriptionasync = ["10.30.6.0/24"]
+  vnet_address_space            = ["10.30.0.0/20"]
+  snet_pendpoints_address_space = ["10.30.2.0/23"]
+  cidr_subnet_func_api          = "10.30.5.0/24"
+  cidr_subnet_func_consumptions = "10.30.6.0/24"
 
   cidr_subnet_appgateway = ["10.30.10.0/24"]
   cidr_subnet_apim       = ["10.30.8.0/24"]
