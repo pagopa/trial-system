@@ -328,13 +328,6 @@ components:
           $ref: '#/components/schemas/CreatedAt'
         updatedAt:
           $ref: '#/components/schemas/UpdatedAt'
-    CreateActivationJob:
-      type: object
-      required:
-        - usersToActivate
-      properties:
-        usersToActivate:
-          $ref: '#/components/schemas/UsersToActivate'
     UpdateActivationJob:
       type: object
       required:
