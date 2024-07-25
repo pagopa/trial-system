@@ -41,20 +41,6 @@ export const makeAValidGetSubscriptionRequest = () =>
     },
   });
 
-export const makeAValidCreateActivationJobRequest = () =>
-  new HttpRequest({
-    url: 'https://function/trials/{trialId}/activation-jobs',
-    method: 'POST',
-    body: {
-      string: JSON.stringify({
-        usersToActivate: anActivationJob.usersToActivate,
-      }),
-    },
-    params: {
-      trialId: aTrialId,
-    },
-  });
-
 export const makeAValidGetActivationJobRequest = () =>
   new HttpRequest({
     url: 'https://function/trials/{trialId}/activation-job',
