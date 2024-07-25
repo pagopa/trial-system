@@ -19,6 +19,7 @@ on:
         description: Environment where the artifact will be deployed.
         required: false
         default: 'prod'
+        type: choice
         options:
           - prod
 

@@ -3,7 +3,7 @@
 #
 
 locals {
-  subscription_app_settings = {
+  func_api_app_settings = {
     FUNCTIONS_WORKER_RUNTIME       = "node"
     FUNCTIONS_WORKER_PROCESS_COUNT = "4"
     NODE_ENV                       = "production"
@@ -45,48 +45,48 @@ locals {
   }
 }
 
-resource "azurerm_resource_group" "subscription_rg" {
-  name     = "${local.project}-subscription-rg-01"
+resource "azurerm_resource_group" "api_rg" {
+  name     = "${local.project}-api-rg-01"
   location = var.location
 
   tags = var.tags
 }
 
-module "func_subscription" {
-  source = "github.com/pagopa/dx//infra/modules/azure_function_app?ref=func-validation"
+module "func_api" {
+  source = "github.com/pagopa/dx//infra/modules/azure_function_app?ref=main"
 
   environment = {
-    prefix = var.prefix
-    env_short = var.env_short
-    location = var.location
-    app_name = "subscription"
+    prefix          = var.prefix
+    env_short       = var.env_short
+    location        = var.location
+    app_name        = "api"
     instance_number = "01"
   }
 
-  resource_group_name = azurerm_resource_group.subscription_rg.name
+  resource_group_name = azurerm_resource_group.api_rg.name
 
-  health_check_path =  "/info"
+  health_check_path = "/info"
 
-  application_insights_connection_string = azurerm_application_insights.ai.connection_string
+  application_insights_connection_string   = azurerm_application_insights.ai.connection_string
   application_insights_sampling_percentage = 5
 
   app_settings = merge(
-    local.subscription_app_settings,
+    local.func_api_app_settings,
     {},
   )
 
   slot_app_settings = merge(
-    local.subscription_app_settings,
+    local.func_api_app_settings,
     {},
   )
 
-  subnet_cidr = var.cidr_subnet_fnsubscription
+  subnet_cidr   = var.cidr_subnet_func_api
   subnet_pep_id = module.pendpoints_snet.id
   virtual_network = {
-    name = azurerm_virtual_network.vnet.name
+    name                = azurerm_virtual_network.vnet.name
     resource_group_name = azurerm_resource_group.net_rg.name
   }
-  private_dns_zone_resource_group_name = var.vnet_common.weu.resource_group_name
+  private_dns_zone_resource_group_name = azurerm_resource_group.net_rg.name
 
   tags = var.tags
 }
@@ -94,7 +94,7 @@ module "func_subscription" {
 resource "azurerm_role_assignment" "evh_subs_publisher" {
   scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Sender"
-  principal_id         = module.func_subscription.function_app.function_app.principal_id
+  principal_id         = module.func_api.function_app.function_app.principal_id
 }
 
 # Enables the subs_fn to read and write to cosmosdb
@@ -103,13 +103,13 @@ resource "azurerm_cosmosdb_sql_role_assignment" "subs_fn_to_cosmos_db" {
   resource_group_name = azurerm_resource_group.data_rg.name
   account_name        = module.cosmosdb_account.name
   role_definition_id  = "${module.cosmosdb_account.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
-  principal_id        = module.func_subscription.function_app.function_app.principal_id
+  principal_id        = module.func_api.function_app.function_app.principal_id
 }
 
 resource "azurerm_role_assignment" "evh_subs_publisher_staging" {
   scope                = module.event_hub.hub_ids[local.subscription_request_eventhub_name]
   role_definition_name = "Azure Event Hubs Data Sender"
-  principal_id         =  module.func_subscription.function_app.function_app.slot.principal_id
+  principal_id         = module.func_api.function_app.function_app.slot.principal_id
 }
 
 # Enables the subs_fn_staging to read and write to cosmosdb
@@ -118,15 +118,15 @@ resource "azurerm_cosmosdb_sql_role_assignment" "subs_fn_staging_to_cosmos_db" {
   resource_group_name = azurerm_resource_group.data_rg.name
   account_name        = module.cosmosdb_account.name
   role_definition_id  = "${module.cosmosdb_account.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
-  principal_id        = module.func_subscription.function_app.function_app.slot.principal_id
+  principal_id        = module.func_api.function_app.function_app.slot.principal_id
 }
 
-module "function_subscription_autoscaler" {
+module "function_apis_autoscaler" {
   source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=main"
 
-  resource_group_name = azurerm_resource_group.subscription_rg.name
+  resource_group_name = azurerm_resource_group.api_rg.name
   target_service = {
-    function_app_name = module.func_subscription.function_app.function_app.name
+    function_app_name = module.func_api.function_app.function_app.name
   }
 
   scheduler = {
@@ -174,4 +174,29 @@ module "function_subscription_autoscaler" {
   }
 
   tags = var.tags
+}
+
+resource "azurerm_monitor_metric_alert" "func_api_health_check" {
+
+  name                = "[${module.func_api.function_app.function_app.name}] Health Check Failed"
+  resource_group_name = module.func_api.function_app.resource_group_name
+  scopes              = [module.func_api.function_app.function_app.id]
+  description         = "Function availability is under threshold level. Runbook: -"
+  severity            = 1
+  frequency           = "PT5M"
+  auto_mitigate       = false
+  enabled             = true
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "HealthCheckStatus"
+    aggregation      = "Average"
+    operator         = "LessThan"
+    threshold        = 50
+  }
+
+  action {
+    action_group_id    = azurerm_monitor_action_group.error_action_group.id
+    webhook_properties = {}
+  }
 }
