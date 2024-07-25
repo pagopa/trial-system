@@ -5,7 +5,7 @@ info:
   description: |
     Documentation of the Trial System Subscription function.
 servers:
-  - url: https://ts-p-itn-subscription-fn-01.azurewebsites.net
+  - url: https://ts-p-itn-api-func-01.azurewebsites.net
 security:
   - ApiKeyAuth: []
 paths:

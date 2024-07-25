@@ -1,5 +1,17 @@
 # functions-subscription
 
+## 1.3.3
+
+### Patch Changes
+
+- b483962: [IOPLT-625] Create another cosmos client with connection policy that redirects reads on `subscription` container to the replicated region
+
+## 1.3.2
+
+### Patch Changes
+
+- 6220496: Improvements due to load tests
+
 ## 1.3.1
 
 ### Patch Changes

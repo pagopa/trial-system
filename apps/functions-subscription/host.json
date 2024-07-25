@@ -8,7 +8,10 @@
   "extensions": {
     "http": {
       "routePrefix": ""
-    }
+    },
+    "eventHubs": {
+      "maxEventBatchSize": 10
+    },
   },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",

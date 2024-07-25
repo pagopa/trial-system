@@ -35,7 +35,7 @@ export const makeSubscriptionHistoryCosmosContainer = (
           E.toError,
         ),
         TE.flatMapEither(decodeFromFeed(SubscriptionHistoryCodec)),
-        TE.map(RA.head),
+        TE.mapBoth(cosmosErrorToDomainError, RA.head),
       ),
     insert: (subscriptionHistory) =>
       pipe(

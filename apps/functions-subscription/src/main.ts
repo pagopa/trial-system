@@ -44,24 +44,34 @@ const config = pipe(
   }),
 );
 
+const aadCredentials = new DefaultAzureCredential();
+
 const cosmosDB = new CosmosClient({
   endpoint: config.cosmosdb.endpoint,
-  aadCredentials: new DefaultAzureCredential(),
+  aadCredentials,
+});
+const replicaPreferredCosmosDB = new CosmosClient({
+  endpoint: config.cosmosdb.endpoint,
+  aadCredentials,
+  connectionPolicy: {
+    // Define the order of the locations where fetching the data
+    preferredLocations: ['Germany West Central', 'Italy North'],
+  },
 });
 
 const subscriptionRequestEventHub = new EventHubProducerClient(
   `${config.eventhubs.namespace}.servicebus.windows.net`,
   config.eventhubs.names.subscriptionRequest,
-  new DefaultAzureCredential(),
+  aadCredentials,
 );
 
 const serviceBus = new ServiceBusClient(
   `${config.servicebus.namespace}.servicebus.windows.net`,
-  new DefaultAzureCredential(),
+  aadCredentials,
 );
 
 const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
-  cosmosDB.database(config.cosmosdb.databaseName),
+  replicaPreferredCosmosDB.database(config.cosmosdb.databaseName),
 );
 
 const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
@@ -89,17 +99,17 @@ const trialReaderWriter = makeTrialsCosmosContainer(
 );
 
 const serviceBusManagementClient = new ServiceBusManagementClient(
-  new DefaultAzureCredential(),
+  aadCredentials,
   config.azure.subscriptionId,
 );
 
 const managedServiceIdentityClient = new ManagedServiceIdentityClient(
-  new DefaultAzureCredential(),
+  aadCredentials,
   config.azure.subscriptionId,
 );
 
 const authorizationManagementClient = new AuthorizationManagementClient(
-  new DefaultAzureCredential(),
+  aadCredentials,
   config.azure.subscriptionId,
 );
 
@@ -189,12 +199,21 @@ app.http('getTrial', {
   route: 'trials/{trialId}',
 });
 
+const retry = {
+  strategy: 'fixedDelay' as const,
+  maxRetryCount: -1,
+  delayInterval: {
+    milliseconds: 100,
+  },
+};
+
 if (config.subscriptionRequest.consumer === 'on')
   app.eventHub('subscriptionRequestConsumer', {
     connection: 'SubscriptionRequestEventHubConnection',
     eventHubName: config.eventhubs.names.subscriptionRequest,
     cardinality: 'many',
     handler: makeSubscriptionRequestConsumerHandler(env),
+    retry,
   });
 
 if (config.subscriptionHistory.consumer === 'on')
@@ -205,6 +224,7 @@ if (config.subscriptionHistory.consumer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'subscriptionHistoryConsumer-',
     handler: makeSubscriptionHistoryChangesHandler(capabilities),
+    retry,
   });
 
 if (config.activations.consumer === 'on')
@@ -215,6 +235,7 @@ if (config.activations.consumer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'activationConsumer-',
     handler: makeActivationsChangesHandler({ env, config }),
+    retry,
   });
 
 if (config.events.producer === 'on')
@@ -225,6 +246,7 @@ if (config.events.producer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'eventProducer-',
     handler: makeEventsProducerCosmosDBHandler(capabilities),
+    retry,
   });
 
 if (config.trials.consumer === 'on')
@@ -235,4 +257,5 @@ if (config.trials.consumer === 'on')
     leaseContainerName: config.cosmosdb.containersNames.leases,
     leaseContainerPrefix: 'trialConsumer-',
     handler: makeTrialChangesHandler(capabilities),
+    retry,
   });

@@ -73,7 +73,7 @@ module "subscription_fn" {
     sku_size                     = var.function_subscription_config.sku_size
     maximum_elastic_worker_count = 0
     worker_count                 = 2
-    zone_balancing_enabled       = false
+    zone_balancing_enabled       = true
   }
 
   app_settings = merge(
@@ -186,198 +186,57 @@ resource "azurerm_cosmosdb_sql_role_assignment" "subs_fn_staging_to_cosmos_db" {
   principal_id        = module.subscription_fn_staging_slot.system_identity_principal
 }
 
-resource "azurerm_monitor_autoscale_setting" "function_subscription" {
-  name                = format("%s-autoscale-01", module.subscription_fn.name)
+module "function_subscription_autoscaler" {
+  source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=main"
+
   resource_group_name = azurerm_resource_group.subscription_rg.name
-  location            = var.location
-  target_resource_id  = module.subscription_fn.app_service_plan_id
+  target_service = {
+    function_app_name = module.subscription_fn.name
+  }
 
-
-  # Scaling strategy
-  # 05 - 19,30 -> min 3
-  # 19,30 - 23 -> min 4
-  # 23 - 05 -> min 2
-  dynamic "profile" {
-    for_each = [
-      {
-        name = "{\"name\":\"default\",\"for\":\"evening\"}",
-
-        recurrence = {
-          hours   = 22
-          minutes = 59
-        }
-
-        capacity = {
-          default = var.function_subscription_config.autoscale_default + 1
-          minimum = var.function_subscription_config.autoscale_minimum + 1
-          maximum = var.function_subscription_config.autoscale_maximum
-        }
-      },
-      {
-        name = "{\"name\":\"default\",\"for\":\"night\"}",
-
-        recurrence = {
-          hours   = 5
-          minutes = 0
-        }
-
-        capacity = {
-          default = var.function_subscription_config.autoscale_default + 1
-          minimum = var.function_subscription_config.autoscale_minimum + 1
-          maximum = var.function_subscription_config.autoscale_maximum
-        }
-      },
-      {
-        name = "evening",
-
-        recurrence = {
-          hours   = 19
-          minutes = 30
-        }
-
-        capacity = {
-          default = var.function_subscription_config.autoscale_default + 2
-          minimum = var.function_subscription_config.autoscale_minimum + 2
-          maximum = var.function_subscription_config.autoscale_maximum
-        }
-      },
-      {
-        name = "night",
-
-        recurrence = {
-          hours   = 23
-          minutes = 0
-        }
-
-        capacity = {
-          default = var.function_subscription_config.autoscale_default
-          minimum = var.function_subscription_config.autoscale_minimum
-          maximum = var.function_subscription_config.autoscale_maximum
-        }
+  scheduler = {
+    normal_load = {
+      default = 4
+      minimum = 4
+    }
+    low_load = {
+      default = 3
+      minimum = 3
+      name    = "night"
+      start = {
+        hour    = 22
+        minutes = 0
       }
-    ]
-    iterator = profile_info
-
-    content {
-      name = profile_info.value.name
-
-      dynamic "recurrence" {
-        for_each = profile_info.value.recurrence != null ? [profile_info.value.recurrence] : []
-        iterator = recurrence_info
-
-        content {
-          timezone = "W. Europe Standard Time"
-          hours    = [recurrence_info.value.hours]
-          minutes  = [recurrence_info.value.minutes]
-          days = [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday"
-          ]
-        }
-      }
-
-      capacity {
-        default = profile_info.value.capacity.default
-        minimum = profile_info.value.capacity.minimum
-        maximum = profile_info.value.capacity.maximum
-      }
-
-      # Increase
-
-      rule {
-        metric_trigger {
-          metric_name              = "Requests"
-          metric_resource_id       = module.subscription_fn.id
-          metric_namespace         = "microsoft.web/sites"
-          time_grain               = "PT1M"
-          statistic                = "Average"
-          time_window              = "PT1M"
-          time_aggregation         = "Average"
-          operator                 = "GreaterThan"
-          threshold                = 3000
-          divide_by_instance_count = false
-        }
-
-        scale_action {
-          direction = "Increase"
-          type      = "ChangeCount"
-          value     = "2"
-          cooldown  = "PT1M"
-        }
-      }
-
-      rule {
-        metric_trigger {
-          metric_name              = "CpuPercentage"
-          metric_resource_id       = module.subscription_fn.app_service_plan_id
-          metric_namespace         = "microsoft.web/serverfarms"
-          time_grain               = "PT1M"
-          statistic                = "Average"
-          time_window              = "PT1M"
-          time_aggregation         = "Average"
-          operator                 = "GreaterThan"
-          threshold                = 45
-          divide_by_instance_count = false
-        }
-
-        scale_action {
-          direction = "Increase"
-          type      = "ChangeCount"
-          value     = "2"
-          cooldown  = "PT1M"
-        }
-      }
-
-      # Decrease
-
-      rule {
-        metric_trigger {
-          metric_name              = "Requests"
-          metric_resource_id       = module.subscription_fn.id
-          metric_namespace         = "microsoft.web/sites"
-          time_grain               = "PT1M"
-          statistic                = "Average"
-          time_window              = "PT15M"
-          time_aggregation         = "Average"
-          operator                 = "LessThan"
-          threshold                = 2000
-          divide_by_instance_count = false
-        }
-
-        scale_action {
-          direction = "Decrease"
-          type      = "ChangeCount"
-          value     = "1"
-          cooldown  = "PT10M"
-        }
-      }
-
-      rule {
-        metric_trigger {
-          metric_name              = "CpuPercentage"
-          metric_resource_id       = module.subscription_fn.app_service_plan_id
-          metric_namespace         = "microsoft.web/serverfarms"
-          time_grain               = "PT1M"
-          statistic                = "Average"
-          time_window              = "PT15M"
-          time_aggregation         = "Average"
-          operator                 = "LessThan"
-          threshold                = 30
-          divide_by_instance_count = false
-        }
-
-        scale_action {
-          direction = "Decrease"
-          type      = "ChangeCount"
-          value     = "1"
-          cooldown  = "PT10M"
-        }
+      end = {
+        hour    = 6
+        minutes = 0
       }
     }
+    maximum = 30
   }
+
+  scale_metrics = {
+    requests = {
+      upper_threshold           = 5000
+      lower_threshold           = 1000
+      increase_by               = 2
+      decrease_by               = 2
+      statistic_increase        = "Max"
+      statistic_decrease        = "Max"
+      time_aggregation_increase = "Maximum"
+      time_aggregation_decrease = "Maximum"
+    },
+    cpu = {
+      upper_threshold           = 60
+      lower_threshold           = 20
+      increase_by               = 2
+      decrease_by               = 2
+      statistic_increase        = "Max"
+      statistic_decrease        = "Max"
+      time_aggregation_increase = "Maximum"
+      time_aggregation_decrease = "Maximum"
+    }
+  }
+
+  tags = var.tags
 }
