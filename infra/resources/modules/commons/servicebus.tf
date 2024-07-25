@@ -30,7 +30,7 @@ resource "azurerm_servicebus_topic" "events" {
 
 resource "azurerm_monitor_autoscale_setting" "service_bus" {
   name                = "${local.project}-events-sbns-as-01"
-  resource_group_name = azurerm_resource_group.async_rg.name
+  resource_group_name = azurerm_resource_group.data_rg.name
   location            = var.location
   target_resource_id  = azurerm_servicebus_namespace.main.id
 
@@ -88,4 +88,3 @@ resource "azurerm_monitor_autoscale_setting" "service_bus" {
     }
   }
 }
-

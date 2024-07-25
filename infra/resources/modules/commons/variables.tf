@@ -47,13 +47,13 @@ variable "snet_pendpoints_address_space" {
 }
 
 
-variable "cidr_subnet_fnsubscriptionasync" {
-  type        = list(string)
+variable "cidr_subnet_func_consumptions" {
+  type        = string
   description = "The subscription async function address space"
 }
 
-variable "cidr_subnet_fnsubscription" {
-  type        = list(string)
+variable "cidr_subnet_func_api" {
+  type        = string
   description = "The subscription function address space"
 }
 
