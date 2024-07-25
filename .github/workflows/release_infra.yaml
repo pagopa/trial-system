@@ -11,6 +11,10 @@ on:
 
 jobs:
   release_prod:
+    concurrency:
+      cancel-in-progress: false
+      group: terraform
+
     uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
     name: Infrastructure Apply
     secrets: inherit
