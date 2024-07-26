@@ -1,5 +1,11 @@
 # ops-scripts
 
+## 1.1.1
+
+### Patch Changes
+
+- 38a0212: [IOPLT-612] Change generate command
+
 ## 1.1.0
 
 ### Minor Changes
