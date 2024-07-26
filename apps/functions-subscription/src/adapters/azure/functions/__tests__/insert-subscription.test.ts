@@ -13,6 +13,25 @@ import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makePostSubscriptionHandler } from '../insert-subscription';
 
 describe('makePostSubscriptionHandler', () => {
+  it('should return 403 if x-user-groups header does not contain the correct group', async () => {
+    const baseRequest =
+      makeAValidCreateSubscriptionRequest(aCreateSubscription);
+    const request = new HttpRequest({
+      url: baseRequest.url,
+      method: baseRequest.method,
+      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      body: { string: await baseRequest.text() },
+    });
+    const env = makeTestSystemEnv();
+    const actual = await makePostSubscriptionHandler(env)(
+      request,
+      makeFunctionContext(),
+    );
+    expect(actual.status).toStrictEqual(403);
+    expect(await actual.json()).toMatchObject({
+      status: 403,
+    });
+  });
   it('should return 201 with the created subscription', async () => {
     const env = makeTestSystemEnv();
     env.createSubscription.mockReturnValueOnce(TE.right(aSubscription));

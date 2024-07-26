@@ -5,8 +5,27 @@ import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { aSubscription } from '../../../../domain/__tests__/data';
 import { ItemNotFound } from '../../../../domain/errors';
 import { makeGetSubscriptionHandler } from '../get-subscription';
+import { HttpRequest } from '@azure/functions';
 
 describe('makeGetSubscriptionHandler', () => {
+  it('should return 403 if x-user-groups header does not contain the correct group', async () => {
+    const request = new HttpRequest({
+      url: makeAValidGetSubscriptionRequest().url,
+      method: makeAValidGetSubscriptionRequest().method,
+      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      body: { string: await makeAValidGetSubscriptionRequest().text() },
+    });
+    const env = makeTestSystemEnv();
+    const actual = await makeGetSubscriptionHandler(env)(
+      request,
+      makeFunctionContext(),
+    );
+    expect(actual.status).toStrictEqual(403);
+    expect(await actual.json()).toMatchObject({
+      status: 403,
+    });
+  });
+
   it('should return 404 when the subscription does not exist', async () => {
     const env = makeTestSystemEnv();
 
