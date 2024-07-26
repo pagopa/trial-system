@@ -7,7 +7,11 @@ import { CreateSubscription } from '../../../generated/definitions/internal/Crea
 import { UserId } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
-import { parsePathParameter, parseRequestBody } from './middleware';
+import {
+  parsePathParameter,
+  parseRequestBody,
+  verifyUserGroup,
+} from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toSubscriptionAPI } from './codec';
 import { TrialIdCodec } from '../../../domain/trial';
@@ -21,6 +25,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) => {
   return pipe(
     RTE.ask<Pick<SystemEnv, 'createSubscription'>>(),
+    RTE.apFirst(RTE.fromEither(verifyUserGroup('ApiTrialManager')(req))),
     RTE.apSW(
       'requestBody',
       RTE.fromEither(parseRequestBody(CreateSubscription)(req)),

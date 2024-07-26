@@ -4,7 +4,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 import { SystemEnv } from '../../../system-env';
-import { parsePathParameter } from './middleware';
+import { parsePathParameter, verifyUserGroup } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toTrialAPI } from './codec';
 import { TrialIdCodec } from '../../../domain/trial';
@@ -20,6 +20,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Env>(),
+    RTE.apFirst(RTE.fromEither(verifyUserGroup('ApiTrialManager')(req))),
     RTE.apSW(
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),

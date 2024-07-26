@@ -8,6 +8,24 @@ import { makePostTrialHandler } from '../create-trial';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 
 describe('makePostTrialHandler', () => {
+  it('should return 403 if x-user-groups header does not contain the correct group', async () => {
+    const request = new HttpRequest({
+      url: makeAValidCreateTrialRequest().url,
+      method: makeAValidCreateTrialRequest().method,
+      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      body: { string: await makeAValidCreateTrialRequest().text() },
+    });
+    const env = makeTestSystemEnv();
+    const actual = await makePostTrialHandler(env)(
+      request,
+      makeFunctionContext(),
+    );
+    expect(actual.status).toStrictEqual(403);
+    expect(await actual.json()).toMatchObject({
+      status: 403,
+    });
+  });
+
   it('should return 202 with the created trial', async () => {
     const env = makeTestSystemEnv();
     env.createTrial.mockReturnValueOnce(TE.right(aTrial));
@@ -27,6 +45,7 @@ describe('makePostTrialHandler', () => {
     const aRequestWithInvalidBody = new HttpRequest({
       url: 'https://function/trials',
       method: 'POST',
+      headers: { 'x-user-groups': 'ApiTrialManager' },
       body: { string: '{}' },
     });
     const env = makeTestSystemEnv();

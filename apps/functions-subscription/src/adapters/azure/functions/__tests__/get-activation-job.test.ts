@@ -5,8 +5,27 @@ import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { makeAValidGetActivationJobRequest } from './data';
 import { anActivationJob } from '../../../../domain/__tests__/data';
 import { makeGetActivationJobHandler } from '../get-activation-job';
+import { HttpRequest } from '@azure/functions';
 
 describe('makeGetActivationJobHandler', () => {
+  it('should return 403 if x-user-groups header does not contain the correct group', async () => {
+    const request = new HttpRequest({
+      url: makeAValidGetActivationJobRequest().url,
+      method: makeAValidGetActivationJobRequest().method,
+      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      body: { string: await makeAValidGetActivationJobRequest().text() },
+    });
+    const env = makeTestSystemEnv();
+    const actual = await makeGetActivationJobHandler(env)(
+      request,
+      makeFunctionContext(),
+    );
+    expect(actual.status).toStrictEqual(403);
+    expect(await actual.json()).toMatchObject({
+      status: 403,
+    });
+  });
+
   it('should return 200 when the activation job exists', async () => {
     const env = makeTestSystemEnv();
 

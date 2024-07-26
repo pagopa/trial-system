@@ -1,6 +1,7 @@
+import * as t from 'io-ts';
 import { Decoder } from 'io-ts';
 import * as H from '@pagopa/handler-kit';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 
 /**
@@ -30,4 +31,30 @@ export const parsePathParameter =
       req.path[paramName],
       H.parse(schema, `Invalid format of ${paramName} parameter`),
       E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
+    );
+
+/**
+ * Verifies the presence of the `x-user-groups` header and checks if it includes
+ * the specified group. If the `x-user-groups` header is missing,
+ * `verifyUserGroup` permits the request as if the group were included in the
+ * header.
+ */
+export const verifyUserGroup =
+  (group: 'ApiTrialManager') => (req: H.HttpRequest) =>
+    pipe(
+      req.headers['x-user-groups'],
+      E.fromNullable(void 0),
+      E.foldW(
+        // if x-user-groups does not exists behave like it were included
+        E.right,
+        // if exists then verify if it is included
+        flow(
+          H.parse(t.string, `Invalid format of 'x-user-groups' header`),
+          E.filterOrElseW(
+            (stringGroups) => stringGroups.split(',').includes(group),
+            () => new H.HttpForbiddenError(`Missing required group: ${group}`),
+          ),
+          E.map(() => void 0),
+        ),
+      ),
     );

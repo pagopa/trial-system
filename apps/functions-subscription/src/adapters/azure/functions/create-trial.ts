@@ -4,7 +4,7 @@ import * as H from '@pagopa/handler-kit';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { toHttpProblemJson } from './errors';
 import { SystemEnv } from '../../../system-env';
-import { parseRequestBody } from './middleware';
+import { parseRequestBody, verifyUserGroup } from './middleware';
 import { CreateTrial } from '../../../generated/definitions/internal/CreateTrial';
 import { toTrialAPI } from './codec';
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
@@ -19,6 +19,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Env>(),
+    RTE.apFirst(RTE.fromEither(verifyUserGroup('ApiTrialManager')(req))),
     RTE.apSW('requestBody', RTE.fromEither(parseRequestBody(CreateTrial)(req))),
     RTE.flatMapTaskEither(
       ({ requestBody: { name, description }, createTrial }) =>
