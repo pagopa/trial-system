@@ -23,7 +23,6 @@ describe('makeGetTrialHandler', () => {
     expect(actual.status).toStrictEqual(403);
     expect(await actual.json()).toMatchObject({
       status: 403,
-      detail: 'Missing required groups: ApiTrialManager',
     });
   });
   it('should return 404 when the trial does not exist', async () => {

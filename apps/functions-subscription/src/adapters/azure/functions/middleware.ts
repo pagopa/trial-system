@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import { Decoder } from 'io-ts';
 import * as H from '@pagopa/handler-kit';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 
 /**
@@ -34,29 +34,27 @@ export const parsePathParameter =
     );
 
 /**
- * Parses a specific header parameter of an HTTP request using the provided schema.
- */
-export const parseHeaderParameter =
-  <T>(schema: Decoder<unknown, T>, headerName: string) =>
-  (req: H.HttpRequest) =>
-    pipe(
-      req.headers[headerName],
-      H.parse(schema, `Invalid format of ${headerName} header`),
-      E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
-    );
-
-/**
- * Checks if the given group is contained in the groups provided in the
- * x-user-groups header.
+ * Verifies the presence of the `x-user-groups` header and checks if it includes
+ * the specified group. If the `x-user-groups` header is missing,
+ * `verifyUserGroup` permits the request as if the group were included in the
+ * header.
  */
 export const verifyUserGroup = (group: string) => (req: H.HttpRequest) =>
   pipe(
-    parseHeaderParameter(t.string, 'x-user-groups')(req),
-    E.mapLeft(
-      () => new H.HttpForbiddenError(`Missing required groups: ${group}`),
-    ),
-    E.filterOrElse(
-      (stringGroups) => stringGroups.split(',').includes(group),
-      () => new H.HttpForbiddenError(`Missing required groups: ${group}`),
+    req.headers['x-user-groups'],
+    E.fromNullable(void 0),
+    E.foldW(
+      E.right,
+      flow(
+        H.parse(t.string, `Invalid format of 'x-user-groups' header`),
+        E.mapLeft(
+          () => new H.HttpForbiddenError(`Missing required group: ${group}`),
+        ),
+        E.filterOrElse(
+          (stringGroups) => stringGroups.split(',').includes(group),
+          () => new H.HttpForbiddenError(`Missing required group: ${group}`),
+        ),
+        E.map(() => void 0),
+      ),
     ),
   );
