@@ -44,13 +44,12 @@ export const verifyUserGroup = (group: string) => (req: H.HttpRequest) =>
     req.headers['x-user-groups'],
     E.fromNullable(void 0),
     E.foldW(
+      // if x-user-groups does not exists behave like it were included
       E.right,
+      // if exists then verify if it is included
       flow(
         H.parse(t.string, `Invalid format of 'x-user-groups' header`),
-        E.mapLeft(
-          () => new H.HttpForbiddenError(`Missing required group: ${group}`),
-        ),
-        E.filterOrElse(
+        E.filterOrElseW(
           (stringGroups) => stringGroups.split(',').includes(group),
           () => new H.HttpForbiddenError(`Missing required group: ${group}`),
         ),
