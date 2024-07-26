@@ -45,15 +45,6 @@ export const makeActivationJob = ({
   usersActivated: 0 as NonNegativeInteger,
 });
 
-export const insertActivationJob = (insertActivationJob: InsertActivationJob) =>
-  pipe(
-    RTE.ask<Pick<Capabilities, 'activationJobWriter'>>(),
-    RTE.let('activationJob', () => makeActivationJob(insertActivationJob)),
-    RTE.flatMapTaskEither(({ activationJob, activationJobWriter }) =>
-      activationJobWriter.insert(activationJob),
-    ),
-  );
-
 export const getActivationJob = (id: TrialId) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'activationJobReader'>>(),

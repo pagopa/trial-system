@@ -4,30 +4,7 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { anActivationJob } from './data';
 import { makeTestEnv } from './mocks';
-import {
-  getActivationJob,
-  insertActivationJob,
-  updateActivationJob,
-} from '../activation-job';
-
-describe('insertActivationJob', () => {
-  it('should call insert as expected', async () => {
-    const testEnv = makeTestEnv();
-    const { trialId, usersToActivate } = anActivationJob;
-
-    testEnv.activationJobWriter.insert.mockReturnValueOnce(
-      TE.right(anActivationJob),
-    );
-
-    const actual = await insertActivationJob({ trialId, usersToActivate })(
-      testEnv,
-    )();
-    const expected = E.right(anActivationJob);
-
-    expect(actual).toStrictEqual(expected);
-    expect(testEnv.activationJobWriter.insert).toBeCalledWith(anActivationJob);
-  });
-});
+import { getActivationJob, updateActivationJob } from '../activation-job';
 
 describe('getActivationJob', () => {
   it('should return a Some when the activation job exists', async () => {
