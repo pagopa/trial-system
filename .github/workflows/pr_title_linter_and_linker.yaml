@@ -2,6 +2,8 @@ name: "Lint and Link PR title"
 
 on:
   pull_request:
+    branches-ignore:
+      - 'changeset-release/main'
     types:
       - opened
       - edited
