@@ -42,9 +42,9 @@ describe('verifyUserGroup', () => {
         'x-user-groups': 'aGroup,anAnotherGroup',
       },
     };
-    const actual = verifyUserGroup('anAdminGroup')(req);
+    const actual = verifyUserGroup('ApiTrialManager')(req);
     const expected = new H.HttpForbiddenError(
-      `Missing required group: anAdminGroup`,
+      `Missing required group: ApiTrialManager`,
     );
     expect(actual).toStrictEqual(E.left(expected));
   });
@@ -53,7 +53,7 @@ describe('verifyUserGroup', () => {
     const req: H.HttpRequest = {
       ...aValidRequest,
     };
-    const actual = verifyUserGroup('aGroup')(req);
+    const actual = verifyUserGroup('ApiTrialManager')(req);
     expect(actual).toStrictEqual(E.right(void 0));
   });
 
@@ -61,10 +61,10 @@ describe('verifyUserGroup', () => {
     const req: H.HttpRequest = {
       ...aValidRequest,
       headers: {
-        'x-user-groups': 'aGroup,anAnotherGroup',
+        'x-user-groups': 'aGroup,ApiTrialManager,anAnotherGroup',
       },
     };
-    const actual = verifyUserGroup('aGroup')(req);
+    const actual = verifyUserGroup('ApiTrialManager')(req);
     expect(actual).toStrictEqual(E.right(void 0));
   });
 });
