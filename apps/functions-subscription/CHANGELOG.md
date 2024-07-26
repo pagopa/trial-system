@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 2.0.0
+
+### Major Changes
+
+- 38a0212: [IOPLT-612] Remove `POST /trials/:id/activation-job` endpoint
+
 ## 1.3.3
 
 ### Patch Changes
