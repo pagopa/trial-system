@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 2.0.1
+
+### Patch Changes
+
+- 1c06327: [IOPLT-620] Add check on x-user-groups header
+
 ## 2.0.0
 
 ### Major Changes
