@@ -17,6 +17,36 @@ module "event_hub" {
     },
   ]
 
+  alerts_enabled = true
+  metric_alerts  = {
+    num_of_messages = {
+      aggregation = "Total"
+      metric_name = "IncomingMessages"
+      description = "High volume of messages to ingest, potentially causing delays in sending subscription request events (~1h)."
+      operator    = "GreaterThanOrEqual"
+      threshold   = 100000
+      frequency   = "PT5M"
+      window_size = "PT15M"
+      dimension   = [],
+    },
+    active_connections = {
+      aggregation = "Average"
+      metric_name = "ActiveConnections"
+      description = "No connections detected, potential issues with the subscription activation feature",
+      operator    = "LessThanOrEqual"
+      threshold   = 0
+      frequency   = "PT5M"
+      window_size = "PT15M"
+      dimension   = [],
+    },
+  }
+  action = [
+    {
+      action_group_id    = azurerm_monitor_action_group.error_action_group.id
+      webhook_properties = null
+    }
+  ]
+
   private_endpoint_created             = true
   private_endpoint_resource_group_name = azurerm_resource_group.net_rg.name
   private_endpoint_subnet_id           = module.pendpoints_snet.id
