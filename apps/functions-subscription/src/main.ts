@@ -34,6 +34,7 @@ import { ManagedServiceIdentityClient } from '@azure/arm-msi';
 import { AuthorizationManagementClient } from '@azure/arm-authorization';
 import { ServiceBusManagementClient } from '@azure/arm-servicebus';
 import { makeChannelAdminServiceBus } from './adapters/azure/servicebus/channel';
+import { makePutSubscriptionHandler } from './adapters/azure/functions/update-subscription';
 
 const config = pipe(
   parseConfig(process.env),
@@ -162,6 +163,13 @@ app.http('getSubscription', {
   methods: ['GET'],
   authLevel: 'function',
   handler: makeGetSubscriptionHandler(env),
+  route: 'trials/{trialId}/subscriptions/{userId}',
+});
+
+app.http('updateSubscription', {
+  methods: ['PUT'],
+  authLevel: 'function',
+  handler: makePutSubscriptionHandler(env),
   route: 'trials/{trialId}/subscriptions/{userId}',
 });
 

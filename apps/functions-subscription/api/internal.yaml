@@ -54,6 +54,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
+    put:
+      operationId: updateSubscription
+      summary: Update subscription
+      description: >-
+        Update the state of the subscription
+      parameters:
+        - $ref: '#/components/parameters/pathTrialId'
+        - $ref: '#/components/parameters/pathUserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscription'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedSubscription'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
   /trials/{trialId}/subscriptions:
     post:
       operationId: createSubscription
@@ -309,6 +345,28 @@ components:
           $ref: '#/components/schemas/UserId'
         state:
           $ref: '#/components/schemas/CreateSubscriptionState'
+    UpdateSubscription:
+      description: >
+        Payload to update the state of the subscription.
+      type: object
+      required:
+        - state
+      properties:
+        state:
+          $ref: '#/components/schemas/SubscriptionState'
+    UpdatedSubscription:
+      type: object
+      required:
+        - trialId
+        - userId
+        - state
+      properties:
+        trialId:
+          $ref: '#/components/schemas/TrialId'
+        userId:
+          $ref: '#/components/schemas/UserId'
+        state:
+          $ref: '#/components/schemas/SubscriptionState'
     Subscription:
       type: object
       required:

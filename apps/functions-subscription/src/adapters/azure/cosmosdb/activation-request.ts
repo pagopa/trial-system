@@ -67,6 +67,31 @@ export const makeActivationRequestReaderWriter = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
+    get: (trialId, userId) =>
+      pipe(
+        TE.tryCatch(
+          () =>
+            container.items
+              .query({
+                query:
+                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.userId = @userId OFFSET 0 LIMIT 1',
+                parameters: [
+                  {
+                    name: '@trialId',
+                    value: trialId,
+                  },
+                  {
+                    name: '@userId',
+                    value: userId,
+                  },
+                ],
+              })
+              .fetchAll(),
+          E.toError,
+        ),
+        TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
+        TE.map(RA.head),
+      ),
     activate: (activationRequests) =>
       pipe(
         RNEA.fromReadonlyArray(activationRequests),
@@ -77,7 +102,32 @@ export const makeActivationRequestReaderWriter = (
             // batches of 99 items.
             // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
             RA.chunksOf(99)(rnea),
-            RA.map(makeBatchOperations(RNEA.head(rnea).trialId)),
+            RA.map(makeBatchOperations(RNEA.head(rnea).trialId, 'ACTIVE')),
+            TE.traverseArray((chunk) =>
+              TE.tryCatch(
+                () =>
+                  container.items.batch([...chunk], RNEA.head(rnea).trialId),
+                E.toError,
+              ),
+            ),
+            TE.map(RA.flatMap(({ result }) => result || [])),
+          ),
+        ),
+        O.getOrElseW(() => TE.of([])),
+        TE.map(makeActivationResult),
+      ),
+    // This method should decrease the counter of the job by the number of activationRequests with state = "ACTIVE"
+    updateActivationRequestsState: (activationRequests, state) =>
+      pipe(
+        RNEA.fromReadonlyArray(activationRequests),
+        O.map((rnea) =>
+          pipe(
+            // Transactional batch can handle only 100 items per batch.
+            // Since one item must be the update of the job, we can handle
+            // batches of 99 items.
+            // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
+            RA.chunksOf(99)(rnea),
+            RA.map(makeBatchOperations(RNEA.head(rnea).trialId, state)),
             TE.traverseArray((chunk) =>
               TE.tryCatch(
                 () =>
@@ -101,9 +151,16 @@ const makeActivationResult = (
 };
 
 const makeBatchOperations =
-  (jobId: TrialId) =>
-  (requests: readonly ActivationRequest[]): readonly OperationInput[] =>
-    pipe(
+  (jobId: TrialId, state: ActivationRequest['state']) =>
+  (requests: readonly ActivationRequest[]): readonly OperationInput[] => {
+    // If state is active, increment counter by the number of requests; otherwise,
+    // decrement the counter only by the number of "ACTIVE" activation requests
+    const counterIncrement =
+      state === 'ACTIVE'
+        ? requests.length
+        : -Math.abs(requests.filter(({ state }) => state === 'ACTIVE').length);
+
+    return pipe(
       requests,
       RA.map(({ id, _etag }) => ({
         id,
@@ -114,7 +171,7 @@ const makeBatchOperations =
             {
               op: PatchOperationType.replace,
               path: `/state`,
-              value: 'ACTIVE',
+              value: state,
             },
           ],
         },
@@ -127,9 +184,10 @@ const makeBatchOperations =
             {
               op: PatchOperationType.incr,
               path: `/usersActivated`,
-              value: requests.length,
+              value: counterIncrement,
             },
           ],
         },
       }),
     );
+  };

@@ -2,6 +2,7 @@ import * as t from 'io-ts';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
+import * as O from 'fp-ts/lib/Option';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { SubscriptionState, UserIdCodec } from './subscription';
 import { Capabilities } from './capabilities';
@@ -43,6 +44,10 @@ export interface ActivationRequestReader {
     trialId: TrialId,
     limit: number,
   ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
+  readonly get: (
+    trialId: ActivationRequest['trialId'],
+    userId: ActivationRequest['userId'],
+  ) => TE.TaskEither<Error, O.Option<ActivationRequest>>;
 }
 
 export interface ActivationRequestWriter {
@@ -60,6 +65,19 @@ export interface ActivationRequestWriter {
    */
   readonly activate: (
     activationRequests: readonly ActivationRequest[],
+  ) => TE.TaskEither<Error, ActivationResult>;
+  /**
+   * This function is responsible to change the state of active activation requests.
+   * This will also update the counter of the activation job decreasing it by
+   * the number of activation requests with ACTIVE state.
+   *
+   * This function should not be used to activate.
+   * If you want to activate any activation requests, then use
+   * {@link activate} method.
+   */
+  readonly updateActivationRequestsState: (
+    activationRequests: readonly ActivationRequest[],
+    state: ActivationRequest['state'],
   ) => TE.TaskEither<Error, ActivationResult>;
 }
 
@@ -89,6 +107,17 @@ export const insertActivationRequest = (request: InsertActivationRequest) =>
     ),
   );
 
+export const getActivationRequest = (
+  trialId: ActivationRequest['trialId'],
+  userId: ActivationRequest['userId'],
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationRequestReader'>>(),
+    RTE.flatMapTaskEither(({ activationRequestReader }) =>
+      activationRequestReader.get(trialId, userId),
+    ),
+  );
+
 export const activateActivationRequests = (
   requests: readonly ActivationRequest[],
 ) =>
@@ -96,5 +125,16 @@ export const activateActivationRequests = (
     RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
     RTE.flatMapTaskEither(({ activationRequestWriter }) =>
       activationRequestWriter.activate(requests),
+    ),
+  );
+
+export const updateState = (
+  requests: readonly ActivationRequest[],
+  state: ActivationRequest['state'],
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
+    RTE.flatMapTaskEither(({ activationRequestWriter }) =>
+      activationRequestWriter.updateActivationRequestsState(requests, state),
     ),
   );

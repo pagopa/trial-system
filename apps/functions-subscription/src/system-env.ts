@@ -7,10 +7,12 @@ import { processActivationJob } from './use-cases/process-activation-job';
 import { processActivationRequest } from './use-cases/process-activation-request';
 import { getActivationJob, updateActivationJob } from './domain/activation-job';
 import { insertTrial, getTrialById } from './domain/trial';
+import { updateSubscription } from './use-cases/update-subscription';
 
 export const makeSystemEnv = (capabilities: Capabilities) => ({
   createSubscription: flow(createSubscription, apply(capabilities)),
   getSubscription: flow(getSubscription, apply(capabilities)),
+  updateSubscription: flow(updateSubscription, apply(capabilities)),
   processSubscriptionRequest: flow(
     processSubscriptionRequest,
     apply(capabilities),
