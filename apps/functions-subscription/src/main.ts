@@ -5,6 +5,7 @@ import { ServiceBusClient } from '@azure/service-bus';
 import { EventHubProducerClient } from '@azure/event-hubs';
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
+import * as appInsights from 'applicationinsights';
 import { makeInfoHandler } from './adapters/azure/functions/info';
 import { makePostSubscriptionHandler } from './adapters/azure/functions/insert-subscription';
 import { makeGetSubscriptionHandler } from './adapters/azure/functions/get-subscription';
@@ -44,6 +45,8 @@ const config = pipe(
 );
 
 const aadCredentials = new DefaultAzureCredential();
+
+appInsights.setup(config.applicationInsights.instrumentationKey).start();
 
 const cosmosDB = new CosmosClient({
   endpoint: config.cosmosdb.endpoint,
