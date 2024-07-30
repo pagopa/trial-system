@@ -23,7 +23,7 @@ module "event_hub" {
       aggregation = "Total"
       metric_name = "IncomingMessages"
       description = "High volume of messages to ingest, potentially causing delays in sending subscription request events (~1h)."
-      operator    = "LessThanOrEqual"
+      operator    = "GreaterThanOrEqual"
       threshold   = 100000
       frequency   = "PT5M"
       window_size = "PT15M"
