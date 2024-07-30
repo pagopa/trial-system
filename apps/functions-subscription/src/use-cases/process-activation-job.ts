@@ -20,11 +20,13 @@ export const processActivationJob = (
     ),
     RTE.flatMapTaskEither(
       ({ activationRequestReader, activationRequestWriter, limit }) =>
-        pipe(
-          activationRequestReader.list(job.trialId, limit),
-          TE.flatMap((activationRequests) =>
-            activationRequestWriter.activate(activationRequests),
-          ),
-        ),
+        limit <= 0
+          ? TE.of('success')
+          : pipe(
+              activationRequestReader.list(job.trialId, limit),
+              TE.flatMap((activationRequests) =>
+                activationRequestWriter.activate(activationRequests),
+              ),
+            ),
     ),
   );

@@ -161,6 +161,21 @@ describe('processActivationJob', () => {
 
     expect(actual).toStrictEqual(expected);
   });
+  it('should not call list and activate if there are no available slots', async () => {
+    const mockEnv = makeTestEnv();
+    const testEnv = mockEnv as unknown as Capabilities;
+
+    const actual = await processActivationJob(
+      { ...anActivationJob, usersActivated: 1000 as NonNegativeInteger },
+      maxFetchSize,
+    )(testEnv)();
+    const expected = E.right('success');
+
+    expect(actual).toStrictEqual(expected);
+    expect(mockEnv.activationRequestReader.list).toBeCalledTimes(0);
+    expect(mockEnv.activationRequestWriter.activate).toBeCalledTimes(0);
+  });
+
   it('should return an error when the fetch fail', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
