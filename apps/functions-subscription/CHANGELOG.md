@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 2.0.2
+
+### Patch Changes
+
+- 7643264: [IOPLT-646] Fix issue on activation job processing function
+
 ## 2.0.1
 
 ### Patch Changes
