@@ -46,6 +46,8 @@ locals {
     TRIAL_CONSUMER                          = "on"
     TRIALS_COSMOSDB_CONTAINER_NAME          = azurerm_cosmosdb_sql_container.trials.name
     TrialsCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
+
+    AI_INSTRUMENTATION_KEY = azurerm_application_insights.ai.instrumentation_key
   }
 }
 

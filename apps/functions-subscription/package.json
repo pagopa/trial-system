@@ -28,6 +28,7 @@
     "@pagopa/handler-kit-azure-func": "^2.0.4",
     "@pagopa/io-functions-commons": "^29.0.4",
     "@pagopa/ts-commons": "^13.0.0",
+    "applicationinsights": "^3.2.1",
     "fp-ts": "^2.16.5",
     "io-ts": "^2.2.19",
     "ulid": "^2.3.0"
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@pagopa/openapi-codegen-ts": "^13.1.0",
     "@tsconfig/node20": "^20.1.4",
+    "@types/applicationinsights": "^0.20.0",
     "@vitest/coverage-v8": "^1.6.0",
     "azure-functions-core-tools": "^4.0.5700",
     "eslint": "^9.2.0",
