@@ -9193,6 +9193,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ops-scripts@workspace:scripts/ops-scripts"
   dependencies:
+    "@azure/cosmos": "npm:^4.0.0"
     "@pagopa/openapi-codegen-ts": "npm:^13.1.0"
     "@pagopa/ts-commons": "npm:^13.0.0"
     "@tsconfig/node20": "npm:^20.1.4"

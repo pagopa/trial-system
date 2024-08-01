@@ -5,12 +5,13 @@
   "private": true,
   "scripts": {
     "clean": "shx rm -rf ./dist",
-    "build": "npm run generate && tsc",
+    "build": "tsc",
     "typecheck": "npm run generate && tsc --noEmit",
     "lint": "eslint --fix",
     "lint:check": "eslint",
     "generate": "shx rm -rf ./src/generated/definitions/trial && shx mkdir -p ./src/generated/definitions/trial && gen-api-models --api-spec ../../apps/functions-subscription/api/public.yaml --no-strict --out-dir ./src/generated/definitions/trial --request-types --response-decoders --client",
-    "start:massive-activation": "npm run build && node -r dotenv/config dist/massive-activation.js dotenv_config_path=.env"
+    "start:massive-activation": "npm run generate && npm run build && node -r dotenv/config dist/massive-activation.js dotenv_config_path=.env",
+    "start:migrate-activations": "npm run build && node -r dotenv/config dist/migrate-activations.js dotenv_config_path=.env"
   },
   "devDependencies": {
     "@pagopa/openapi-codegen-ts": "^13.1.0",
@@ -23,6 +24,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@azure/cosmos": "^4.0.0",
     "@pagopa/ts-commons": "^13.0.0",
     "csv-parse": "^5.5.6",
     "fp-ts": "^2.16.1",
