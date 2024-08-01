@@ -102,7 +102,7 @@ resource "azurerm_cosmosdb_sql_container" "activation" {
   }
 
   autoscale_settings {
-    max_throughput = 1000
+    max_throughput = 10000
   }
 
   indexing_policy {
