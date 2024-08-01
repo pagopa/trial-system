@@ -49,7 +49,7 @@ export const makeActivationRequestReaderWriter = (
             container.items
               .query({
                 query:
-                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.activated = false ORDER BY c.id ASC OFFSET 0 LIMIT @limit',
+                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.state = "SUBSCRIBED" ORDER BY c.id ASC OFFSET 0 LIMIT @limit',
                 parameters: [
                   {
                     name: '@trialId',
@@ -112,8 +112,8 @@ const makeBatchOperations =
           operations: [
             {
               op: PatchOperationType.replace,
-              path: `/activated`,
-              value: true,
+              path: `/state`,
+              value: 'ACTIVE',
             },
           ],
         },

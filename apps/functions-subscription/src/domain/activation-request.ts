@@ -3,7 +3,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
-import { UserIdCodec } from './subscription';
+import { SubscriptionState, UserIdCodec } from './subscription';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
 import { TrialId, TrialIdCodec } from './trial';
@@ -26,7 +26,7 @@ export const ActivationRequestCodec = t.strict({
   trialId: TrialIdCodec,
   userId: UserIdCodec,
   type: t.literal('request'),
-  activated: t.boolean,
+  state: SubscriptionState,
   _etag: t.string,
 });
 export type ActivationRequest = t.TypeOf<typeof ActivationRequestCodec>;
@@ -66,8 +66,8 @@ export interface ActivationRequestWriter {
 export const makeInsertActivationRequest = ({
   trialId,
   userId,
-  activated,
-}: Pick<ActivationRequest, 'trialId' | 'userId' | 'activated'>) =>
+  state,
+}: Pick<ActivationRequest, 'trialId' | 'userId' | 'state'>) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'monotonicIdFn'>>(),
     RTE.map(({ monotonicIdFn }) => monotonicIdFn()),
@@ -77,7 +77,7 @@ export const makeInsertActivationRequest = ({
       trialId,
       userId,
       type: 'request' as const,
-      activated,
+      state,
     })),
   );
 

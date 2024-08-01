@@ -22,7 +22,7 @@ const recoverItemAlreadyExists =
   };
 
 const handleActivatedRequest = (request: ActivationRequest) =>
-  request.activated
+  request.state === 'ACTIVE'
     ? pipe(
         // This operation is required to keep the number of activated users up to date.
         // The assumption is that the activation job exists.
@@ -42,7 +42,7 @@ export const processSubscriptionRequest = (subscription: Subscription) =>
             makeInsertActivationRequest({
               trialId: subscription.trialId,
               userId: subscription.userId,
-              activated: subscription.state === 'ACTIVE',
+              state: subscription.state,
             }),
             RTE.flatMap(insertActivationRequest),
             RTE.flatMap(handleActivatedRequest),

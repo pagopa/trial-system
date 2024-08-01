@@ -35,8 +35,8 @@ const makeTestData = (length: number) => {
             operations: [
               {
                 op: 'replace',
-                path: '/activated',
-                value: true,
+                path: '/state',
+                value: 'ACTIVE',
               },
             ],
           },

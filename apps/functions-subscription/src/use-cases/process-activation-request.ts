@@ -18,9 +18,9 @@ type Env = Pick<
 export const processActivationRequest = ({
   trialId,
   userId,
-  activated,
+  state,
 }: ActivationRequest) => {
-  if (activated)
+  if (state === 'ACTIVE')
     return pipe(
       RTE.ask<Env>(),
       RTE.apSW('subscriptionId', makeSubscriptionId(trialId, userId)),
