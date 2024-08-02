@@ -8,7 +8,7 @@ const EnvsCodec = t.type({
   COSMOS_DATABASE_NAME: NonEmptyString,
   FROM_CONTAINER_NAME: NonEmptyString,
   TO_CONTAINER_NAME: NonEmptyString,
-  COSMOS_TRIAL_ID: NonEmptyString,
+  TRIAL_ID: NonEmptyString,
 });
 
 const config = parseConfigOrThrow(EnvsCodec, process.env);
@@ -24,13 +24,13 @@ const toCosmosContainer = cosmosDB
 
 const runActivationMigration = async () => {
   console.log(
-    `Migrate all items of '${config.COSMOS_TRIAL_ID}' from '${fromCosmosContainer.id}' to '${toCosmosContainer.id}'\n`,
+    `Migrate all items of '${config.TRIAL_ID}' from '${fromCosmosContainer.id}' to '${toCosmosContainer.id}'\n`,
   );
 
   // eslint-disable-next-line functional/prefer-readonly-type
   const items = fromCosmosContainer.items.query<{ activated?: boolean }>({
     query: `SELECT * FROM c WHERE c.trialId = @trialId`,
-    parameters: [{ name: '@trialId', value: config.COSMOS_TRIAL_ID }],
+    parameters: [{ name: '@trialId', value: config.TRIAL_ID }],
   });
 
   // eslint-disable-next-line functional/no-loop-statements
