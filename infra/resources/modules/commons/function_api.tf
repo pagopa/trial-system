@@ -72,12 +72,16 @@ module "func_api" {
 
   app_settings = merge(
     local.func_api_app_settings,
-    {},
+    {
+      AzureFunctionsWebHost__hostid = "staging"
+    },
   )
 
   slot_app_settings = merge(
     local.func_api_app_settings,
-    {},
+    {
+      AzureFunctionsWebHost__hostid = null
+    },
   )
 
   subnet_cidr   = var.cidr_subnet_func_api
