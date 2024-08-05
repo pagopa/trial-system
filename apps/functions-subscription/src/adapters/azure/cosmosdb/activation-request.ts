@@ -24,8 +24,9 @@ import { TrialId } from '../../../domain/trial';
 
 export const makeActivationRequestReaderWriter = (
   db: Database,
+  containerName: string,
 ): ActivationRequestReader & ActivationRequestWriter => {
-  const container = db.container('activations');
+  const container = db.container(containerName);
   return {
     insert: (insertActivationRequest) =>
       pipe(
