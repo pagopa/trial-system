@@ -153,3 +153,33 @@ resource "azurerm_api_management_subscription" "wallet" {
   state               = "active"
   allow_tracing       = false
 }
+
+####################################################################################
+# Test User - Used for test purposes
+####################################################################################
+resource "azurerm_api_management_user" "test" {
+  user_id             = "test-user"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  first_name          = "Test"
+  last_name           = "PagoPA"
+  email               = "trialsystem-tech@pagopa.it"
+  state               = "active"
+}
+
+resource "azurerm_api_management_group_user" "test" {
+  user_id             = azurerm_api_management_user.test.user_id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  group_name          = azurerm_api_management_group.api_trial_manager.name
+}
+
+resource "azurerm_api_management_subscription" "test" {
+  user_id             = azurerm_api_management_user.test.id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  product_id          = module.apim_product_ts_management.id
+  display_name        = "TEST TRIAL MANAGER API"
+  state               = "active"
+  allow_tracing       = false
+}
