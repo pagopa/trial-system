@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.0.0
+
+### Major Changes
+
+- 4f2be20: [IOPLT-655] Turn on activation consumer
+
 ## 2.1.0
 
 ### Minor Changes
