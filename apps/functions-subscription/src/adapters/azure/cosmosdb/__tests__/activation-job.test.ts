@@ -8,6 +8,7 @@ import { makeActivationJobCosmosContainer } from '../activation-job';
 import { ItemNotFound } from '../../../../domain/errors';
 
 describe('makeActivationJobCosmosContainer', () => {
+  const containerName = 'aContainerName';
   describe('get', () => {
     it('should get the item', async () => {
       const mockDB = makeDatabaseMock();
@@ -19,7 +20,10 @@ describe('makeActivationJobCosmosContainer', () => {
 
       const { trialId: id } = anActivationJob;
 
-      const actual = await makeActivationJobCosmosContainer(testDB).get(id)();
+      const actual = await makeActivationJobCosmosContainer(
+        testDB,
+        containerName,
+      ).get(id)();
 
       expect(actual).toStrictEqual(E.right(O.some(anActivationJob)));
       expect(mockDB.container('').item).toBeCalledWith(id, id);
@@ -36,10 +40,10 @@ describe('makeActivationJobCosmosContainer', () => {
         .container('')
         .items.create.mockResolvedValueOnce({ body: anActivationJob });
 
-      const actual =
-        await makeActivationJobCosmosContainer(testDB).insert(
-          anActivationJob,
-        )();
+      const actual = await makeActivationJobCosmosContainer(
+        testDB,
+        containerName,
+      ).insert(anActivationJob)();
 
       expect(actual).toStrictEqual(E.right(anActivationJob));
       expect(mockDB.container('').items.create).toBeCalledWith({
@@ -59,10 +63,10 @@ describe('makeActivationJobCosmosContainer', () => {
       mockDB.container('').item.mockReturnValueOnce({ patch: patchMock });
       patchMock.mockResolvedValueOnce({ resource: anActivationJob });
 
-      const actual = await makeActivationJobCosmosContainer(testDB).update(
-        trialId,
-        update,
-      )();
+      const actual = await makeActivationJobCosmosContainer(
+        testDB,
+        containerName,
+      ).update(trialId, update)();
 
       expect(actual).toStrictEqual(E.right(anActivationJob));
       expect(mockDB.container('').item).toBeCalledWith(trialId, trialId);
@@ -88,10 +92,10 @@ describe('makeActivationJobCosmosContainer', () => {
       mockDB.container('').item.mockReturnValueOnce({ patch: patchMock });
       patchMock.mockRejectedValueOnce(error);
 
-      const actual = await makeActivationJobCosmosContainer(testDB).update(
-        trialId,
-        update,
-      )();
+      const actual = await makeActivationJobCosmosContainer(
+        testDB,
+        containerName,
+      ).update(trialId, update)();
 
       expect(actual).toStrictEqual(
         E.left(

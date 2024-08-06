@@ -35,8 +35,8 @@ const makeTestData = (length: number) => {
             operations: [
               {
                 op: 'replace',
-                path: '/activated',
-                value: true,
+                path: '/state',
+                value: 'ACTIVE',
               },
             ],
           },
@@ -67,6 +67,7 @@ const makeTestData = (length: number) => {
 };
 
 describe('makeActivationRequestReaderWriter', () => {
+  const containerName = 'aContainerName';
   describe('insert', () => {
     it('should return the inserted item', async () => {
       const mockDB = makeDatabaseMock();
@@ -77,6 +78,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).insert(anInsertActivationRequest)();
 
       expect(actual).toStrictEqual(E.right(anActivationRequest));
@@ -94,6 +96,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).insert(anInsertActivationRequest)();
 
       expect(actual).toMatchObject(
@@ -113,6 +116,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).activate([])();
 
       expect(actual).toStrictEqual(E.right(result));
@@ -133,6 +137,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
@@ -165,6 +170,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
@@ -188,6 +194,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.left(error));
@@ -211,6 +218,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).activate(activationRequests)();
 
       expect(actual).toStrictEqual(E.right(result));
@@ -235,6 +243,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).list(anActivationJob.trialId, elementsToFetch)();
 
       expect(actual).toStrictEqual(E.right(activationRequests));
@@ -249,6 +258,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).list(anActivationJob.trialId, elementsToFetch)();
 
       expect(actual).toStrictEqual(E.right([]));
@@ -264,6 +274,7 @@ describe('makeActivationRequestReaderWriter', () => {
 
       const actual = await makeActivationRequestReaderWriter(
         mockDB as unknown as Database,
+        containerName,
       ).list(anActivationJob.trialId, elementsToFetch)();
 
       expect(actual).toStrictEqual(E.left(error));

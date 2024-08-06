@@ -24,8 +24,9 @@ import { TrialId } from '../../../domain/trial';
 
 export const makeActivationRequestReaderWriter = (
   db: Database,
+  containerName: string,
 ): ActivationRequestReader & ActivationRequestWriter => {
-  const container = db.container('activations');
+  const container = db.container(containerName);
   return {
     insert: (insertActivationRequest) =>
       pipe(
@@ -49,7 +50,7 @@ export const makeActivationRequestReaderWriter = (
             container.items
               .query({
                 query:
-                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.activated = false ORDER BY c.id ASC OFFSET 0 LIMIT @limit',
+                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.state = "SUBSCRIBED" ORDER BY c.id ASC OFFSET 0 LIMIT @limit',
                 parameters: [
                   {
                     name: '@trialId',
@@ -112,8 +113,8 @@ const makeBatchOperations =
           operations: [
             {
               op: PatchOperationType.replace,
-              path: `/activated`,
-              value: true,
+              path: `/state`,
+              value: 'ACTIVE',
             },
           ],
         },

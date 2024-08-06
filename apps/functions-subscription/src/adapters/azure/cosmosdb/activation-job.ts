@@ -12,8 +12,9 @@ import { decodeFromItem } from './decode';
 
 export const makeActivationJobCosmosContainer = (
   db: Database,
+  containerName: string,
 ): ActivationJobReader & ActivationJobWriter => {
-  const container = db.container('activations');
+  const container = db.container(containerName);
   return {
     get: (id) =>
       pipe(

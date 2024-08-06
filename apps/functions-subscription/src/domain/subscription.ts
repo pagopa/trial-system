@@ -36,6 +36,13 @@ export const UserIdCodec = t.brand(
 );
 export type UserId = t.TypeOf<typeof UserIdCodec>;
 
+export const SubscriptionState = t.keyof({
+  UNSUBSCRIBED: null,
+  SUBSCRIBED: null,
+  ACTIVE: null,
+  DISABLED: null,
+});
+
 // this codec is useful to minimize the code duplication,
 // it is used by SubscriptionCodec and SubscriptionHistoryCodec
 export const SubscriptionWithoutIdCodec = t.strict({
@@ -43,12 +50,7 @@ export const SubscriptionWithoutIdCodec = t.strict({
   trialId: TrialIdCodec,
   createdAt: IsoDateFromString,
   updatedAt: IsoDateFromString,
-  state: t.keyof({
-    UNSUBSCRIBED: null,
-    SUBSCRIBED: null,
-    ACTIVE: null,
-    DISABLED: null,
-  }),
+  state: SubscriptionState,
 });
 
 export const SubscriptionCodec = t.intersection([

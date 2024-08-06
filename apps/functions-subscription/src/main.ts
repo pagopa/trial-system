@@ -79,6 +79,7 @@ const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
 
 const activationJobReaderWriter = makeActivationJobCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
+  config.cosmosdb.containersNames.activations,
 );
 
 const subscriptionQueue = makeSubscriptionQueueEventHubProducer(
@@ -87,6 +88,7 @@ const subscriptionQueue = makeSubscriptionQueueEventHubProducer(
 
 const activationRequestReaderWriter = makeActivationRequestReaderWriter(
   cosmosDB.database(config.cosmosdb.databaseName),
+  config.cosmosdb.containersNames.activations,
 );
 
 const eventWriter = makeEventWriterServiceBus(

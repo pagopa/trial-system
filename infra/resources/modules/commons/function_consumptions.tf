@@ -35,9 +35,9 @@ locals {
     SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = local.subscription_request_eventhub_name
     SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
 
-    ACTIVATION_CONSUMER                                   = "on"
+    ACTIVATION_CONSUMER                                   = "off"
     ACTIVATION_MAX_FETCH_SIZE                             = "999"
-    ACTIVATIONS_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.activations.name
+    ACTIVATIONS_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.activation.name
     ActivationConsumerCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
 
     EVENTS_PRODUCER              = "on"

@@ -56,7 +56,7 @@ export const anInsertActivationRequest = {
   id: anActivationRequestId,
   userId: aUserId,
   trialId: aTrialId,
-  activated: false,
+  state: 'SUBSCRIBED' as const,
   type: 'request' as const,
 };
 export const anActivationRequest = {
@@ -65,7 +65,7 @@ export const anActivationRequest = {
 };
 export const anActivationRequestActivated = {
   ...anInsertActivationRequest,
-  activated: true,
+  state: 'ACTIVE' as const,
   _etag: 'anEtag',
 };
 
