@@ -1,5 +1,11 @@
 # ops-scripts
 
+## 1.2.0
+
+### Minor Changes
+
+- b3e415b: [IOPLT-656] Add script to migrate activations to the new container
+
 ## 1.1.1
 
 ### Patch Changes
