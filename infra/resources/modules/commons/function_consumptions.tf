@@ -252,7 +252,8 @@ module "function_consumptions_autoscaler" {
       statistic_decrease        = "Max"
       time_aggregation_increase = "Maximum"
       time_aggregation_decrease = "Maximum"
-    }
+    },
+    memory = null
   }
 
   tags = var.tags
