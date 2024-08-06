@@ -236,8 +236,8 @@ module "function_consumptions_autoscaler" {
 
   scheduler = {
     normal_load = {
-      default = 3
-      minimum = 3
+      default = 1
+      minimum = 1
     }
     maximum = 30
   }
