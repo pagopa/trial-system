@@ -2,4 +2,4 @@
 "functions-subscription": minor
 ---
 
-[IOPLT-653, IOPLT-657] Use `state` property instead of `activated`
+[IOPLT-653, IOPLT-657] Update logic to use `state` property instead of `activated`
