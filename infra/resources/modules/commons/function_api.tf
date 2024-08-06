@@ -35,7 +35,7 @@ locals {
 
     ACTIVATION_CONSUMER                 = "off"
     ACTIVATION_MAX_FETCH_SIZE           = "999"
-    ACTIVATIONS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.activations.name
+    ACTIVATIONS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.activation.name
 
     EVENTS_PRODUCER              = "off"
     EVENTS_SERVICEBUS_TOPIC_NAME = azurerm_servicebus_topic.events.name

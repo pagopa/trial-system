@@ -19,7 +19,7 @@ resource "azurerm_dashboard" "main" {
       cosmosdb_account : module.cosmosdb_account.id,
       db_name : module.cosmosdb_sql_database_trial.name,
       subscription_container_name : azurerm_cosmosdb_sql_container.subscription.name,
-      activations_container_name : azurerm_cosmosdb_sql_container.activations.name,
+      activations_container_name : azurerm_cosmosdb_sql_container.activation.name,
       api_service_plan : module.func_api.function_app.plan.id,
       consumers_service_plan : module.func_consumers.function_app.plan.id,
       servicebus_namespace : azurerm_servicebus_namespace.main.id,

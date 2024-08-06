@@ -18,7 +18,7 @@ module "event_hub" {
   ]
 
   alerts_enabled = true
-  metric_alerts  = {
+  metric_alerts = {
     num_of_messages = {
       aggregation = "Total"
       metric_name = "IncomingMessages"
