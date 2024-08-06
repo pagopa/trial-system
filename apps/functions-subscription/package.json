@@ -2,7 +2,7 @@
   "name": "functions-subscription",
   "private": true,
   "main": "./dist/main.js",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "The Azure function that let users to subscribe to a trial and to provide information about the subscriptions.",
   "scripts": {
     "clean": "rimraf ./dist ./src/generated/definitions/internal",

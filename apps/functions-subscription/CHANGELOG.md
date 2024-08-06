@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 2.1.0
+
+### Minor Changes
+
+- cd037a0: [IOPLT-653, IOPLT-657] Update logic to use `state` property instead of `activated`
+
 ## 2.0.2
 
 ### Patch Changes
