@@ -58,22 +58,9 @@ export interface ActivationRequestWriter {
     activationRequest: InsertActivationRequest,
   ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationRequest>;
   /**
-   * This function is responsible to activate the activation requests.
-   * If any of the activation request cannot be activated, then none of them
-   * are activated.
-   * All the activation request must be of the same trialId.
-   */
-  readonly activate: (
-    activationRequests: readonly ActivationRequest[],
-  ) => TE.TaskEither<Error, ActivationResult>;
-  /**
    * This function is responsible to change the state of active activation requests.
    * This will also update the counter of the activation job decreasing it by
    * the number of activation requests with ACTIVE state.
-   *
-   * This function should not be used to activate.
-   * If you want to activate any activation requests, then use
-   * {@link activate} method.
    */
   readonly updateActivationRequestsState: (
     activationRequests: readonly ActivationRequest[],
@@ -118,17 +105,7 @@ export const getActivationRequest = (
     ),
   );
 
-export const activateActivationRequests = (
-  requests: readonly ActivationRequest[],
-) =>
-  pipe(
-    RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
-    RTE.flatMapTaskEither(({ activationRequestWriter }) =>
-      activationRequestWriter.activate(requests),
-    ),
-  );
-
-export const updateState = (
+export const updateActivationRequestState = (
   requests: readonly ActivationRequest[],
   state: ActivationRequest['state'],
 ) =>

@@ -3,21 +3,10 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Subscription, UserId } from '../domain/subscription';
 import { TrialId } from '../domain/trial';
 import {
-  activateActivationRequests,
-  ActivationRequest,
-  updateState,
+  updateActivationRequestState,
   getActivationRequest,
 } from '../domain/activation-request';
 import { ItemNotFound } from '../domain/errors';
-
-const handleUpdateSubscriptionState = (
-  activationRequest: ActivationRequest,
-  newState: Subscription['state'],
-) => {
-  if (newState === 'ACTIVE')
-    return activateActivationRequests([activationRequest]);
-  else return updateState([activationRequest], newState);
-};
 
 export const updateSubscription = (
   userId: UserId,
@@ -33,7 +22,7 @@ export const updateSubscription = (
     RTE.flatMap((req) => {
       if (state !== req.state) {
         return pipe(
-          handleUpdateSubscriptionState(req, state),
+          updateActivationRequestState([req], state),
           RTE.flatMap(() => RTE.of({ ...req, state })),
         );
       } else {
