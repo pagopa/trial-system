@@ -8,9 +8,9 @@ import {
 } from '../domain/subscription-history';
 import {
   ActivationRequest,
-  activateActivationRequests,
   insertActivationRequest,
   makeInsertActivationRequest,
+  updateActivationRequestState,
 } from '../domain/activation-request';
 
 const recoverItemAlreadyExists =
@@ -26,7 +26,7 @@ const handleActivatedRequest = (request: ActivationRequest) =>
     ? pipe(
         // This operation is required to keep the number of activated users up to date.
         // The assumption is that the activation job exists.
-        activateActivationRequests([request]),
+        updateActivationRequestState([request], 'ACTIVE'),
         RTE.map(() => request),
       )
     : RTE.of(request);

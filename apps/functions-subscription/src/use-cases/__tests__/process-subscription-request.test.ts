@@ -61,7 +61,7 @@ describe('processSubscriptionRequest', () => {
     mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
       TE.right({ ...anActivationRequest, state: 'ACTIVE' }),
     );
-    mockEnv.activationRequestWriter.activate.mockReturnValueOnce(
+    mockEnv.activationRequestWriter.updateActivationRequestsState.mockReturnValueOnce(
       TE.right('success'),
     );
 
@@ -71,9 +71,9 @@ describe('processSubscriptionRequest', () => {
     })(testEnv)();
 
     expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(mockEnv.activationRequestWriter.activate).toBeCalledWith([
-      { ...anActivationRequest, state: 'ACTIVE' },
-    ]);
+    expect(
+      mockEnv.activationRequestWriter.updateActivationRequestsState,
+    ).toBeCalledWith([{ ...anActivationRequest, state: 'ACTIVE' }], 'ACTIVE');
   });
   it('should not call activate if the request is neither ACTIVE nor SUBSCRIBED', async () => {
     const mockEnv = makeTestEnv();
