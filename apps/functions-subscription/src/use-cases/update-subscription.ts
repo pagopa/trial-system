@@ -23,7 +23,7 @@ export const updateSubscription = (
       if (state !== req.state) {
         return pipe(
           updateActivationRequestState([req], state),
-          RTE.flatMap(() => RTE.of({ ...req, state })),
+          RTE.map(() => ({ ...req, state })),
         );
       } else {
         return RTE.of(req);
