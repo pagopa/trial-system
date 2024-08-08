@@ -90,9 +90,8 @@ export const makeActivationRequestReaderWriter = (
           E.toError,
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
-        TE.map(RA.head),
+        TE.mapBoth(cosmosErrorToDomainError, RA.head),
       ),
-    // This method should decrease the counter of the job by the number of activationRequests with state = "ACTIVE"
     updateActivationRequestsState: (activationRequests, state) =>
       pipe(
         RNEA.fromReadonlyArray(activationRequests),
