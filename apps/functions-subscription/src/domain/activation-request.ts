@@ -58,9 +58,15 @@ export interface ActivationRequestWriter {
     activationRequest: InsertActivationRequest,
   ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationRequest>;
   /**
-   * This function is responsible to change the state of active activation requests.
-   * This will also update the counter of the activation job decreasing it by
-   * the number of activation requests with ACTIVE state.
+   * Updates the state of activation requests and adjusts the activation job counter accordingly.
+   *
+   * This function changes the state of the provided activation requests and updates the counter
+   * of the activation job by increasing or decreasing it based on the number of activation requests
+   * and their new state.
+   *
+   * @param activationRequests - An array of activation requests to be updated.
+   * @param state - The new state to assign to the activation requests.
+   * @returns A TaskEither that resolves to an {@link ActivationRequest} or an {@link Error}.
    */
   readonly updateActivationRequestsState: (
     activationRequests: readonly ActivationRequest[],
