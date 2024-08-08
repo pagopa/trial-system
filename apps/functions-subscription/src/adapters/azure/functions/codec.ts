@@ -6,6 +6,8 @@ import { Subscription as SubscriptionAPI } from '../../../generated/definitions/
 import { SubscriptionStateEnum } from '../../../generated/definitions/internal/SubscriptionState';
 import { TrialStateEnum } from '../../../generated/definitions/internal/TrialState';
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
+import { ActivationRequest } from '../../../domain/activation-request';
+import { UpdatedSubscription } from '../../../generated/definitions/internal/UpdatedSubscription';
 
 export const toSubscriptionAPI = (
   subscription: Subscription,
@@ -15,6 +17,14 @@ export const toSubscriptionAPI = (
   state: SubscriptionStateEnum[subscription.state],
   createdAt: subscription.createdAt,
   updatedAt: subscription.updatedAt,
+});
+
+export const toUpdatedSubscription = (
+  activationRequest: ActivationRequest,
+): UpdatedSubscription => ({
+  trialId: activationRequest.trialId,
+  userId: activationRequest.userId,
+  state: SubscriptionStateEnum[activationRequest.state],
 });
 
 export const toActivationJobAPI = (
