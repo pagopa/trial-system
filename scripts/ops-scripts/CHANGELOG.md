@@ -1,5 +1,11 @@
 # ops-scripts
 
+## 2.0.0
+
+### Major Changes
+
+- 0d5dcb6: [IOPLT-679] Remove useless scripts
+
 ## 1.3.0
 
 ### Minor Changes
