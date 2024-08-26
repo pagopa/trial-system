@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "apps/functions-subscription/api/*.yaml"
+      - "infra/resources/modules/commons/api/**/*.yaml"
       - ".github/workflows/opex_api_session_manager.yaml"
       - ".github/workflows/call_opex_api.yml"
       - "apps/functions-subscription/.opex/**"
