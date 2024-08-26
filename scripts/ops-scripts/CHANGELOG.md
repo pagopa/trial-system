@@ -1,5 +1,11 @@
 # ops-scripts
 
+## 1.3.0
+
+### Minor Changes
+
+- bef8c0d: [IOPLT-627] Add a script to remove trial's subs and subs-history
+
 ## 1.2.0
 
 ### Minor Changes
