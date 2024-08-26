@@ -1,5 +1,11 @@
 # ops-scripts
 
+## 2.0.1
+
+### Patch Changes
+
+- 44a2f9b: Fix reference to the OpenAPI file on generate script
+
 ## 2.0.0
 
 ### Major Changes
