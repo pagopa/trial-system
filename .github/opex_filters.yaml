@@ -5,5 +5,5 @@ apply-action:
   - ".github/workflows/opex_api_trial.yaml"
   - ".github/workflows/call_opex_api.yml"
 management:
-  - "apps/functions-subscription/api/public.yaml"
+  - "infra/resources/modules/commons/api/ts_management/v1/_openapi.yaml"
   - "apps/functions-subscription/.opex/management/**"
