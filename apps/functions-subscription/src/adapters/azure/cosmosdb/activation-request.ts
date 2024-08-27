@@ -128,12 +128,16 @@ const makeActivationResult = (
 const makeBatchOperations =
   (jobId: TrialId, state: ActivationRequest['state']) =>
   (requests: readonly ActivationRequest[]): readonly OperationInput[] => {
-    // If state is active, increment counter by the number of requests; otherwise,
-    // decrement the counter only by the number of "ACTIVE" activation requests
-    const counterIncrement =
+    // If state is active, increment counter by the number of requests (filter out the activation requests that are already ACTIVE);
+    // otherwise, decrement the counter only by the number of "ACTIVE" activation requests
+    const activeRequests = requests.filter(({ state }) => state === 'ACTIVE');
+    const nonActiveRequests = requests.filter(
+      ({ state }) => state !== 'ACTIVE',
+    );
+    const usersActivatedIncrement =
       state === 'ACTIVE'
-        ? requests.length
-        : -Math.abs(requests.filter(({ state }) => state === 'ACTIVE').length);
+        ? Math.abs(nonActiveRequests.length)
+        : -Math.abs(activeRequests.length);
 
     return pipe(
       requests,
@@ -159,7 +163,7 @@ const makeBatchOperations =
             {
               op: PatchOperationType.incr,
               path: `/usersActivated`,
-              value: counterIncrement,
+              value: usersActivatedIncrement,
             },
           ],
         },
