@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.0.1
+
+### Patch Changes
+
+- 44a2f9b: Remove public Open API
+
 ## 3.0.0
 
 ### Major Changes
