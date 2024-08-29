@@ -24,6 +24,14 @@ resource "github_repository_environment" "github_repository_environment_app_prod
     protected_branches     = false
     custom_branch_policies = true
   }
+
+  reviewers {
+    teams = matchkeys(
+      data.github_organization_teams.all.teams[*].id,
+      data.github_organization_teams.all.teams[*].slug,
+      local.app_cd.reviewers_teams
+    )
+  }
 }
 
 resource "github_actions_environment_secret" "env_prod_cd_secrets" {
