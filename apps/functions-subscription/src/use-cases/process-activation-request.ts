@@ -19,35 +19,31 @@ export const processActivationRequest = ({
   trialId,
   userId,
   state,
-}: ActivationRequest) => {
-  if (state === 'ACTIVE')
-    return pipe(
-      RTE.ask<Env>(),
-      RTE.apSW('subscriptionId', makeSubscriptionId(trialId, userId)),
-      RTE.bindW(
-        'subscriptionHistoryLatest',
-        ({ subscriptionHistoryReader, subscriptionId }) =>
-          pipe(
-            subscriptionHistoryReader.getLatest({ subscriptionId }),
-            TE.flatMapOption(
-              (some) => some,
-              () => new Error('Subscription History not found'),
-            ),
-            RTE.fromTaskEither,
+}: ActivationRequest) =>
+  pipe(
+    RTE.ask<Env>(),
+    RTE.apSW('subscriptionId', makeSubscriptionId(trialId, userId)),
+    RTE.bindW(
+      'subscriptionHistoryLatest',
+      ({ subscriptionHistoryReader, subscriptionId }) =>
+        pipe(
+          subscriptionHistoryReader.getLatest({ subscriptionId }),
+          TE.flatMapOption(
+            (some) => some,
+            () => new Error('Subscription History not found'),
           ),
-      ),
-      RTE.flatMap(({ subscriptionHistoryLatest }) => {
-        // only subscription in the SUBSCRIBED state can be activated
-        if (subscriptionHistoryLatest.state === 'SUBSCRIBED')
-          return pipe(
+          RTE.fromTaskEither,
+        ),
+    ),
+    RTE.flatMap(({ subscriptionHistoryLatest }) =>
+      state === subscriptionHistoryLatest.state
+        ? RTE.of(subscriptionHistoryLatest)
+        : pipe(
             makeSubscriptionHistoryNextVersion(subscriptionHistoryLatest, {
-              state: 'ACTIVE',
+              state,
             }),
             RTE.flatMap(insertSubscriptionHistory),
-          );
-        else return RTE.of(subscriptionHistoryLatest);
-      }),
-      RTE.map(O.of),
-    );
-  else return RTE.right(O.none);
-};
+          ),
+    ),
+    RTE.map(O.of),
+  );
