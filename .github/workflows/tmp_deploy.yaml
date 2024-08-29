@@ -1,0 +1,24 @@
+name: Echo
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    environment: "prod-cd"
+    steps:
+      - name: Echo 1
+        env:
+          HELLO: "Hello"
+        run: echo "HELLO"
+
+  world:
+    runs-on: ubuntu-latest
+    environment: "prod-cd"
+    steps:
+      - name: Echo 2
+        env:
+          WORLD: "World"
+        run: echo "WORLD"
