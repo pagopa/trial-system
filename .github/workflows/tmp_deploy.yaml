@@ -6,19 +6,19 @@ on:
 
 jobs:
   hello:
-    runs-on: ubuntu-latest
-    environment: "prod-cd"
-    steps:
-      - name: Echo 1
-        env:
-          HELLO: "Hello"
-        run: echo "HELLO"
+    concurrency:
+      cancel-in-progress: false
+      group: ${{ github.workflow }}-echo
+    uses: ./.github/workflows/call_echo.yaml
+    name: Echo Hello
+    with:
+      message: "Hello"
 
   world:
-    runs-on: ubuntu-latest
-    environment: "prod-cd"
-    steps:
-      - name: Echo 2
-        env:
-          WORLD: "World"
-        run: echo "WORLD"
+    concurrency:
+      cancel-in-progress: false
+      group: ${{ github.workflow }}-echo
+    uses: ./.github/workflows/call_echo.yaml
+    name: Echo World
+    with:
+      message: "World"
