@@ -11,7 +11,12 @@ on:
 jobs:
   deploy:
     name: Deploy API
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@f09aec9635f1b6f550dd90d2d2581d3e5239b409
+    concurrency:
+      # This value must be equals to the one set in the DX Workflow: https://github.com/pagopa/dx/blob/51ca1/.github/workflows/function_app_deploy.yaml#L36C10-L36C35
+      group: ${{ github.workflow }}-cd
+      # Override this configuration to prevent cancelling a running deploy.
+      cancel-in-progress: false
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@51ca10d1e4c97e8e987f14c14758bc8cf55fe79b
     secrets: inherit
     with:
       workspace_name: functions-subscription
