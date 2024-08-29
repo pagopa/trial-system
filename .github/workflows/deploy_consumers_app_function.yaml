@@ -1,0 +1,16 @@
+name: "Deploy Consumers App Function"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Consumers
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@f09aec9635f1b6f550dd90d2d2581d3e5239b409
+    secrets: inherit
+    with:
+      workspace_name: functions-subscription
+      environment: app-prod
+      resource_group_name: ts-p-itn-consumers-rg-01
+      function_app_name: ts-p-itn-consumers-func-01
+      health_check_path: "/info"
