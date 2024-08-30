@@ -21,7 +21,7 @@
     "@azure/arm-servicebus": "^6.1.0",
     "@azure/cosmos": "^4.0.0",
     "@azure/event-hubs": "^5.11.4",
-    "@azure/functions": "^4.4.0",
+    "@azure/functions": "^4.5.1",
     "@azure/identity": "^4.2.1",
     "@azure/service-bus": "^7.9.4",
     "@pagopa/handler-kit": "^1.1.0",

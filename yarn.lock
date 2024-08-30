@@ -347,7 +347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/functions@npm:^4.0.1, @azure/functions@npm:^4.4.0":
+"@azure/functions@npm:^4.0.1":
   version: 4.4.0
   resolution: "@azure/functions@npm:4.4.0"
   dependencies:
@@ -355,6 +355,17 @@ __metadata:
     long: "npm:^4.0.0"
     undici: "npm:^5.13.0"
   checksum: 10c0/81c97e20c0ce462f262b6a1ce18e1e45c2c690e0988b7221d7094d276cefe3312e1373a697c8408fc88f0fa004825057b455cb87366cf85a831baa83bf571ec5
+  languageName: node
+  linkType: hard
+
+"@azure/functions@npm:^4.5.1":
+  version: 4.5.1
+  resolution: "@azure/functions@npm:4.5.1"
+  dependencies:
+    cookie: "npm:^0.6.0"
+    long: "npm:^4.0.0"
+    undici: "npm:^5.13.0"
+  checksum: 10c0/58e16a6bd4916b807e5d72d3dd6e411bf89502a947e0e7d780d6d084bf7cc873c50a704d9ebb74f108d4ae38302e9e862901661f3f3b70c7de877cfdb78fa2da
   languageName: node
   linkType: hard
 
@@ -6728,7 +6739,7 @@ __metadata:
     "@azure/arm-servicebus": "npm:^6.1.0"
     "@azure/cosmos": "npm:^4.0.0"
     "@azure/event-hubs": "npm:^5.11.4"
-    "@azure/functions": "npm:^4.4.0"
+    "@azure/functions": "npm:^4.5.1"
     "@azure/identity": "npm:^4.2.1"
     "@azure/service-bus": "npm:^7.9.4"
     "@pagopa/handler-kit": "npm:^1.1.0"
