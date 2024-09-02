@@ -7,6 +7,7 @@ import { makeDatabaseMock } from './mocks';
 import {
   anActivationJob,
   anActivationRequest,
+  anActivationRequestActivated,
   anInsertActivationRequest,
 } from '../../../../domain/__tests__/data';
 import { makeActivationRequestReaderWriter } from '../activation-request';
@@ -69,7 +70,7 @@ const makeTestData = (length: number) => {
 describe('makeActivationRequestReaderWriter', () => {
   const containerName = 'aContainerName';
   describe('insert', () => {
-    it('should return the inserted item', async () => {
+    it('should return the inserted activation with subscribed state', async () => {
       const mockDB = makeDatabaseMock();
 
       mockDB
@@ -84,6 +85,58 @@ describe('makeActivationRequestReaderWriter', () => {
       expect(actual).toStrictEqual(E.right(anActivationRequest));
       expect(mockDB.container('').items.create).toBeCalledWith(
         anInsertActivationRequest,
+      );
+    });
+    it('should return the inserted activation with active state', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').items.batch.mockResolvedValueOnce({
+        result: [
+          {
+            statusCode: 200,
+            requestCharge: 1,
+            resourceBody: anActivationRequestActivated,
+          },
+          {
+            statusCode: 200,
+            requestCharge: 1,
+            resourceBody: anActivationJob,
+          },
+        ],
+      });
+
+      const activeInsertActivationRequest = {
+        ...anInsertActivationRequest,
+        state: 'ACTIVE' as const,
+      };
+
+      const actual = await makeActivationRequestReaderWriter(
+        mockDB as unknown as Database,
+        containerName,
+      ).insert(activeInsertActivationRequest)();
+
+      expect(actual).toStrictEqual(E.right(anActivationRequestActivated));
+      expect(mockDB.container('').items.batch).toBeCalledWith(
+        [
+          {
+            operationType: 'Create',
+            resourceBody: activeInsertActivationRequest,
+          },
+          {
+            id: activeInsertActivationRequest.trialId,
+            operationType: 'Patch',
+            resourceBody: {
+              operations: [
+                {
+                  op: 'incr',
+                  path: `/usersActivated`,
+                  value: 1,
+                },
+              ],
+            },
+          },
+        ],
+        activeInsertActivationRequest.trialId,
       );
     });
     it('should return ItemAlreadyExists if the item already exists', async () => {
