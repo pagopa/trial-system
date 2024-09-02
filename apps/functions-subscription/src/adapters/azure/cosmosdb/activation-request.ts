@@ -39,25 +39,28 @@ export const makeActivationRequestReaderWriter = (
           ? pipe(
               TE.tryCatch(
                 () =>
-                  container.items.batch([
-                    {
-                      operationType: BulkOperationType.Create,
-                      resourceBody: insertActivationRequest,
-                    },
-                    {
-                      id: insertActivationRequest.trialId,
-                      operationType: BulkOperationType.Patch,
-                      resourceBody: {
-                        operations: [
-                          {
-                            op: PatchOperationType.incr,
-                            path: `/usersActivated`,
-                            value: 1,
-                          },
-                        ],
+                  container.items.batch(
+                    [
+                      {
+                        operationType: BulkOperationType.Create,
+                        resourceBody: insertActivationRequest,
                       },
-                    },
-                  ]),
+                      {
+                        id: insertActivationRequest.trialId,
+                        operationType: BulkOperationType.Patch,
+                        resourceBody: {
+                          operations: [
+                            {
+                              op: PatchOperationType.incr,
+                              path: `/usersActivated`,
+                              value: 1,
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                    insertActivationRequest.trialId,
+                  ),
                 E.toError,
               ),
               TE.flatMapEither(({ result }) =>
