@@ -15,7 +15,7 @@ import { ItemAlreadyExists } from '../../domain/errors';
 const { userId, trialId } = aSubscription;
 
 describe('processSubscriptionRequest', () => {
-  it('should call insert subscription-history and activation request if the subscription request is SUBSCRIBED', async () => {
+  it('should call insert subscription-history and activation request', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -43,60 +43,6 @@ describe('processSubscriptionRequest', () => {
     expect(mockEnv.activationRequestWriter.insert).toBeCalledWith(
       anInsertActivationRequest,
     );
-  });
-  it('should call activate if the subscription request is ACTIVE', async () => {
-    const mockEnv = makeTestEnv();
-    const testEnv = mockEnv as unknown as Capabilities;
-
-    mockEnv.monotonicIdFn.mockReturnValueOnce({
-      value: anActivationRequest.id,
-    });
-    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
-    mockEnv.hashFn
-      .mockReturnValueOnce({ value: aSubscription.id })
-      .mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
-      TE.right({ ...aSubscriptionHistory, state: 'ACTIVE' }),
-    );
-    mockEnv.activationRequestWriter.insert.mockReturnValueOnce(
-      TE.right({ ...anActivationRequest, state: 'ACTIVE' }),
-    );
-    mockEnv.activationRequestWriter.updateActivationRequestsState.mockReturnValueOnce(
-      TE.right('success'),
-    );
-
-    const actual = await processSubscriptionRequest({
-      ...aSubscription,
-      state: 'ACTIVE',
-    })(testEnv)();
-
-    expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(
-      mockEnv.activationRequestWriter.updateActivationRequestsState,
-    ).toBeCalledWith([{ ...anActivationRequest, state: 'ACTIVE' }], 'ACTIVE');
-  });
-  it('should not call activate if the request is neither ACTIVE nor SUBSCRIBED', async () => {
-    const mockEnv = makeTestEnv();
-    const testEnv = mockEnv as unknown as Capabilities;
-
-    mockEnv.monotonicIdFn.mockReturnValueOnce({
-      value: anActivationRequest.id,
-    });
-    mockEnv.clock.now.mockReturnValueOnce(aSubscription.createdAt);
-    mockEnv.hashFn.mockReturnValueOnce({ value: aSubscriptionHistory.id });
-    mockEnv.subscriptionHistoryWriter.insert.mockReturnValueOnce(
-      TE.right(aSubscriptionHistory),
-    );
-
-    const actual = await processSubscriptionRequest({
-      ...aSubscription,
-      state: 'DISABLED',
-    })(testEnv)();
-
-    expect(actual).toStrictEqual(E.right({ userId, trialId }));
-    expect(mockEnv.subscriptionWriter.insert).toBeCalledTimes(0);
-    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(1);
-    expect(mockEnv.activationRequestWriter.insert).toBeCalledTimes(0);
   });
   it('should insert the first version of subscription-history if subscription already exists', async () => {
     const mockEnv = makeTestEnv();
