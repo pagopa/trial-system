@@ -1,6 +1,7 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
+import * as A from 'fp-ts/lib/Array';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import * as RNEA from 'fp-ts/lib/ReadonlyNonEmptyArray';
 import { pipe } from 'fp-ts/lib/function';
@@ -18,7 +19,11 @@ import {
   ActivationRequestWriter,
   ActivationResult,
 } from '../../../domain/activation-request';
-import { decodeFromFeed, decodeFromItem } from './decode';
+import {
+  decodeFromFeed,
+  decodeFromItem,
+  decodeFromOperationResponse,
+} from './decode';
 import { cosmosErrorToDomainError } from './errors';
 import { TrialId } from '../../../domain/trial';
 
@@ -30,11 +35,47 @@ export const makeActivationRequestReaderWriter = (
   return {
     insert: (insertActivationRequest) =>
       pipe(
-        TE.tryCatch(
-          () => container.items.create(insertActivationRequest),
-          E.toError,
-        ),
-        TE.flatMapEither(decodeFromItem(ActivationRequestCodec)),
+        insertActivationRequest.state === 'ACTIVE'
+          ? pipe(
+              TE.tryCatch(
+                () =>
+                  container.items.batch([
+                    {
+                      operationType: BulkOperationType.Create,
+                      resourceBody: insertActivationRequest,
+                    },
+                    {
+                      id: insertActivationRequest.trialId,
+                      operationType: BulkOperationType.Patch,
+                      resourceBody: {
+                        operations: [
+                          {
+                            op: PatchOperationType.incr,
+                            path: `/usersActivated`,
+                            value: 1,
+                          },
+                        ],
+                      },
+                    },
+                  ]),
+                E.toError,
+              ),
+              TE.flatMapEither(({ result }) =>
+                pipe(
+                  result || [],
+                  A.head,
+                  O.map(decodeFromOperationResponse(ActivationRequestCodec)),
+                  O.getOrElseW(() => E.right(O.none)),
+                ),
+              ),
+            )
+          : pipe(
+              TE.tryCatch(
+                () => container.items.create(insertActivationRequest),
+                E.toError,
+              ),
+              TE.flatMapEither(decodeFromItem(ActivationRequestCodec)),
+            ),
         TE.flatMap(
           TE.fromOption(
             () =>
