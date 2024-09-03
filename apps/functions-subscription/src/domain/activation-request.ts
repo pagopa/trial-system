@@ -2,6 +2,7 @@ import * as t from 'io-ts';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
+import * as O from 'fp-ts/lib/Option';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { SubscriptionState, UserIdCodec } from './subscription';
 import { Capabilities } from './capabilities';
@@ -43,6 +44,10 @@ export interface ActivationRequestReader {
     trialId: TrialId,
     limit: number,
   ) => TE.TaskEither<Error, readonly ActivationRequest[]>;
+  readonly get: (
+    trialId: ActivationRequest['trialId'],
+    userId: ActivationRequest['userId'],
+  ) => TE.TaskEither<Error, O.Option<ActivationRequest>>;
 }
 
 export interface ActivationRequestWriter {
@@ -53,13 +58,19 @@ export interface ActivationRequestWriter {
     activationRequest: InsertActivationRequest,
   ) => TE.TaskEither<Error | ItemAlreadyExists, ActivationRequest>;
   /**
-   * This function is responsible to activate the activation requests.
-   * If any of the activation request cannot be activated, then none of them
-   * are activated.
-   * All the activation request must be of the same trialId.
+   * Updates the state of activation requests and adjusts the activation job counter accordingly.
+   *
+   * This function changes the state of the provided activation requests and updates the counter
+   * of the activation job by increasing or decreasing it based on the number of activation requests
+   * and their new state.
+   *
+   * @param activationRequests - An array of activation requests to be updated.
+   * @param state - The new state to assign to the activation requests.
+   * @returns A TaskEither that resolves to an {@link ActivationRequest} or an {@link Error}.
    */
-  readonly activate: (
+  readonly updateActivationRequestsState: (
     activationRequests: readonly ActivationRequest[],
+    state: ActivationRequest['state'],
   ) => TE.TaskEither<Error, ActivationResult>;
 }
 
@@ -89,12 +100,24 @@ export const insertActivationRequest = (request: InsertActivationRequest) =>
     ),
   );
 
-export const activateActivationRequests = (
+export const getActivationRequest = (
+  trialId: ActivationRequest['trialId'],
+  userId: ActivationRequest['userId'],
+) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'activationRequestReader'>>(),
+    RTE.flatMapTaskEither(({ activationRequestReader }) =>
+      activationRequestReader.get(trialId, userId),
+    ),
+  );
+
+export const updateActivationRequestState = (
   requests: readonly ActivationRequest[],
+  state: ActivationRequest['state'],
 ) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'activationRequestWriter'>>(),
     RTE.flatMapTaskEither(({ activationRequestWriter }) =>
-      activationRequestWriter.activate(requests),
+      activationRequestWriter.updateActivationRequestsState(requests, state),
     ),
   );

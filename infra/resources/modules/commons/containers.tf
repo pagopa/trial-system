@@ -89,6 +89,23 @@ resource "azurerm_cosmosdb_sql_container" "activation" {
         order = "Ascending"
       }
     }
+
+    composite_index {
+      index {
+        path  = "/trialId"
+        order = "Ascending"
+      }
+
+      index {
+        path  = "/type"
+        order = "Ascending"
+      }
+
+      index {
+        path  = "/userId"
+        order = "Ascending"
+      }
+    }
   }
 }
 

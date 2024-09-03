@@ -14,6 +14,7 @@ export const makeTestSystemEnv = () => ({
   createSubscription: mockFn<SystemEnv['createSubscription']>(),
   processSubscriptionRequest: mockFn<SystemEnv['processSubscriptionRequest']>(),
   getSubscription: mockFn<SystemEnv['getSubscription']>(),
+  updateSubscription: mockFn<SystemEnv['updateSubscription']>(),
   processActivationJob: mockFn<SystemEnv['processActivationJob']>(),
   processActivationRequest: mockFn<SystemEnv['processActivationRequest']>(),
   createTrial: mockFn<SystemEnv['createTrial']>(),

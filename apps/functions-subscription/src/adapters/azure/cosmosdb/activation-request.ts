@@ -1,6 +1,7 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
+import * as A from 'fp-ts/lib/Array';
 import * as RA from 'fp-ts/lib/ReadonlyArray';
 import * as RNEA from 'fp-ts/lib/ReadonlyNonEmptyArray';
 import { pipe } from 'fp-ts/lib/function';
@@ -18,7 +19,11 @@ import {
   ActivationRequestWriter,
   ActivationResult,
 } from '../../../domain/activation-request';
-import { decodeFromFeed, decodeFromItem } from './decode';
+import {
+  decodeFromFeed,
+  decodeFromItem,
+  decodeFromOperationResponse,
+} from './decode';
 import { cosmosErrorToDomainError } from './errors';
 import { TrialId } from '../../../domain/trial';
 
@@ -30,11 +35,50 @@ export const makeActivationRequestReaderWriter = (
   return {
     insert: (insertActivationRequest) =>
       pipe(
-        TE.tryCatch(
-          () => container.items.create(insertActivationRequest),
-          E.toError,
-        ),
-        TE.flatMapEither(decodeFromItem(ActivationRequestCodec)),
+        insertActivationRequest.state === 'ACTIVE'
+          ? pipe(
+              TE.tryCatch(
+                () =>
+                  container.items.batch(
+                    [
+                      {
+                        operationType: BulkOperationType.Create,
+                        resourceBody: insertActivationRequest,
+                      },
+                      {
+                        id: insertActivationRequest.trialId,
+                        operationType: BulkOperationType.Patch,
+                        resourceBody: {
+                          operations: [
+                            {
+                              op: PatchOperationType.incr,
+                              path: `/usersActivated`,
+                              value: 1,
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                    insertActivationRequest.trialId,
+                  ),
+                E.toError,
+              ),
+              TE.flatMapEither(({ result }) =>
+                pipe(
+                  result || [],
+                  A.head,
+                  O.map(decodeFromOperationResponse(ActivationRequestCodec)),
+                  O.getOrElseW(() => E.right(O.none)),
+                ),
+              ),
+            )
+          : pipe(
+              TE.tryCatch(
+                () => container.items.create(insertActivationRequest),
+                E.toError,
+              ),
+              TE.flatMapEither(decodeFromItem(ActivationRequestCodec)),
+            ),
         TE.flatMap(
           TE.fromOption(
             () =>
@@ -67,7 +111,32 @@ export const makeActivationRequestReaderWriter = (
         ),
         TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
       ),
-    activate: (activationRequests) =>
+    get: (trialId, userId) =>
+      pipe(
+        TE.tryCatch(
+          () =>
+            container.items
+              .query({
+                query:
+                  'SELECT * FROM c WHERE c.trialId = @trialId AND c.type = "request" AND c.userId = @userId OFFSET 0 LIMIT 1',
+                parameters: [
+                  {
+                    name: '@trialId',
+                    value: trialId,
+                  },
+                  {
+                    name: '@userId',
+                    value: userId,
+                  },
+                ],
+              })
+              .fetchAll(),
+          E.toError,
+        ),
+        TE.flatMapEither(decodeFromFeed(ActivationRequestCodec)),
+        TE.mapBoth(cosmosErrorToDomainError, RA.head),
+      ),
+    updateActivationRequestsState: (activationRequests, state) =>
       pipe(
         RNEA.fromReadonlyArray(activationRequests),
         O.map((rnea) =>
@@ -77,7 +146,7 @@ export const makeActivationRequestReaderWriter = (
             // batches of 99 items.
             // https://learn.microsoft.com/en-us/javascript/api/@azure/cosmos/items?view=azure-node-latest#@azure-cosmos-items-batch
             RA.chunksOf(99)(rnea),
-            RA.map(makeBatchOperations(RNEA.head(rnea).trialId)),
+            RA.map(makeBatchOperations(RNEA.head(rnea).trialId, state)),
             TE.traverseArray((chunk) =>
               TE.tryCatch(
                 () =>
@@ -101,9 +170,20 @@ const makeActivationResult = (
 };
 
 const makeBatchOperations =
-  (jobId: TrialId) =>
-  (requests: readonly ActivationRequest[]): readonly OperationInput[] =>
-    pipe(
+  (jobId: TrialId, state: ActivationRequest['state']) =>
+  (requests: readonly ActivationRequest[]): readonly OperationInput[] => {
+    // If state is active, increment counter by the number of requests (filter out the activation requests that are already ACTIVE);
+    // otherwise, decrement the counter only by the number of "ACTIVE" activation requests
+    const activeRequests = requests.filter(({ state }) => state === 'ACTIVE');
+    const nonActiveRequests = requests.filter(
+      ({ state }) => state !== 'ACTIVE',
+    );
+    const usersActivatedIncrement =
+      state === 'ACTIVE'
+        ? Math.abs(nonActiveRequests.length)
+        : -Math.abs(activeRequests.length);
+
+    return pipe(
       requests,
       RA.map(({ id, _etag }) => ({
         id,
@@ -114,7 +194,7 @@ const makeBatchOperations =
             {
               op: PatchOperationType.replace,
               path: `/state`,
-              value: 'ACTIVE',
+              value: state,
             },
           ],
         },
@@ -127,9 +207,10 @@ const makeBatchOperations =
             {
               op: PatchOperationType.incr,
               path: `/usersActivated`,
-              value: requests.length,
+              value: usersActivatedIncrement,
             },
           ],
         },
       }),
     );
+  };

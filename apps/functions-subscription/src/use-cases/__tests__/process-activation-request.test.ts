@@ -9,24 +9,11 @@ import {
   aSubscription,
   aSubscriptionHistory,
   aSubscriptionHistoryV1,
-  anActivationRequest,
   anActivationRequestActivated,
 } from '../../domain/__tests__/data';
 
 describe('processActivationRequest', () => {
-  it('should return none if activation request is not activated', async () => {
-    const mockEnv = makeTestEnv();
-    const testEnv = mockEnv as unknown as Capabilities;
-
-    const actual =
-      await processActivationRequest(anActivationRequest)(testEnv)();
-
-    expect(actual).toStrictEqual(E.right(O.none));
-    expect(mockEnv.subscriptionHistoryReader.getLatest).toBeCalledTimes(0);
-    expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
-  });
-
-  it('should not insert a new version if the latest subscription-history is not SUBSCRIBED', async () => {
+  it('should not insert a new version when state does not change', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
@@ -46,7 +33,7 @@ describe('processActivationRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
   });
 
-  it('should create a new version of subscription-history if activated and the latest version is SUBSCRIBED', async () => {
+  it('should create a new version of subscription-history when the state changes', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 

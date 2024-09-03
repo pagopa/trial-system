@@ -25,7 +25,10 @@ export const processActivationJob = (
           : pipe(
               activationRequestReader.list(job.trialId, limit),
               TE.flatMap((activationRequests) =>
-                activationRequestWriter.activate(activationRequests),
+                activationRequestWriter.updateActivationRequestsState(
+                  activationRequests,
+                  'ACTIVE',
+                ),
               ),
             ),
     ),
