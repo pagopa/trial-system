@@ -56,9 +56,9 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
     put:
       operationId: updateSubscription
-      summary: Update subscription
+      summary: Update a subscription
       description: >-
-        Update the state of the subscription
+        Update the state of a subscription
       parameters:
         - $ref: '#/components/parameters/pathTrialId'
         - $ref: '#/components/parameters/pathUserId'
