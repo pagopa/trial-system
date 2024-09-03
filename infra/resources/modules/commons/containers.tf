@@ -97,12 +97,12 @@ resource "azurerm_cosmosdb_sql_container" "activation" {
       }
 
       index {
-        path  = "/userId"
+        path  = "/type"
         order = "Ascending"
       }
 
       index {
-        path  = "/type"
+        path  = "/userId"
         order = "Ascending"
       }
     }
