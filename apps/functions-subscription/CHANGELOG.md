@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.1.0
+
+### Minor Changes
+
+- bfef558: Add endpoint to update the `state` of a subscription
+
 ## 3.0.1
 
 ### Patch Changes
