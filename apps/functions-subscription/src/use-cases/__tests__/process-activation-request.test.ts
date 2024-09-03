@@ -33,7 +33,7 @@ describe('processActivationRequest', () => {
     expect(mockEnv.subscriptionHistoryWriter.insert).toBeCalledTimes(0);
   });
 
-  it('should create a new version of subscription-history when state changed', async () => {
+  it('should create a new version of subscription-history when the state changes', async () => {
     const mockEnv = makeTestEnv();
     const testEnv = mockEnv as unknown as Capabilities;
 
