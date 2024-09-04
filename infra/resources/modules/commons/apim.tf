@@ -52,6 +52,16 @@ module "apim" {
   tags = var.tags
 }
 
+resource "azurerm_key_vault_access_policy" "apim_policy" {
+  key_vault_id            = module.key_vault.id
+  tenant_id               = data.azurerm_client_config.current.tenant_id
+  object_id               = module.apim.principal_id
+  key_permissions         = []
+  secret_permissions      = ["Get"]
+  certificate_permissions = []
+  storage_permissions     = []
+}
+
 module "apim_product_ts_management" {
   source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
 
