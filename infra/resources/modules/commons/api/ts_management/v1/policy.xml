@@ -34,6 +34,9 @@
     </inbound>
     <outbound>
         <base />
+        <set-header name="x-test-header" exists-action="override">
+          <value>{{test-named-value}}</value>
+        </set-header>
     </outbound>
     <backend>
         <base />
