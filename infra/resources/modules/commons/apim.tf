@@ -128,6 +128,17 @@ resource "azurerm_api_management_named_value" "ts_subscription_fn_key" {
   secret              = "true"
 }
 
+resource "azurerm_api_management_named_value" "ts_api_fn_key" {
+  name                = "ts-api-fn-key"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ts-api-fn-key"
+  secret              = true
+  value_from_key_vault {
+    secret_id = data.azurerm_key_vault_secret.ts_subscription_fn_key_secret.versionless_id
+  }
+}
+
 ####################################################################################
 # TRIAL MANAGERS GROUPS
 ####################################################################################
