@@ -57,7 +57,7 @@ resource "azurerm_key_vault_access_policy" "apim_policy" {
   tenant_id               = data.azurerm_client_config.current.tenant_id
   object_id               = module.apim.principal_id
   key_permissions         = []
-  secret_permissions      = ["Get"]
+  secret_permissions      = ["Get", "List"]
   certificate_permissions = []
   storage_permissions     = []
 }
