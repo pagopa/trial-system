@@ -52,6 +52,21 @@ module "apim" {
   tags = var.tags
 }
 
+module "apim_key_vault_access_policy" {
+  source       = "github.com/pagopa/dx//infra/modules/azure_role_assignments?ref=64bece38e810e3744a142345f985ac2f279b93a9"
+  principal_id = module.apim.principal_id
+
+  key_vault = [
+    {
+      name                = module.key_vault.name
+      resource_group_name = module.key_vault.resource_group_name
+      roles = {
+        secrets = "reader"
+      }
+    }
+  ]
+}
+
 module "apim_product_ts_management" {
   source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
 
@@ -111,6 +126,17 @@ resource "azurerm_api_management_named_value" "ts_subscription_fn_key" {
   display_name        = "ts-subscription-fn-key"
   value               = data.azurerm_key_vault_secret.ts_subscription_fn_key_secret.value
   secret              = "true"
+}
+
+resource "azurerm_api_management_named_value" "ts_api_fn_key" {
+  name                = "ts-api-fn-key"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ts-api-fn-key"
+  secret              = true
+  value_from_key_vault {
+    secret_id = data.azurerm_key_vault_secret.ts_subscription_fn_key_secret.versionless_id
+  }
 }
 
 #### JUST FOR TEST - REMOVE THESE RESOURCES ###
