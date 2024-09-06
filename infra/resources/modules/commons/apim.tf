@@ -119,15 +119,6 @@ data "azurerm_key_vault_secret" "ts_subscription_fn_key_secret" {
   key_vault_id = module.key_vault.id
 }
 
-resource "azurerm_api_management_named_value" "ts_subscription_fn_key" {
-  name                = "ts-subscription-fn-key"
-  api_management_name = module.apim.name
-  resource_group_name = module.apim.resource_group_name
-  display_name        = "ts-subscription-fn-key"
-  value               = data.azurerm_key_vault_secret.ts_subscription_fn_key_secret.value
-  secret              = "true"
-}
-
 resource "azurerm_api_management_named_value" "ts_api_fn_key" {
   name                = "ts-api-fn-key"
   api_management_name = module.apim.name
