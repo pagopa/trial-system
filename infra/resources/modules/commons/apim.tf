@@ -139,23 +139,6 @@ resource "azurerm_api_management_named_value" "ts_api_fn_key" {
   }
 }
 
-#### JUST FOR TEST - REMOVE THESE RESOURCES ###
-data "azurerm_key_vault_secret" "test_secret" {
-  name         = "testSecret"
-  key_vault_id = module.key_vault.id
-}
-
-resource "azurerm_api_management_named_value" "test-named-value" {
-  name                = "test-named-value"
-  api_management_name = module.apim.name
-  resource_group_name = module.apim.resource_group_name
-  display_name        = "test-named-value"
-  secret              = true
-  value_from_key_vault {
-    secret_id = data.azurerm_key_vault_secret.test_secret.versionless_id
-  }
-}
-
 ####################################################################################
 # TRIAL MANAGERS GROUPS
 ####################################################################################
