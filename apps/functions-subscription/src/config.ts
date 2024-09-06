@@ -8,23 +8,32 @@ import {
   WithinRangeInteger,
 } from '@pagopa/ts-commons/lib/numbers';
 
+type OnOrOff = 'on' | 'off';
+
+interface ActiveConsumer {
+  readonly consumer: Extract<OnOrOff, 'on'>;
+  readonly connectionString: string;
+}
+interface InactiveConsumer {
+  readonly consumer: Extract<OnOrOff, 'off'>;
+}
+type Consumer = ActiveConsumer | InactiveConsumer;
+
+const OnOrOffCodec = t.keyof<{
+  readonly [K in OnOrOff]: unknown;
+}>({
+  on: null,
+  off: null,
+});
+
 export interface Config {
-  readonly subscriptionHistory: {
-    readonly consumer: 'on' | 'off';
-  };
-  readonly subscriptionRequest: {
-    readonly consumer: 'on' | 'off';
-  };
-  readonly activations: {
-    readonly consumer: 'on' | 'off';
-    readonly maxFetchSize: number;
-  };
+  readonly subscriptionHistory: Consumer;
+  readonly subscriptionRequest: Consumer;
+  readonly activations: Consumer & { readonly maxFetchSize: number };
   readonly events: {
-    readonly producer: 'on' | 'off';
+    readonly producer: OnOrOff;
   };
-  readonly trials: {
-    readonly consumer: 'on' | 'off';
-  };
+  readonly trials: Consumer;
   readonly servicebus: {
     readonly namespace: string;
     readonly names: {
@@ -54,12 +63,7 @@ export interface Config {
   };
 }
 
-const OnOrOffCodec = t.keyof({
-  on: null,
-  off: null,
-});
-
-const EnvsCodec = t.strict({
+const EnvsCodec = t.type({
   COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
   EVENTHUB_NAMESPACE: NonEmptyString,
@@ -79,6 +83,14 @@ const EnvsCodec = t.strict({
   SUBSCRIPTION_ID: NonEmptyString,
   SERVICE_BUS_RESOURCE_GROUP_NAME: NonEmptyString,
   SERVICE_BUS_LOCATION: NonEmptyString,
+  SubscriptionHistoryCosmosConnection: t.union([NonEmptyString, t.undefined]),
+  SubscriptionHistoryCosmosConnection__accountName: NonEmptyString,
+  ActivationConsumerCosmosDBConnection: t.union([NonEmptyString, t.undefined]),
+  ActivationConsumerCosmosDBConnection__accountEndpoint: NonEmptyString,
+  SubscriptionRequestEventHubConnection: t.union([NonEmptyString, t.undefined]),
+  SubscriptionRequestEventHubConnection__accountName: NonEmptyString,
+  TrialsCosmosConnection: t.union([NonEmptyString, t.undefined]),
+  TrialsCosmosConnection__accountEndpoint: NonEmptyString,
 });
 
 export const parseConfig = (
@@ -91,12 +103,21 @@ export const parseConfig = (
       (envs) => ({
         subscriptionHistory: {
           consumer: envs.SUBSCRIPTION_HISTORY_CONSUMER,
+          connectionString:
+            envs.SubscriptionHistoryCosmosConnection ||
+            envs.SubscriptionHistoryCosmosConnection__accountName,
         },
         subscriptionRequest: {
           consumer: envs.SUBSCRIPTION_REQUEST_CONSUMER,
+          connectionString:
+            envs.SubscriptionRequestEventHubConnection ||
+            envs.SubscriptionRequestEventHubConnection__accountName,
         },
         activations: {
           consumer: envs.ACTIVATION_CONSUMER,
+          connectionString:
+            envs.ActivationConsumerCosmosDBConnection ||
+            envs.ActivationConsumerCosmosDBConnection__accountEndpoint,
           maxFetchSize: envs.ACTIVATION_MAX_FETCH_SIZE,
         },
         events: {
@@ -104,6 +125,9 @@ export const parseConfig = (
         },
         trials: {
           consumer: envs.TRIAL_CONSUMER,
+          connectionString:
+            envs.TrialsCosmosConnection ||
+            envs.TrialsCosmosConnection__accountEndpoint,
         },
         servicebus: {
           namespace: envs.SERVICEBUS_NAMESPACE,
