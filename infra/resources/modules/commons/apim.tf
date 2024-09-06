@@ -52,6 +52,21 @@ module "apim" {
   tags = var.tags
 }
 
+module "apim_key_vault_access_policy" {
+  source       = "github.com/pagopa/dx//infra/modules/azure_role_assignments?ref=64bece38e810e3744a142345f985ac2f279b93a9"
+  principal_id = module.apim.principal_id
+
+  key_vault = [
+    {
+      name                = module.key_vault.name
+      resource_group_name = module.key_vault.resource_group_name
+      roles = {
+        secrets = "reader"
+      }
+    }
+  ]
+}
+
 module "apim_product_ts_management" {
   source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
 
