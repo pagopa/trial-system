@@ -52,14 +52,19 @@ module "apim" {
   tags = var.tags
 }
 
-resource "azurerm_key_vault_access_policy" "apim_policy" {
-  key_vault_id            = module.key_vault.id
-  tenant_id               = data.azurerm_client_config.current.tenant_id
-  object_id               = module.apim.principal_id
-  key_permissions         = []
-  secret_permissions      = ["Get", "List"]
-  certificate_permissions = []
-  storage_permissions     = []
+module "apim_key_vault_access_policy" {
+  source       = "github.com/pagopa/dx//infra/modules/azure_role_assignments?ref=64bece38e810e3744a142345f985ac2f279b93a9"
+  principal_id = module.apim.principal_id
+
+  key_vault = [
+    {
+      name                = module.key_vault.name
+      resource_group_name = module.key_vault.resource_group_name
+      roles = {
+        secrets = "reader"
+      }
+    }
+  ]
 }
 
 module "apim_product_ts_management" {
