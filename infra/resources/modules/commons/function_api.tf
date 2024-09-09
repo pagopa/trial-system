@@ -27,21 +27,25 @@ locals {
 
     LEASES_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.leases.name
 
-    SUBSCRIPTION_HISTORY_CONSUMER                = "off"
-    SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.subscription_history.name
+    SUBSCRIPTION_HISTORY_CONSUMER                        = "off"
+    SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME         = azurerm_cosmosdb_sql_container.subscription_history.name
+    SubscriptionHistoryCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
 
-    SUBSCRIPTION_REQUEST_CONSUMER      = "off"
-    SUBSCRIPTION_REQUEST_EVENTHUB_NAME = local.subscription_request_eventhub_name
+    SUBSCRIPTION_REQUEST_CONSUMER                                  = "off"
+    SUBSCRIPTION_REQUEST_EVENTHUB_NAME                             = local.subscription_request_eventhub_name
+    SubscriptionRequestEventHubConnection__fullyQualifiedNamespace = "${module.event_hub.name}.servicebus.windows.net"
 
-    ACTIVATION_CONSUMER                 = "off"
-    ACTIVATION_MAX_FETCH_SIZE           = "999"
-    ACTIVATIONS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.activation.name
+    ACTIVATION_CONSUMER                                   = "off"
+    ACTIVATION_MAX_FETCH_SIZE                             = "999"
+    ACTIVATIONS_COSMOSDB_CONTAINER_NAME                   = azurerm_cosmosdb_sql_container.activation.name
+    ActivationConsumerCosmosDBConnection__accountEndpoint = module.cosmosdb_account.endpoint
 
     EVENTS_PRODUCER              = "off"
     EVENTS_SERVICEBUS_TOPIC_NAME = azurerm_servicebus_topic.events.name
 
-    TRIAL_CONSUMER                 = "off"
-    TRIALS_COSMOSDB_CONTAINER_NAME = azurerm_cosmosdb_sql_container.trials.name
+    TRIAL_CONSUMER                          = "off"
+    TRIALS_COSMOSDB_CONTAINER_NAME          = azurerm_cosmosdb_sql_container.trials.name
+    TrialsCosmosConnection__accountEndpoint = module.cosmosdb_account.endpoint
   }
 }
 
