@@ -10,15 +10,6 @@ import {
 
 type OnOrOff = 'on' | 'off';
 
-interface ActiveConsumer {
-  readonly consumer: Extract<OnOrOff, 'on'>;
-  readonly connectionString: string;
-}
-interface InactiveConsumer {
-  readonly consumer: Extract<OnOrOff, 'off'>;
-}
-type Consumer = ActiveConsumer | InactiveConsumer;
-
 const OnOrOffCodec = t.keyof<{
   readonly [K in OnOrOff]: unknown;
 }>({
@@ -27,13 +18,22 @@ const OnOrOffCodec = t.keyof<{
 });
 
 export interface Config {
-  readonly subscriptionHistory: Consumer;
-  readonly subscriptionRequest: Consumer;
-  readonly activations: Consumer & { readonly maxFetchSize: number };
+  readonly subscriptionHistory: {
+    readonly consumer: OnOrOff;
+  };
+  readonly subscriptionRequest: {
+    readonly consumer: OnOrOff;
+  };
+  readonly activations: {
+    readonly consumer: OnOrOff;
+    readonly maxFetchSize: number;
+  };
   readonly events: {
     readonly producer: OnOrOff;
   };
-  readonly trials: Consumer;
+  readonly trials: {
+    readonly consumer: OnOrOff;
+  };
   readonly servicebus: {
     readonly namespace: string;
     readonly names: {
@@ -103,21 +103,12 @@ export const parseConfig = (
       (envs) => ({
         subscriptionHistory: {
           consumer: envs.SUBSCRIPTION_HISTORY_CONSUMER,
-          connectionString:
-            envs.SubscriptionHistoryCosmosConnection ||
-            envs.SubscriptionHistoryCosmosConnection__accountName,
         },
         subscriptionRequest: {
           consumer: envs.SUBSCRIPTION_REQUEST_CONSUMER,
-          connectionString:
-            envs.SubscriptionRequestEventHubConnection ||
-            envs.SubscriptionRequestEventHubConnection__accountName,
         },
         activations: {
           consumer: envs.ACTIVATION_CONSUMER,
-          connectionString:
-            envs.ActivationConsumerCosmosDBConnection ||
-            envs.ActivationConsumerCosmosDBConnection__accountEndpoint,
           maxFetchSize: envs.ACTIVATION_MAX_FETCH_SIZE,
         },
         events: {
@@ -125,9 +116,6 @@ export const parseConfig = (
         },
         trials: {
           consumer: envs.TRIAL_CONSUMER,
-          connectionString:
-            envs.TrialsCosmosConnection ||
-            envs.TrialsCosmosConnection__accountEndpoint,
         },
         servicebus: {
           namespace: envs.SERVICEBUS_NAMESPACE,
