@@ -141,6 +141,14 @@ resource "azurerm_api_management_group" "api_trial_manager" {
   description         = "A group that enables Trial Managers to mange its own trials"
 }
 
+resource "azurerm_api_management_group" "api_trial_user" {
+  name                = "apitrialuser"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ApiTrialUser"
+  description         = "A group that enables users to manage their trial subscriptions"
+}
+
 ####################################################################################
 # IO Wallet User
 ####################################################################################
