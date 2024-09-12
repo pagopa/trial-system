@@ -130,6 +130,14 @@ resource "azurerm_api_management_named_value" "ts_api_fn_key" {
   }
 }
 
+resource "azurerm_api_management_named_value" "ts_api_fn_url" {
+  name                = "ts-api-fn-url"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ts-api-fn-url"
+  value               = "https://${module.func_api.function_app.function_app.default_hostname}"
+}
+
 ####################################################################################
 # TRIAL MANAGERS GROUPS
 ####################################################################################
