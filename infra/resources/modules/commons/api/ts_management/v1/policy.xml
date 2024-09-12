@@ -1,7 +1,7 @@
 <policies>
     <inbound>
         <base />
-        <set-backend-service base-url="{{ts-subscription-fn-url}}" />
+        <set-backend-service base-url="{{ts-api-fn-url}}" />
         <set-header name="x-functions-key" exists-action="override">
             <value>{{ts-api-fn-key}}</value>
         </set-header>
