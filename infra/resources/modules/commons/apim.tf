@@ -84,6 +84,23 @@ module "apim_product_ts_management" {
   policy_xml = file("../modules/commons/api_product/ts_management/_base_policy.xml")
 }
 
+module "apim_product_ts_subscription" {
+  source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.44.0"
+
+  product_id   = "ts-subscription-api"
+  display_name = "TRIAL SYSTEM SUBSCRIPTION API"
+  description  = "Product for Trial System users"
+
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+
+  published             = false
+  subscription_required = true
+  approval_required     = false
+
+  policy_xml = file("../modules/commons/api_product/ts_management/_base_policy.xml")
+}
+
 module "apim_trial_manager_api_v1" {
   source = "github.com/pagopa/terraform-azurerm-v3//api_management_api?ref=v8.26.0"
 
