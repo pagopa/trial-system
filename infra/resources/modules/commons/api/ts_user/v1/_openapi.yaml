@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  version: 0.0.0
+  title: Trial System API
+  description: |
+    Documentation of the Trial System Subscription API.
+servers:
+  - url: https://api.trial.pagopa.it/api/v1
+security:
+  - ApiKeyAuth: []
+paths:
+  /trials/{trialId}/subscriptions/{userId}:
+    get:
+      operationId: getSubscription
+      summary: Get subscription detail
+      description: >-
+        Returns the details about the subscription of the specified user for
+        the specified trial.
+      parameters:
+        - $ref: '#/components/parameters/pathTrialId'
+        - $ref: '#/components/parameters/pathUserId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+  /trials/{trialId}/subscriptions:
+    post:
+      operationId: createSubscription
+      summary: Create a subscription
+      description: Subscribe the given user to the given trial.
+      parameters:
+        - $ref: '#/components/parameters/pathTrialId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscription'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
+  parameters:
+    pathTrialId:
+      name: trialId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    pathUserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        # Using the reference ($ref) to UserId breaks the client generator
+        # For now duplicate the type
+        type: string
+        minLength: 1
+  schemas:
+    ProblemJson:
+      $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/ProblemJson'
+    CreatedAt:
+      $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/Timestamp'
+    UpdatedAt:
+      $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/Timestamp'
+    UserId:
+      type: string
+      minLength: 1
+    SubscriptionState:
+      type: string
+      description: |-
+        - UNSUBSCRIBED: The user is not subscribed to the specified trial and does
+            not have any access to the specified trial.
+        - SUBSCRIBED: The user is subscribed to the specified trial and does
+            not have any access to the specified trial. The system is going to
+            activate the user if any slot for the trial is available.
+        - ACTIVE: The user has the access to the specified trial.
+        - DISABLED: The user does not have the access to the specified trial.
+      enum:
+        - UNSUBSCRIBED
+        - SUBSCRIBED
+        - ACTIVE
+        - DISABLED
+    TrialId:
+      type: string
+      description: Unique identifier of the trial.
+      minLength: 1
+    CreateSubscription:
+      description: >
+        Payload to create a subscription.
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          $ref: '#/components/schemas/UserId'
+    Subscription:
+      type: object
+      required:
+        - trialId
+        - userId
+        - state
+        - createdAt
+        - updatedAt
+      properties:
+        trialId:
+          $ref: '#/components/schemas/TrialId'
+        userId:
+          $ref: '#/components/schemas/UserId'
+        state:
+          $ref: '#/components/schemas/SubscriptionState'
+        createdAt:
+          $ref: '#/components/schemas/CreatedAt'
+        updatedAt:
+          $ref: '#/components/schemas/UpdatedAt'
