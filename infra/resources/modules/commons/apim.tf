@@ -106,14 +106,6 @@ module "apim_trial_manager_api_v1" {
   xml_content = file("../modules/commons/api/ts_management/v1/policy.xml")
 }
 
-resource "azurerm_api_management_named_value" "ts_subscription_fn_url" {
-  name                = "ts-subscription-fn-url"
-  api_management_name = module.apim.name
-  resource_group_name = module.apim.resource_group_name
-  display_name        = "ts-subscription-fn-url"
-  value               = "https://${module.func_api.function_app.function_app.default_hostname}"
-}
-
 data "azurerm_key_vault_secret" "ts_subscription_fn_key_secret" {
   name         = "ts-subscription-fn-key-KEY-APIM"
   key_vault_id = module.key_vault.id
