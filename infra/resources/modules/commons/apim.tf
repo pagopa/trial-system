@@ -67,6 +67,14 @@ module "apim_key_vault_access_policy" {
   ]
 }
 
+resource "azurerm_api_management_policy_fragment" "user_id_header" {
+  description       = "Add the x-user-id header"
+  api_management_id = module.apim.id
+  name              = "UserIdHeader"
+  format            = "xml"
+  value             = file("${path.module}/api/policy_fragments/user_id_header.xml")
+}
+
 module "apim_product_ts_management" {
   source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
 

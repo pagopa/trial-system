@@ -1,0 +1,5 @@
+<fragment>
+  <set-header name="x-user-id" exists-action="override">
+    <value>@(context.User.Id)</value>
+  </set-header>
+</fragment>
