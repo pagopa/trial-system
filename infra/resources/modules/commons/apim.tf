@@ -123,6 +123,28 @@ module "apim_trial_manager_api_v1" {
   xml_content = file("../modules/commons/api/ts_management/v1/policy.xml")
 }
 
+module "apim_trial_subscription_api_v1" {
+  source = "github.com/pagopa/terraform-azurerm-v3//api_management_api?ref=v8.44.0"
+
+  name                  = "trial-subscription-api"
+  api_management_name   = module.apim.name
+  resource_group_name   = module.apim.resource_group_name
+  product_ids           = [module.apim_product_ts_subscription.product_id]
+  subscription_required = true
+  service_url           = null
+
+  description  = "TRIAL SUBSCRIPTION API"
+  display_name = "TRIAL Subscription API"
+  path         = "api/v1"
+  protocols    = ["https"]
+
+  content_format = "openapi"
+
+  content_value = file("../modules/commons/api/ts_user/v1/_openapi.yaml")
+
+  xml_content = file("../modules/commons/api/ts_user/v1/policy.xml")
+}
+
 resource "azurerm_api_management_named_value" "ts_subscription_fn_url" {
   name                = "ts-subscription-fn-url"
   api_management_name = module.apim.name
