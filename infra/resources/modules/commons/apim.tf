@@ -200,3 +200,15 @@ resource "azurerm_api_management_subscription" "test" {
   state               = "active"
   allow_tracing       = false
 }
+
+####################################################################################
+# IO Backend
+####################################################################################
+resource "azurerm_api_management_subscription" "io_backend" {
+  api_management_name = module.apim.name
+  product_id          = module.apim_product_ts_management.id
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "IO Backend"
+  state               = "active"
+  allow_tracing       = false
+}
