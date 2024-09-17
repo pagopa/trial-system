@@ -204,9 +204,18 @@ resource "azurerm_api_management_subscription" "test" {
 ####################################################################################
 # IO Backend
 ####################################################################################
+// TODO: Remove this when https://github.com/pagopa/trial-system/pull/192 is merged
+data "azurerm_api_management_user" "io_backend" {
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  user_id             = "io-backend-user-id"
+
+}
 resource "azurerm_api_management_subscription" "io_backend" {
   api_management_name = module.apim.name
   product_id          = module.apim_product_ts_management.id
+  // FIXME: Change user id when https://github.com/pagopa/trial-system/pull/192 is merged
+  user_id             = data.azurerm_api_management_user.io_backend.id
   resource_group_name = module.apim.resource_group_name
   display_name        = "IO Backend"
   state               = "active"
