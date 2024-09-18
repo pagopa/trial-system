@@ -2618,6 +2618,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@infra/devops@workspace:infra/devops":
+  version: 0.0.0-use.local
+  resolution: "@infra/devops@workspace:infra/devops"
+  languageName: unknown
+  linkType: soft
+
+"@infra/github-runner@workspace:infra/github-runner":
+  version: 0.0.0-use.local
+  resolution: "@infra/github-runner@workspace:infra/github-runner"
+  languageName: unknown
+  linkType: soft
+
+"@infra/identity@workspace:infra/identity":
+  version: 0.0.0-use.local
+  resolution: "@infra/identity@workspace:infra/identity"
+  languageName: unknown
+  linkType: soft
+
+"@infra/repository@workspace:infra/repository":
+  version: 0.0.0-use.local
+  resolution: "@infra/repository@workspace:infra/repository"
+  languageName: unknown
+  linkType: soft
+
+"@infra/resources@workspace:infra/resources":
+  version: 0.0.0-use.local
+  resolution: "@infra/resources@workspace:infra/resources"
+  languageName: unknown
+  linkType: soft
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
