@@ -45,7 +45,7 @@ export const verifyUserGroup =
       req.headers['x-user-groups'],
       E.fromNullable(void 0),
       E.foldW(
-        // if x-user-groups does not exists behave like it were included
+        // if x-user-groups does not exist behave like it were included
         E.right,
         // if exists then verify if it is included
         flow(
