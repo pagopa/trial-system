@@ -35,16 +35,16 @@ describe('parseRequestBody', () => {
 });
 
 describe('verifyUserGroup', () => {
-  it('should return Left if the `x-user-groups` header does not contain the given group', async () => {
+  it('should return Left if the `x-user-groups` header does not contain any of the given groups', async () => {
     const req: H.HttpRequest = {
       ...aValidRequest,
       headers: {
         'x-user-groups': 'aGroup,anAnotherGroup',
       },
     };
-    const actual = verifyUserGroup('ApiTrialManager')(req);
+    const actual = verifyUserGroup(['ApiTrialManager', 'ApiTrialUser'])(req);
     const expected = new H.HttpForbiddenError(
-      `Missing required group: ApiTrialManager`,
+      `Missing required group: ApiTrialManager,ApiTrialUser`,
     );
     expect(actual).toStrictEqual(E.left(expected));
   });
@@ -53,7 +53,7 @@ describe('verifyUserGroup', () => {
     const req: H.HttpRequest = {
       ...aValidRequest,
     };
-    const actual = verifyUserGroup('ApiTrialManager')(req);
+    const actual = verifyUserGroup(['ApiTrialManager', 'ApiTrialUser'])(req);
     expect(actual).toStrictEqual(E.right(void 0));
   });
 
@@ -64,7 +64,7 @@ describe('verifyUserGroup', () => {
         'x-user-groups': 'aGroup,ApiTrialManager,anAnotherGroup',
       },
     };
-    const actual = verifyUserGroup('ApiTrialManager')(req);
+    const actual = verifyUserGroup(['ApiTrialManager', 'ApiTrialUser'])(req);
     expect(actual).toStrictEqual(E.right(void 0));
   });
 });

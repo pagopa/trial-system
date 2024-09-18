@@ -79,4 +79,29 @@ describe('makeGetSubscriptionHandler', () => {
       state: aSubscription.state,
     });
   });
+
+  it('should return 200 when the subscription exist and the x-user-groups header has ApiTrialUser', async () => {
+    const env = makeTestSystemEnv();
+
+    env.getSubscription.mockReturnValueOnce(TE.right(aSubscription));
+
+    const request = new HttpRequest({
+      url: makeAValidGetSubscriptionRequest().url,
+      params: makeAValidGetSubscriptionRequest().params,
+      method: makeAValidGetSubscriptionRequest().method,
+      headers: { 'x-user-groups': 'ApiTrialUser' },
+    });
+
+    const actual = await makeGetSubscriptionHandler(env)(
+      request,
+      makeFunctionContext(),
+    );
+
+    expect(actual.status).toStrictEqual(200);
+    expect(await actual.json()).toMatchObject({
+      userId: aSubscription.userId,
+      trialId: aSubscription.trialId,
+      state: aSubscription.state,
+    });
+  });
 });

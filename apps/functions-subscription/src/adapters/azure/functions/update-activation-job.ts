@@ -23,7 +23,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Pick<SystemEnv, 'updateActivationJob'>>(),
-    RTE.apFirst(RTE.fromEither(verifyUserGroup('ApiTrialManager')(req))),
+    RTE.apFirst(RTE.fromEither(verifyUserGroup(['ApiTrialManager'])(req))),
     RTE.apSW(
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
