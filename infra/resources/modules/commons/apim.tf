@@ -141,6 +141,14 @@ resource "azurerm_api_management_group" "api_trial_manager" {
   description         = "A group that enables Trial Managers to mange its own trials"
 }
 
+resource "azurerm_api_management_group" "api_trial_user" {
+  name                = "apitrialuser"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ApiTrialUser"
+  description         = "A group that enables users to manage their trial subscriptions"
+}
+
 ####################################################################################
 # IO Wallet User
 ####################################################################################
@@ -199,4 +207,24 @@ resource "azurerm_api_management_subscription" "test" {
   display_name        = "TEST TRIAL MANAGER API"
   state               = "active"
   allow_tracing       = false
+}
+
+####################################################################################
+# IO Backend User
+####################################################################################
+resource "azurerm_api_management_user" "io_backend" {
+  user_id             = "io-backend"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  first_name          = "IO"
+  last_name           = "Backend"
+  email               = "io-platform@pagopa.it"
+  state               = "active"
+}
+
+resource "azurerm_api_management_group_user" "io_user_group" {
+  user_id             = azurerm_api_management_user.io_backend.user_id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  group_name          = azurerm_api_management_group.api_trial_user.name
 }
