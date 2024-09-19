@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.2.0
+
+### Minor Changes
+
+- d1ca220: [IOPLT-692] Create APIM subscription for IO Backend
+
 ## 0.1.0
 
 ### Minor Changes
