@@ -40,5 +40,6 @@ jobs:
           version: yarn run version
           publish: yarn run release
           commit: 'ci(changesets): version packages'
+          setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
