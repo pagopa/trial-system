@@ -210,7 +210,7 @@ resource "azurerm_api_management_subscription" "test" {
 }
 
 ####################################################################################
-# IO Backend User
+# IO Backend
 ####################################################################################
 resource "azurerm_api_management_user" "io_backend" {
   user_id             = "io-backend"
@@ -227,4 +227,14 @@ resource "azurerm_api_management_group_user" "io_user_group" {
   api_management_name = module.apim.name
   resource_group_name = module.apim.resource_group_name
   group_name          = azurerm_api_management_group.api_trial_user.name
+}
+
+resource "azurerm_api_management_subscription" "io_backend" {
+  api_management_name = module.apim.name
+  product_id          = module.apim_product_ts_management.id
+  user_id             = azurerm_api_management_user.io_backend.id
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "IO Backend"
+  state               = "active"
+  allow_tracing       = false
 }
