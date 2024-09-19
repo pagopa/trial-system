@@ -3,11 +3,9 @@ name: Release Infra
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-    paths:
-      # Trigger the workflow when resources are modified
-      - "infra/resources/**"
+    tags:
+      # Trigger this workflow when a tag `@infra/resources@<sem-ver>` is pushed.
+      - '@infra/resources@[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   release_prod:
