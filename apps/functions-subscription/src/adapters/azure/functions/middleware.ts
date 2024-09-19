@@ -54,8 +54,8 @@ export const verifyUserGroup =
           E.map((stringGroups) => stringGroups.split(',')),
           E.filterOrElseW(
             (headerGroups) =>
-              headerGroups.some((group) =>
-                allowedGroups.toString().includes(group),
+              allowedGroups.some((allowedGroup) =>
+                headerGroups.includes(allowedGroup),
               ),
             () =>
               new H.HttpForbiddenError(

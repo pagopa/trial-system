@@ -39,12 +39,12 @@ describe('verifyUserGroup', () => {
     const req: H.HttpRequest = {
       ...aValidRequest,
       headers: {
-        'x-user-groups': 'aGroup,anAnotherGroup',
+        'x-user-groups': 'ApiTrial,anAnotherGroup,ApiTrialUser',
       },
     };
-    const actual = verifyUserGroup(['ApiTrialManager', 'ApiTrialUser'])(req);
+    const actual = verifyUserGroup(['ApiTrialManager'])(req);
     const expected = new H.HttpForbiddenError(
-      `Missing required group: ApiTrialManager,ApiTrialUser`,
+      `Missing required group: ApiTrialManager`,
     );
     expect(actual).toStrictEqual(E.left(expected));
   });
