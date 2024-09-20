@@ -1,5 +1,11 @@
 # ops-scripts
 
+## 2.0.2
+
+### Patch Changes
+
+- 48c9218: Bump version of `@azure` packages
+
 ## 2.0.1
 
 ### Patch Changes

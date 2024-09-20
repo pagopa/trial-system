@@ -1,6 +1,6 @@
 {
   "name": "ops-scripts",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Operations scripts for the trial system",
   "private": true,
   "scripts": {
