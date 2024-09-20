@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.1.2
+
+### Patch Changes
+
+- 48c9218: Bump version of `@azure` packages
+
 ## 3.1.1
 
 ### Patch Changes
