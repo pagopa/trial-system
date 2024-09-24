@@ -19,7 +19,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Env>(),
-    RTE.apFirst(RTE.fromEither(verifyUserGroup('ApiTrialManager')(req))),
+    RTE.apFirst(RTE.fromEither(verifyUserGroup(['ApiTrialManager'])(req))),
     RTE.apSW('requestBody', RTE.fromEither(parseRequestBody(CreateTrial)(req))),
     RTE.flatMapTaskEither(
       ({ requestBody: { name, description }, createTrial }) =>

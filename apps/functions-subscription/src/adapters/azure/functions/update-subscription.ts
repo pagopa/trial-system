@@ -23,7 +23,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) => {
   return pipe(
     RTE.ask<Pick<SystemEnv, 'updateSubscription'>>(),
-    RTE.apFirst(RTE.fromEither(verifyUserGroup('ApiTrialManager')(req))),
+    RTE.apFirst(RTE.fromEither(verifyUserGroup(['ApiTrialManager'])(req))),
     RTE.apSW(
       'userId',
       RTE.fromEither(parsePathParameter(UserIdCodec, 'userId')(req)),
