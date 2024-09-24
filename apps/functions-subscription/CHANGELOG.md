@@ -1,5 +1,12 @@
 # functions-subscription
 
+## 3.2.0
+
+### Minor Changes
+
+- ca7c35f: [IOPLT-700] Update logic of middleware that checks `x-user-groups` header.
+  Now the allowed values for the `x-user-groups` are: `ApiTrialManager` and `ApiTrialUser`.
+
 ## 3.1.2
 
 ### Patch Changes
