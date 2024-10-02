@@ -52,6 +52,9 @@ export interface Config {
   readonly azure: {
     readonly subscriptionId: string;
   };
+  readonly applicationInsights: {
+    readonly connectionString: string;
+  };
 }
 
 const OnOrOffCodec = t.keyof({
@@ -79,6 +82,7 @@ const EnvsCodec = t.strict({
   SUBSCRIPTION_ID: NonEmptyString,
   SERVICE_BUS_RESOURCE_GROUP_NAME: NonEmptyString,
   SERVICE_BUS_LOCATION: NonEmptyString,
+  AI_CONNECTION_STRING: NonEmptyString,
 });
 
 export const parseConfig = (
@@ -132,6 +136,9 @@ export const parseConfig = (
         },
         azure: {
           subscriptionId: envs.SUBSCRIPTION_ID,
+        },
+        applicationInsights: {
+          connectionString: envs.AI_CONNECTION_STRING,
         },
       }),
     ),
