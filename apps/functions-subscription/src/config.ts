@@ -83,14 +83,11 @@ const EnvsCodec = t.type({
   SUBSCRIPTION_ID: NonEmptyString,
   SERVICE_BUS_RESOURCE_GROUP_NAME: NonEmptyString,
   SERVICE_BUS_LOCATION: NonEmptyString,
-  SubscriptionHistoryCosmosConnection: t.union([NonEmptyString, t.undefined]),
-  SubscriptionHistoryCosmosConnection__accountName: NonEmptyString,
-  ActivationConsumerCosmosDBConnection: t.union([NonEmptyString, t.undefined]),
   ActivationConsumerCosmosDBConnection__accountEndpoint: NonEmptyString,
-  SubscriptionRequestEventHubConnection: t.union([NonEmptyString, t.undefined]),
-  SubscriptionRequestEventHubConnection__accountName: NonEmptyString,
-  TrialsCosmosConnection: t.union([NonEmptyString, t.undefined]),
+  SubscriptionHistoryCosmosConnection__accountEndpoint: NonEmptyString,
   TrialsCosmosConnection__accountEndpoint: NonEmptyString,
+  SubscriptionRequestEventHubConnection__fullyQualifiedNamespace:
+    NonEmptyString,
 });
 
 export const parseConfig = (

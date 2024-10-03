@@ -23,21 +23,20 @@
 
     "SUBSCRIPTION_REQUEST_CONSUMER": "on",
     "SUBSCRIPTION_REQUEST_EVENTHUB_NAME": "<put-here-the-name-of-the-event-hub>",
+    "SubscriptionRequestEventHubConnection__fullyQualifiedNamespace": "<put-here-the-the-event-hub-fully-qualified-namespace>",
 
     "EVENTS_PRODUCER": "on",
     "EVENTS_SERVICEBUS_TOPIC_NAME": "<put-here-the-the-service-bus-topic-name>",
-    "EventProducerCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
-    "EventProducerCosmosConnection": "<put-here-the-the-cosmos-database-connection-string>",
 
     "ACTIVATION_CONSUMER": "on",
     "ACTIVATIONS_COSMOSDB_CONTAINER_NAME": "activations",
     "ACTIVATION_MAX_FETCH_SIZE": "50",
-    "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
     "ActivationConsumerCosmosDBConnection": "<put-here-the-the-cosmos-database-connection-string>",
+    "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
     "TRIAL_CONSUMER": "off",
     "TRIALS_COSMOSDB_CONTAINER_NAME": "trials",
-    "TrialsCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
-    "TrialsCosmosConnection": "<put-here-the-the-cosmos-database-connection-string>"
+    "TrialsCosmosConnection": "<put-here-the-the-cosmos-database-connection-string>",
+    "TrialsCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>"
   }
 }
