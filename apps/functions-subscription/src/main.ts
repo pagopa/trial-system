@@ -1,4 +1,4 @@
-import * as appInsights from 'applicationinsights';
+import { startApplicationInsights } from './adapters/azure/applicationinsights';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import { app } from '@azure/functions';
@@ -45,7 +45,7 @@ const config = pipe(
   }),
 );
 
-appInsights.setup(config.applicationInsights.connectionString).start();
+startApplicationInsights(config.applicationInsights);
 
 const aadCredentials = new DefaultAzureCredential();
 

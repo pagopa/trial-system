@@ -54,6 +54,7 @@ export interface Config {
   };
   readonly applicationInsights: {
     readonly connectionString: string;
+    readonly samplingPercentage?: number;
   };
 }
 
@@ -83,6 +84,7 @@ const EnvsCodec = t.strict({
   SERVICE_BUS_RESOURCE_GROUP_NAME: NonEmptyString,
   SERVICE_BUS_LOCATION: NonEmptyString,
   AI_CONNECTION_STRING: NonEmptyString,
+  AI_SAMPLING_PERCENTAGE: t.union([NumberFromString, t.undefined]),
 });
 
 export const parseConfig = (
@@ -139,6 +141,7 @@ export const parseConfig = (
         },
         applicationInsights: {
           connectionString: envs.AI_CONNECTION_STRING,
+          samplingPercentage: envs.AI_SAMPLING_PERCENTAGE,
         },
       }),
     ),

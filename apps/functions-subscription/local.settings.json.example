@@ -35,6 +35,7 @@
     "TRIALS_COSMOSDB_CONTAINER_NAME": "trials",
     "TrialsCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
-    "AI_CONNECTION_STRING": "<put-here-the-application-insights-connection-string>"
+    "AI_CONNECTION_STRING": "<put-here-the-application-insights-connection-string>",
+    "AI_SAMPLING_PERCENTAGE": "<put-here-sampling-percentage-value>"
   }
 }
