@@ -1,4 +1,3 @@
-
 resource "azurerm_log_analytics_workspace" "law" {
   name                = "${local.project}-trial-law-01"
   location            = var.location
