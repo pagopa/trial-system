@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.4.0
+
+### Minor Changes
+
+- 1423254: Add `/info` endpoint to APIM's OpenAPI
+
 ## 0.3.0
 
 ### Minor Changes
