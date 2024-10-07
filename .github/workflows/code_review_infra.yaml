@@ -14,6 +14,9 @@ on:
       # Trigger the workflow when the involved workflows are modified
       - ".github/workflows/code_review_infra.yaml"
       - ".github/workflows/templates/infra_**"
+      # Do not trigger the workflow when the next files are modified
+      - "!infra/resources/package.json"
+      - "!infra/resources/CHANGELOG.md"
 
 jobs:
   code_review_prod:

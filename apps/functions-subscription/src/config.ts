@@ -61,6 +61,10 @@ export interface Config {
   readonly azure: {
     readonly subscriptionId: string;
   };
+  readonly applicationInsights: {
+    readonly connectionString: string;
+    readonly samplingPercentage?: number;
+  };
 }
 
 const EnvsCodec = t.type({
@@ -88,6 +92,8 @@ const EnvsCodec = t.type({
   TrialsCosmosConnection__accountEndpoint: NonEmptyString,
   SubscriptionRequestEventHubConnection__fullyQualifiedNamespace:
     NonEmptyString,
+  AI_CONNECTION_STRING: NonEmptyString,
+  AI_SAMPLING_PERCENTAGE: t.union([NumberFromString, t.undefined]),
 });
 
 export const parseConfig = (
@@ -141,6 +147,10 @@ export const parseConfig = (
         },
         azure: {
           subscriptionId: envs.SUBSCRIPTION_ID,
+        },
+        applicationInsights: {
+          connectionString: envs.AI_CONNECTION_STRING,
+          samplingPercentage: envs.AI_SAMPLING_PERCENTAGE,
         },
       }),
     ),
