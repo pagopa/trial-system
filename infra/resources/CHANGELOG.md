@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.3.0
+
+### Minor Changes
+
+- c3bc5ee: Add `AI_CONNECTION_STRING` environment variable
+
 ## 0.2.0
 
 ### Minor Changes
