@@ -111,6 +111,11 @@ data "azurerm_key_vault_secret" "ts_subscription_fn_key_secret" {
   key_vault_id = module.key_vault.id
 }
 
+data "azurerm_key_vault_secret" "ts_api_fn_key_secret" {
+  name         = "ts-api-fn-key-KEY-APIM"
+  key_vault_id = module.key_vault.id
+}
+
 resource "azurerm_api_management_named_value" "ts_api_fn_key" {
   name                = "ts-api-fn-key"
   api_management_name = module.apim.name
