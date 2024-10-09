@@ -9,7 +9,13 @@ import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { makeActivationsChangesHandler } from '../process-activations-changes';
 
-const config = { activations: { consumer: 'on' as const, maxFetchSize: 1 } };
+const config = {
+  activations: {
+    consumer: 'on' as const,
+    maxFetchSize: 1,
+    connectionString: 'aConnectionString',
+  },
+};
 
 describe('makeActivationJobConsumerHandler', () => {
   it('should call processActivationJob as expected', async () => {

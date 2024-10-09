@@ -8,22 +8,31 @@ import {
   WithinRangeInteger,
 } from '@pagopa/ts-commons/lib/numbers';
 
+type OnOrOff = 'on' | 'off';
+
+const OnOrOffCodec = t.keyof<{
+  readonly [K in OnOrOff]: unknown;
+}>({
+  on: null,
+  off: null,
+});
+
 export interface Config {
   readonly subscriptionHistory: {
-    readonly consumer: 'on' | 'off';
+    readonly consumer: OnOrOff;
   };
   readonly subscriptionRequest: {
-    readonly consumer: 'on' | 'off';
+    readonly consumer: OnOrOff;
   };
   readonly activations: {
-    readonly consumer: 'on' | 'off';
+    readonly consumer: OnOrOff;
     readonly maxFetchSize: number;
   };
   readonly events: {
-    readonly producer: 'on' | 'off';
+    readonly producer: OnOrOff;
   };
   readonly trials: {
-    readonly consumer: 'on' | 'off';
+    readonly consumer: OnOrOff;
   };
   readonly servicebus: {
     readonly namespace: string;
@@ -58,12 +67,7 @@ export interface Config {
   };
 }
 
-const OnOrOffCodec = t.keyof({
-  on: null,
-  off: null,
-});
-
-const EnvsCodec = t.strict({
+const EnvsCodec = t.type({
   COSMOSDB_ENDPOINT: NonEmptyString,
   COSMOSDB_DATABASE_NAME: NonEmptyString,
   EVENTHUB_NAMESPACE: NonEmptyString,
@@ -83,6 +87,11 @@ const EnvsCodec = t.strict({
   SUBSCRIPTION_ID: NonEmptyString,
   SERVICE_BUS_RESOURCE_GROUP_NAME: NonEmptyString,
   SERVICE_BUS_LOCATION: NonEmptyString,
+  ActivationConsumerCosmosDBConnection__accountEndpoint: NonEmptyString,
+  SubscriptionHistoryCosmosConnection__accountEndpoint: NonEmptyString,
+  TrialsCosmosConnection__accountEndpoint: NonEmptyString,
+  SubscriptionRequestEventHubConnection__fullyQualifiedNamespace:
+    NonEmptyString,
   AI_CONNECTION_STRING: NonEmptyString,
   AI_SAMPLING_PERCENTAGE: t.union([NumberFromString, t.undefined]),
 });
