@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.3.0
+
+### Minor Changes
+
+- 4c39e31: Decode CosmosConnection variables; if the variables are missing, there will be a runtime error on startup.
+
 ## 3.2.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.4.1
+
+### Patch Changes
+
+- 4c39e31: Add missing environment variables
+
 ## 0.4.0
 
 ### Minor Changes
