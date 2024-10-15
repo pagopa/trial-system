@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
-import { makeAValidGetSubscriptionRequest } from './data';
+import {
+  makeAValidGetSubscriptionRequest,
+  managerHttpRequestHeaders,
+} from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { aSubscription } from '../../../../domain/__tests__/data';
 import { ItemNotFound } from '../../../../domain/errors';
@@ -12,7 +15,10 @@ describe('makeGetSubscriptionHandler', () => {
     const request = new HttpRequest({
       url: makeAValidGetSubscriptionRequest().url,
       method: makeAValidGetSubscriptionRequest().method,
-      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'Guest,AnotherGroup',
+      },
       body: { string: await makeAValidGetSubscriptionRequest().text() },
     });
     const env = makeTestSystemEnv();
@@ -89,7 +95,10 @@ describe('makeGetSubscriptionHandler', () => {
       url: makeAValidGetSubscriptionRequest().url,
       params: makeAValidGetSubscriptionRequest().params,
       method: makeAValidGetSubscriptionRequest().method,
-      headers: { 'x-user-groups': 'ApiTrialUser' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'ApiTrialUser',
+      },
     });
 
     const actual = await makeGetSubscriptionHandler(env)(

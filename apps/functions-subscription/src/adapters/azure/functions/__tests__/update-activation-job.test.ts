@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import { HttpRequest } from '@azure/functions';
-import { makeAValidUpdateActivationJobRequest } from './data';
+import {
+  makeAValidUpdateActivationJobRequest,
+  managerHttpRequestHeaders,
+} from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { anActivationJob } from '../../../../domain/__tests__/data';
 import { ItemNotFound } from '../../../../domain/errors';
@@ -12,7 +15,10 @@ describe('makePutActivationJobHandler', () => {
     const request = new HttpRequest({
       url: makeAValidUpdateActivationJobRequest().url,
       method: makeAValidUpdateActivationJobRequest().method,
-      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'Guest,AnotherGroup',
+      },
       body: { string: await makeAValidUpdateActivationJobRequest().text() },
     });
     const env = makeTestSystemEnv();
@@ -47,7 +53,7 @@ describe('makePutActivationJobHandler', () => {
     const aRequestWithInvalidBody = new HttpRequest({
       url: 'https://function/trials/{trialId}/activation-job',
       method: 'PUT',
-      headers: { 'x-user-groups': 'ApiTrialManager' },
+      headers: managerHttpRequestHeaders,
       body: { string: '{}' },
       params: {
         trialId: 'aTrialId',
