@@ -146,3 +146,34 @@ resource "azurerm_cosmosdb_sql_container" "trials" {
     }
   }
 }
+
+resource "azurerm_cosmosdb_sql_container" "trial" {
+  name                  = "trial"
+  resource_group_name   = azurerm_resource_group.data_rg.name
+  account_name          = module.cosmosdb_account.name
+  database_name         = module.cosmosdb_sql_database_trial.name
+  partition_key_path    = "/ownerId"
+  partition_key_version = 2
+
+  autoscale_settings {
+    max_throughput = 10000
+  }
+
+  indexing_policy {
+    included_path {
+      path = "/*"
+    }
+
+    composite_index {
+      index {
+        path  = "/id"
+        order = "Ascending"
+      }
+
+      index {
+        path  = "/ownerId"
+        order = "Ascending"
+      }
+    }
+  }
+}
