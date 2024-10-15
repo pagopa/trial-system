@@ -128,6 +128,7 @@ resource "azurerm_cosmosdb_sql_container" "leases" {
   }
 }
 
+# This container is going to be deleted
 resource "azurerm_cosmosdb_sql_container" "trials" {
   name                  = "trials"
   resource_group_name   = azurerm_resource_group.data_rg.name
