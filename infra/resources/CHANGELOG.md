@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.5.1
+
+### Patch Changes
+
+- 79284e2: Update secret's reference
+
 ## 0.5.0
 
 ### Minor Changes
