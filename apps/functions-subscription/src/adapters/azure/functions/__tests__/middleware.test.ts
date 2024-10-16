@@ -74,12 +74,10 @@ describe('verifyUserGroup', () => {
 });
 
 describe('getAndValidateUser', () => {
-  it('should return Left if the `x-user-id` header is missing', async () => {
+  it('should return Left if the header are missing', async () => {
     const req: H.HttpRequest = {
       ...aValidRequest,
-      headers: {
-        'x-user-groups': 'ApiTrial,anAnotherGroup,ApiTrialUser',
-      },
+      headers: {},
     };
     const actual = getAndValidateUser(['ApiTrialManager'])(req);
     const expected = new H.HttpBadRequestError(

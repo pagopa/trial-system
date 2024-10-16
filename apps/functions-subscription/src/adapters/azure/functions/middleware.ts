@@ -35,7 +35,7 @@ export const parsePathParameter =
     );
 
 /**
- * Parses a specific path parameter of an HTTP request using the provided schema.
+ * Parses a specific header parameter of an HTTP request using the provided schema.
  */
 export const parseHeaderParameter =
   <T>(schema: Decoder<unknown, T>, paramName: string) =>
