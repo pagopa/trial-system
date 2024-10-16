@@ -1,5 +1,12 @@
 # @infra/resources
 
+## 0.5.3
+
+### Patch Changes
+
+- 779bc98: Remove legacy and unused secret
+- a9f2815: [IOPLT-732] Create `trial` container
+
 ## 0.5.2
 
 ### Patch Changes
