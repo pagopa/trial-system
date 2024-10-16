@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.5.2
+
+### Patch Changes
+
+- 8cd8f2f: [IOPLT-719] Turn off consumers on staging slot
+
 ## 0.5.1
 
 ### Patch Changes
