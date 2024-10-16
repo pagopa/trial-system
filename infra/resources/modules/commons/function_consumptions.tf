@@ -83,7 +83,14 @@ module "func_consumers" {
 
   slot_app_settings = merge(
     local.consumers_app_settings,
-    {},
+    {
+      // Disable consumers on staging slot
+      SUBSCRIPTION_HISTORY_CONSUMER = "off"
+      SUBSCRIPTION_REQUEST_CONSUMER = "off"
+      ACTIVATION_CONSUMER           = "off"
+      EVENTS_PRODUCER               = "off"
+      TRIAL_CONSUMER                = "off"
+    },
   )
 
   subnet_cidr   = var.cidr_subnet_func_consumptions
