@@ -1,5 +1,17 @@
 # @infra/resources
 
+## 0.5.1
+
+### Patch Changes
+
+- 79284e2: Update secret's reference
+
+## 0.5.0
+
+### Minor Changes
+
+- 360db60: Reference new secret called `ts-api-fn-key-KEY-APIM`
+
 ## 0.4.1
 
 ### Patch Changes
