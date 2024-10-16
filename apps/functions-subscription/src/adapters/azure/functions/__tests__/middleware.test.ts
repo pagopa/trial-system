@@ -80,9 +80,7 @@ describe('getAndValidateUser', () => {
       headers: {},
     };
     const actual = getAndValidateUser(['ApiTrialManager'])(req);
-    const expected = new H.HttpBadRequestError(
-      'Invalid format of x-user-id parameter',
-    );
+    const expected = new H.HttpBadRequestError('Missing x-user-id header');
     expect(actual).toStrictEqual(E.left(expected));
   });
   it('should return Left if the `x-user-groups` header is missing', async () => {
@@ -90,6 +88,7 @@ describe('getAndValidateUser', () => {
       ...aValidRequest,
       headers: {
         'x-user-id': 'aUserId',
+        'x-user-groups': '',
       },
     };
     const actual = getAndValidateUser(['ApiTrialManager'])(req);

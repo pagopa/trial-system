@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import { Decoder } from 'io-ts';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import * as H from '@pagopa/handler-kit';
 import { flow, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
@@ -42,8 +43,13 @@ export const parseHeaderParameter =
   (req: H.HttpRequest) =>
     pipe(
       req.headers[paramName],
-      H.parse(schema, `Invalid format of ${paramName} parameter`),
-      E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
+      E.fromNullable(new H.HttpBadRequestError(`Missing ${paramName} header`)),
+      E.flatMap(
+        flow(
+          H.parse(schema, `Invalid format of ${paramName} parameter`),
+          E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
+        ),
+      ),
     );
 
 type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager';
@@ -98,10 +104,10 @@ const toUserType = (groups: readonly string[]): User['type'] => {
 export const getAndValidateUser =
   (allowedGroups: readonly AllowedGroup[]) => (req: H.HttpRequest) =>
     pipe(
-      parseHeaderParameter(t.string, 'x-user-id')(req),
+      parseHeaderParameter(NonEmptyString, 'x-user-id')(req),
       E.flatMap((userId) =>
         pipe(
-          parseHeaderParameter(t.string, 'x-user-groups')(req),
+          parseHeaderParameter(NonEmptyString, 'x-user-groups')(req),
           E.map((groups) => groups.split(',')),
           E.filterOrElseW(
             (headerGroups) =>
