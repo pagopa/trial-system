@@ -123,7 +123,7 @@ resource "azurerm_api_management_named_value" "ts_api_fn_key" {
   display_name        = "ts-api-fn-key"
   secret              = true
   value_from_key_vault {
-    secret_id = data.azurerm_key_vault_secret.ts_subscription_fn_key_secret.versionless_id
+    secret_id = data.azurerm_key_vault_secret.ts_api_fn_key_secret.versionless_id
   }
 }
 
