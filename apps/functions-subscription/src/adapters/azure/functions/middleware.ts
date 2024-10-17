@@ -1,4 +1,3 @@
-import * as t from 'io-ts';
 import { Decoder } from 'io-ts';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import * as H from '@pagopa/handler-kit';
@@ -53,40 +52,6 @@ export const parseHeaderParameter =
     );
 
 type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager';
-/**
- * Verifies the presence of the `x-user-groups` header and checks if it includes
- * at least one of the specified groups. If the `x-user-groups` header is missing,
- * `verifyUserGroup` permits the request as if the group were included in the
- * header.
- *
- * @deprecated use {@link getAndValidateUser} instead
- */
-export const verifyUserGroup =
-  (allowedGroups: readonly AllowedGroup[]) => (req: H.HttpRequest) =>
-    pipe(
-      req.headers['x-user-groups'],
-      E.fromNullable(void 0),
-      E.foldW(
-        // if x-user-groups does not exist behave like it were included
-        E.right,
-        // if exists then verify if it is included
-        flow(
-          H.parse(t.string, `Invalid format of 'x-user-groups' header`),
-          E.map((stringGroups) => stringGroups.split(',')),
-          E.filterOrElseW(
-            (headerGroups) =>
-              allowedGroups.some((allowedGroup) =>
-                headerGroups.includes(allowedGroup),
-              ),
-            () =>
-              new H.HttpForbiddenError(
-                `Missing required group: ${allowedGroups}`,
-              ),
-          ),
-          E.map(() => void 0),
-        ),
-      ),
-    );
 
 const toUserType = (groups: readonly string[]): User['type'] => {
   return groups.some((group) => group === 'ApiTrialManager')
