@@ -5,9 +5,9 @@ import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { UserIdCodec } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import {
+  getAndValidateUser,
   parsePathParameter,
   parseRequestBody,
-  verifyUserGroup,
 } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toUpdatedSubscription } from './codec';
@@ -23,7 +23,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) => {
   return pipe(
     RTE.ask<Pick<SystemEnv, 'updateSubscription'>>(),
-    RTE.apFirst(RTE.fromEither(verifyUserGroup(['ApiTrialManager'])(req))),
+    RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req))),
     RTE.apSW(
       'userId',
       RTE.fromEither(parsePathParameter(UserIdCodec, 'userId')(req)),

@@ -8,9 +8,9 @@ import { UserId } from '../../../domain/subscription';
 import { SystemEnv } from '../../../system-env';
 import { SubscriptionStoreError } from '../../../use-cases/errors';
 import {
+  getAndValidateUser,
   parsePathParameter,
   parseRequestBody,
-  verifyUserGroup,
 } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toSubscriptionAPI } from './codec';
@@ -26,7 +26,9 @@ const makeHandlerKitHandler: H.Handler<
   return pipe(
     RTE.ask<Pick<SystemEnv, 'createSubscription'>>(),
     RTE.apFirst(
-      RTE.fromEither(verifyUserGroup(['ApiTrialManager', 'ApiTrialUser'])(req)),
+      RTE.fromEither(
+        getAndValidateUser(['ApiTrialManager', 'ApiTrialUser'])(req),
+      ),
     ),
     RTE.apSW(
       'requestBody',
