@@ -6,7 +6,7 @@ import {
   managerHttpRequestHeaders,
 } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
-import { aTrial } from '../../../../domain/__tests__/data';
+import { aTrial, aTrialOwner } from '../../../../domain/__tests__/data';
 import { makePostTrialHandler } from '../create-trial';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 
@@ -44,6 +44,7 @@ describe('makePostTrialHandler', () => {
     expect(env.createTrial).toHaveBeenCalledWith(
       aTrial.name,
       aTrial.description,
+      aTrialOwner,
     );
   });
 

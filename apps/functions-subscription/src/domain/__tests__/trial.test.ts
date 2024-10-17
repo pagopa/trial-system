@@ -1,4 +1,4 @@
-import { aTrial } from './data';
+import { aTrial, aTrialOwner } from './data';
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
@@ -15,7 +15,7 @@ describe('insertTrial', () => {
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial));
 
-    const actual = await insertTrial(name, description)(testEnv)();
+    const actual = await insertTrial(name, description, aTrialOwner)(testEnv)();
     const expected = E.right(aTrial);
 
     expect(actual).toMatchObject(expected);
@@ -29,7 +29,7 @@ describe('insertTrial', () => {
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
-    const actual = await insertTrial(name, description)(testEnv)();
+    const actual = await insertTrial(name, description, aTrialOwner)(testEnv)();
     const expected = E.left(error);
     expect(actual).toStrictEqual(expected);
   });
@@ -41,7 +41,7 @@ describe('insertTrial', () => {
     testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial.id });
     testEnv.trialWriter.insert.mockReturnValueOnce(TE.left(error));
 
-    const actual = await insertTrial(name, description)(testEnv)();
+    const actual = await insertTrial(name, description, aTrialOwner)(testEnv)();
     const expected = E.left(error);
     expect(actual).toMatchObject(expected);
   });

@@ -21,7 +21,7 @@ export const aCreateSubscriptionWithActiveState: CreateSubscription = {
 // These are the HTTP headers the API Management set when forwarding the HTTP requests to the Azure Function.
 export const managerHttpRequestHeaders = {
   'x-user-groups': 'ApiTrialManager',
-  'x-user-id': 'aUserId',
+  'x-user-id': 'aTrialOwnerId',
   'x-subscription-id': 'anApimSubscriptionId',
   'x-user-email': 'aUserEmail',
   'x-functions-key': 'aFunctionKey',
