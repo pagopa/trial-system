@@ -14,7 +14,7 @@ LOAD_FROM_LOCAL_DRIVE=${LOAD_FROM_LOCAL_DRIVE:-Y}
 
 if [ "$LOAD_FROM_LOCAL_DRIVE" = "Y" ] ; 
 then
-    read -p "Please enter the local file path: > " FILE_TO_SPLIT
+    read -p "Please enter a local file path: > " FILE_TO_SPLIT
 else
     echo -e "${Yellow}Remote csv files must be located into ${BYellow}iopstexportdata ${Yellow}storage account${Color_Off}"
     FILE_EXISTS=false
@@ -44,20 +44,25 @@ NUMBER_OF_LINES=$(wc -l < $FILE_TO_SPLIT | xargs)
 
 echo -e "${Yellow}Please note that you have selected a file that contains ${BYellow}$NUMBER_OF_LINES user/s${Color_Off}"
 
-read -p "How many users per chunk do you need to process [Default: $NUMBER_OF_LINES]? > " LINES_PER_CHUNK
+read -p "How many users per chunk do you want to process [Default: $NUMBER_OF_LINES]? > " LINES_PER_CHUNK
 LINES_PER_CHUNK=${LINES_PER_CHUNK:-$NUMBER_OF_LINES}
 
-read -p "What's the Logic App url to be invoked? > " LAPP_URL
+read -p "What's the Logic App url to be invoked? (see: https://portal.azure.com/#view/Microsoft_Azure_EMA/WorkflowMenuBlade/~/workflowOverview/resourceId/%2Fsubscriptions%2Fec285037-c673-4f58-b594-d7c480da4e8b%2FresourceGroups%2Fio-p-rg-operations%2Fproviders%2FMicrosoft.Web%2Fsites%2Fio-p-lapp-common%2Fworkflows%2Factivate-trial-users/location/West%20Europe/isReadOnly~/false) > " LAPP_URL
 
 read -p "What's the trial identifier? > " TRIAL_ID
 
 read -p "Please enter the api key to be used through the Trial System APIs: > " API_KEY
 
-read -p "Do you want to apply a delay between activations [Default: 0 ms]? > " DELAY
+read -p "Please enter the delay you want to apply between activations (in milliseconds) [Default: 0]: > " DELAY
 DELAY=${DELAY:-0}
 
-read -p "Do you want to enable message notification flow for each activation (true/false) [Default: false]? > " ENABLE_MESSAGE_FLOW
-ENABLE_MESSAGE_FLOW=${ENABLE_MESSAGE_FLOW:-false}
+read -p "Do you want to enable message notification flow for each activation (Y/N) [Default: N]? > " ENABLE_MESSAGE_FLOW_STR
+ENABLE_MESSAGE_FLOW_STR=${ENABLE_MESSAGE_FLOW_STR:-N}
+
+case "$ENABLE_MESSAGE_FLOW_STR" in
+ Y) ENABLE_MESSAGE_FLOW=true ;;
+ N) ENABLE_MESSAGE_FLOW=false ;;
+esac
 
 if [ "$ENABLE_MESSAGE_FLOW" = true ] ; 
 then
