@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as O from 'fp-ts/lib/Option';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
-import { makeAValidGetActivationJobRequest } from './data';
+import {
+  makeAValidGetActivationJobRequest,
+  managerHttpRequestHeaders,
+} from './data';
 import { anActivationJob } from '../../../../domain/__tests__/data';
 import { makeGetActivationJobHandler } from '../get-activation-job';
 import { HttpRequest } from '@azure/functions';
@@ -12,7 +15,10 @@ describe('makeGetActivationJobHandler', () => {
     const request = new HttpRequest({
       url: makeAValidGetActivationJobRequest().url,
       method: makeAValidGetActivationJobRequest().method,
-      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'Guest,AnotherGroup',
+      },
       body: { string: await makeAValidGetActivationJobRequest().text() },
     });
     const env = makeTestSystemEnv();

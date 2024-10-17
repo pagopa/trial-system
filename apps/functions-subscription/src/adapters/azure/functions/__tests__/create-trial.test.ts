@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import { HttpRequest } from '@azure/functions';
-import { makeAValidCreateTrialRequest } from './data';
+import {
+  makeAValidCreateTrialRequest,
+  managerHttpRequestHeaders,
+} from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { aTrial } from '../../../../domain/__tests__/data';
 import { makePostTrialHandler } from '../create-trial';
@@ -12,7 +15,10 @@ describe('makePostTrialHandler', () => {
     const request = new HttpRequest({
       url: makeAValidCreateTrialRequest().url,
       method: makeAValidCreateTrialRequest().method,
-      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'Guest,AnotherGroup',
+      },
       body: { string: await makeAValidCreateTrialRequest().text() },
     });
     const env = makeTestSystemEnv();
@@ -45,7 +51,7 @@ describe('makePostTrialHandler', () => {
     const aRequestWithInvalidBody = new HttpRequest({
       url: 'https://function/trials',
       method: 'POST',
-      headers: { 'x-user-groups': 'ApiTrialManager' },
+      headers: managerHttpRequestHeaders,
       body: { string: '{}' },
     });
     const env = makeTestSystemEnv();
