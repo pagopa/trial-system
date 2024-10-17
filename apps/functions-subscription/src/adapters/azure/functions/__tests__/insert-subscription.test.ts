@@ -5,6 +5,7 @@ import {
   aCreateSubscription,
   aCreateSubscriptionWithActiveState,
   makeAValidCreateSubscriptionRequest,
+  managerHttpRequestHeaders,
 } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { SubscriptionStoreError } from '../../../../use-cases/errors';
@@ -19,7 +20,10 @@ describe('makePostSubscriptionHandler', () => {
     const request = new HttpRequest({
       url: baseRequest.url,
       method: baseRequest.method,
-      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'Guest,AnotherGroup',
+      },
       body: { string: await baseRequest.text() },
     });
     const env = makeTestSystemEnv();
@@ -83,6 +87,7 @@ describe('makePostSubscriptionHandler', () => {
       url: 'https://function/trials/{trialId}/subscriptions',
       method: 'POST',
       body: { string: '{}' },
+      headers: managerHttpRequestHeaders,
       params: {
         trialId: 'aTrialId',
       },
