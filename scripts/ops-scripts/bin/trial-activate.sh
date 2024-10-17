@@ -9,10 +9,10 @@ Yellow='\033[0;33m'       # Yellow
 BYellow='\033[1;33m'      # Yellow
 Red='\033[0;31m'          # Red
 
-read -p "Do you want to load a local csv file (Y/N) [Default: Y]? > " LOAD_FROM_LOCAL_DRIVE
-LOAD_FROM_LOCAL_DRIVE=${LOAD_FROM_LOCAL_DRIVE:-Y}
+read -p "Do you want to load a local csv file (y/n) [Default: y]? > " LOAD_FROM_LOCAL_DRIVE
+LOAD_FROM_LOCAL_DRIVE=${LOAD_FROM_LOCAL_DRIVE:-y}
 
-if [ "$LOAD_FROM_LOCAL_DRIVE" = "Y" ] ; 
+if [ "$LOAD_FROM_LOCAL_DRIVE" = "y" ] ; 
 then
     read -p "Please enter a local file path: > " FILE_TO_SPLIT
 else
@@ -56,8 +56,8 @@ read -p "Please enter the api key to be used through the Trial System APIs: > " 
 read -p "Please enter the delay you want to apply between activations (in milliseconds) [Default: 0]: > " DELAY
 DELAY=${DELAY:-0}
 
-read -p "Do you want to enable message notification flow for each activation (Y/N) [Default: N]? > " ENABLE_MESSAGE_FLOW_STR
-ENABLE_MESSAGE_FLOW_STR=${ENABLE_MESSAGE_FLOW_STR:-N}
+read -p "Do you want to enable message notification flow for each activation (y/n) [Default: n]? > " ENABLE_MESSAGE_FLOW_STR
+ENABLE_MESSAGE_FLOW_STR=${ENABLE_MESSAGE_FLOW_STR:-n}
 
 case "$ENABLE_MESSAGE_FLOW_STR" in
  Y) ENABLE_MESSAGE_FLOW=true ;;
