@@ -47,7 +47,12 @@ echo -e "${Yellow}Please note that you have selected a file that contains ${BYel
 read -p "How many users per chunk do you want to process [Default: $NUMBER_OF_LINES]? > " LINES_PER_CHUNK
 LINES_PER_CHUNK=${LINES_PER_CHUNK:-$NUMBER_OF_LINES}
 
-read -p "What's the Logic App url to be invoked? (see: https://portal.azure.com/#view/Microsoft_Azure_EMA/WorkflowMenuBlade/~/workflowOverview/resourceId/%2Fsubscriptions%2Fec285037-c673-4f58-b594-d7c480da4e8b%2FresourceGroups%2Fio-p-rg-operations%2Fproviders%2FMicrosoft.Web%2Fsites%2Fio-p-lapp-common%2Fworkflows%2Factivate-trial-users/location/West%20Europe/isReadOnly~/false) > " LAPP_URL
+read -p "What's the Logic App url to be invoked? By default, if no url is provided, trial-system-activation-lapp-url secret value will be read on io-p-kv-common key vault: > " LAPP_URL
+if [ "$LAPP_URL" = "" ] ; 
+then
+    echo "Reading Logic App's secret value from key vault..."
+    LAPP_URL=$(az keyvault secret show --name trial-system-activation-lapp-url --vault io-p-kv-common --query value)
+fi
 
 read -p "What's the trial identifier? > " TRIAL_ID
 
