@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.6.1
+
+### Patch Changes
+
+- 3ba0161: [IOPLT-741] Update value of `TRIALS_COSMOSDB_CONTAINER_NAME` environment variable
+
 ## 0.6.0
 
 ### Minor Changes
