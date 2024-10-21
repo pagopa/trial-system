@@ -14,6 +14,7 @@ import {
   enqueueSubscription,
 } from '../domain/subscription';
 import { getTrialById, TrialId } from '../domain/trial';
+import { Tenant } from '../domain/users';
 
 const handleMissingSubscription = (subscription: Subscription) =>
   pipe(
@@ -27,12 +28,13 @@ const handleMissingSubscription = (subscription: Subscription) =>
   );
 
 export const createSubscription = (
+  tenant: Tenant,
   userId: UserId,
   trialId: TrialId,
   state: Extract<Subscription['state'], 'ACTIVE' | 'SUBSCRIBED'> = 'SUBSCRIBED',
 ) =>
   pipe(
-    getTrialById(trialId),
+    getTrialById(trialId, tenant),
     RTE.flatMapOption(
       (some) => some,
       () => new ItemNotFound('Trial not found'),

@@ -4,6 +4,7 @@ import { SubscriptionHistoryId } from '../subscription-history';
 import { ActivationRequestId } from '../activation-request';
 import { TrialId } from '../trial';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import { TenantId } from '../users';
 
 const aSubscriptionHistoryIdV0 =
   'aSubscriptionHistoryIdV0' as SubscriptionHistoryId;
@@ -16,7 +17,12 @@ const anActivationRequestId = 'anActivationRequestId' as ActivationRequestId;
 
 export const aTrialOwner = {
   type: 'owner' as const,
-  id: 'aTrialOwnerId',
+  id: 'aTrialOwnerId' as TenantId,
+};
+
+export const aTrialSubscriber = {
+  type: 'subscriber' as const,
+  id: 'aTrialSubscriberId' as TenantId,
 };
 
 export const aSubscription = {
