@@ -17,6 +17,11 @@ export const makeTrialsCosmosContainer = (
         TE.tryCatch(() => container.item(trialId, trialId).read(), E.toError),
         TE.flatMapEither(decodeFromItem(TrialCodec)),
       ),
+    getByIdAndOwnerId: (trialId, ownerId) =>
+      pipe(
+        TE.tryCatch(() => container.item(trialId, ownerId).read(), E.toError),
+        TE.flatMapEither(decodeFromItem(TrialCodec)),
+      ),
     insert: (trial) =>
       pipe(
         TE.tryCatch(() => container.items.create(trial), E.toError),
