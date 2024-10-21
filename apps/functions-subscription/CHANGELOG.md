@@ -1,5 +1,12 @@
 # functions-subscription
 
+## 3.6.0
+
+### Minor Changes
+
+- 35c8bcf: [IOPLT-743] Get CosmosDB container names from the configuration
+- ad2589a: [IOPLT-740] Persist `ownerId` when creating a trial
+
 ## 3.5.0
 
 ### Minor Changes
