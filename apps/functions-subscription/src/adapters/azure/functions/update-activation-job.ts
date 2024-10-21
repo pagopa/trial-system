@@ -8,7 +8,7 @@ import { ActivationJob as ActivationJobAPI } from '../../../generated/definition
 import {
   parsePathParameter,
   parseRequestBody,
-  verifyUserGroup,
+  getAndValidateUser,
 } from './middleware';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { toHttpProblemJson } from './errors';
@@ -23,7 +23,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Pick<SystemEnv, 'updateActivationJob'>>(),
-    RTE.apFirst(RTE.fromEither(verifyUserGroup(['ApiTrialManager'])(req))),
+    RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req))),
     RTE.apSW(
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
