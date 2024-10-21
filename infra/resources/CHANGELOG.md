@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.6.2
+
+### Patch Changes
+
+- 7a3c588: Revert "[IOPLT-741] Update value of `TRIALS_COSMOSDB_CONTAINER_NAME` environment variable"
+
 ## 0.6.1
 
 ### Patch Changes
