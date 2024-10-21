@@ -1,5 +1,11 @@
 # ops-scripts
 
+## 2.1.0
+
+### Minor Changes
+
+- 37cb90d: [IOPLT-737] Create script to migrate trials
+
 ## 2.0.2
 
 ### Patch Changes

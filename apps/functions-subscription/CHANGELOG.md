@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.5.0
+
+### Minor Changes
+
+- 29f9970: [IOPLT-739] Replace authorization middleware
+
 ## 3.4.0
 
 ### Minor Changes
