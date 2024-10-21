@@ -15,6 +15,8 @@
 
     "LEASES_COSMOSDB_CONTAINER_NAME": "leases",
 
+    "SUBSCRIPTION_COSMOSDB_CONTAINER_NAME": "subscription",
+
     "SUBSCRIPTION_HISTORY_CONSUMER": "on",
     "SUBSCRIPTION_HISTORY_COSMOSDB_CONTAINER_NAME": "subscription-history",
     # On local development, prefer the connection string instead of the account endpoint
