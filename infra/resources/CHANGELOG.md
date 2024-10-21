@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.6.0
+
+### Minor Changes
+
+- 35c8bcf: [IOPLT-743] Add `subscription` container name to the environment variables of the Azure Functions
+
 ## 0.5.3
 
 ### Patch Changes
