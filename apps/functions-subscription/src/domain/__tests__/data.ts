@@ -14,6 +14,11 @@ const aUserId = 'aUserId' as UserId;
 const aTrialId = 'aTrialId' as TrialId;
 const anActivationRequestId = 'anActivationRequestId' as ActivationRequestId;
 
+export const aTrialOwner = {
+  type: 'owner' as const,
+  id: 'aTrialOwnerId',
+};
+
 export const aSubscription = {
   id: aSubscriptionId,
   userId: aUserId,
@@ -74,6 +79,7 @@ export const aTrial = {
   name: 'aTrialName' as NonEmptyString,
   description: 'aTrialDescription',
   state: 'CREATING' as const,
+  ownerId: aTrialOwner.id,
 };
 
 export const aCreatedTrial = {
