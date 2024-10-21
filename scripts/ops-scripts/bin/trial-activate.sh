@@ -65,8 +65,8 @@ read -p "Do you want to enable message notification flow for each activation (y/
 ENABLE_MESSAGE_FLOW_STR=${ENABLE_MESSAGE_FLOW_STR:-n}
 
 case "$ENABLE_MESSAGE_FLOW_STR" in
- Y) ENABLE_MESSAGE_FLOW=true ;;
- N) ENABLE_MESSAGE_FLOW=false ;;
+ y) ENABLE_MESSAGE_FLOW=true ;;
+ n) ENABLE_MESSAGE_FLOW=false ;;
 esac
 
 if [ "$ENABLE_MESSAGE_FLOW" = true ] ; 
