@@ -1,5 +1,16 @@
 # functions-subscription
 
+## 3.4.0
+
+### Minor Changes
+
+- cf5523c: [IOPLT-728] Add `403 Forbidden` response to some endpoints in the OpenAPI
+
+### Patch Changes
+
+- 88f9d89: [IOPLT-730] Add middleware that authorize user information got from HTTP request
+- f7a12ca: [IOPLT-731] Add missing headers to HTTP request on unit tests
+
 ## 3.3.0
 
 ### Minor Changes

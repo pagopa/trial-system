@@ -106,8 +106,8 @@ module "apim_trial_manager_api_v1" {
   xml_content = file("../modules/commons/api/ts_management/v1/policy.xml")
 }
 
-data "azurerm_key_vault_secret" "ts_subscription_fn_key_secret" {
-  name         = "ts-subscription-fn-key-KEY-APIM"
+data "azurerm_key_vault_secret" "ts_api_fn_key_secret" {
+  name         = "ts-api-fn-key-KEY-APIM"
   key_vault_id = module.key_vault.id
 }
 
@@ -118,7 +118,7 @@ resource "azurerm_api_management_named_value" "ts_api_fn_key" {
   display_name        = "ts-api-fn-key"
   secret              = true
   value_from_key_vault {
-    secret_id = data.azurerm_key_vault_secret.ts_subscription_fn_key_secret.versionless_id
+    secret_id = data.azurerm_key_vault_secret.ts_api_fn_key_secret.versionless_id
   }
 }
 

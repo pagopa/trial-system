@@ -2,7 +2,11 @@ import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as H from '@pagopa/handler-kit';
 import { describe, expect, it } from 'vitest';
-import { parseRequestBody, verifyUserGroup } from '../middleware';
+import {
+  getAndValidateUser,
+  parseRequestBody,
+  verifyUserGroup,
+} from '../middleware';
 
 const DummySchema = t.type({
   name: t.string,
@@ -66,5 +70,60 @@ describe('verifyUserGroup', () => {
     };
     const actual = verifyUserGroup(['ApiTrialManager', 'ApiTrialUser'])(req);
     expect(actual).toStrictEqual(E.right(void 0));
+  });
+});
+
+describe('getAndValidateUser', () => {
+  it('should return Left if the header are missing', async () => {
+    const req: H.HttpRequest = {
+      ...aValidRequest,
+      headers: {},
+    };
+    const actual = getAndValidateUser(['ApiTrialManager'])(req);
+    const expected = new H.HttpBadRequestError('Missing x-user-id header');
+    expect(actual).toStrictEqual(E.left(expected));
+  });
+  it('should return Left if the `x-user-groups` header is missing', async () => {
+    const req: H.HttpRequest = {
+      ...aValidRequest,
+      headers: {
+        'x-user-id': 'aUserId',
+        'x-user-groups': '',
+      },
+    };
+    const actual = getAndValidateUser(['ApiTrialManager'])(req);
+    const expected = new H.HttpBadRequestError(
+      'Invalid format of x-user-groups parameter',
+    );
+    expect(actual).toStrictEqual(E.left(expected));
+  });
+  it('should return Left if the `x-user-groups` header does not contain any of the given groups', async () => {
+    const req: H.HttpRequest = {
+      ...aValidRequest,
+      headers: {
+        'x-user-id': 'aUserId',
+        'x-user-groups': 'anotherUserGroup',
+      },
+    };
+    const actual = getAndValidateUser(['ApiTrialManager'])(req);
+    const expected = new H.HttpForbiddenError(
+      'Missing required group: ApiTrialManager',
+    );
+    expect(actual).toStrictEqual(E.left(expected));
+  });
+  it('should return Right when the `x-user-id` header and the `x-user-groups` header are present', async () => {
+    const req: H.HttpRequest = {
+      ...aValidRequest,
+      headers: {
+        'x-user-id': 'aUserId',
+        'x-user-groups': 'ApiTrialUser,ApiTrialManager',
+      },
+    };
+    const actual = getAndValidateUser(['ApiTrialManager'])(req);
+    const expected = {
+      id: 'aUserId',
+      type: 'owner',
+    };
+    expect(actual).toStrictEqual(E.right(expected));
   });
 });

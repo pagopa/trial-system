@@ -1,5 +1,30 @@
 # @infra/resources
 
+## 0.5.3
+
+### Patch Changes
+
+- 779bc98: Remove legacy and unused secret
+- a9f2815: [IOPLT-732] Create `trial` container
+
+## 0.5.2
+
+### Patch Changes
+
+- 8cd8f2f: [IOPLT-719] Turn off consumers on staging slot
+
+## 0.5.1
+
+### Patch Changes
+
+- 79284e2: Update secret's reference
+
+## 0.5.0
+
+### Minor Changes
+
+- 360db60: Reference new secret called `ts-api-fn-key-KEY-APIM`
+
 ## 0.4.1
 
 ### Patch Changes

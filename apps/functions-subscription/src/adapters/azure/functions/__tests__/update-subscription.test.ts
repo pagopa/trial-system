@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import { HttpRequest } from '@azure/functions';
-import { makeAValidUpdateSubscriptionRequest } from './data';
+import {
+  makeAValidUpdateSubscriptionRequest,
+  managerHttpRequestHeaders,
+} from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { anActivationRequest } from '../../../../domain/__tests__/data';
 import { ItemNotFound } from '../../../../domain/errors';
@@ -18,7 +21,10 @@ describe('makeUpdateSubscriptionHandler', () => {
     const request = new HttpRequest({
       url: baseRequest.url,
       method: baseRequest.method,
-      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'Guest,AnotherGroup',
+      },
       body: { string: await baseRequest.text() },
       params: baseRequest.params,
     });
@@ -55,7 +61,7 @@ describe('makeUpdateSubscriptionHandler', () => {
     const aRequestWithInvalidBody = new HttpRequest({
       url: baseRequest.url,
       method: baseRequest.method,
-      headers: { 'x-user-groups': 'ApiTrialManager' },
+      headers: managerHttpRequestHeaders,
       body: { string: '{}' },
       params: baseRequest.params,
     });
