@@ -52,6 +52,10 @@ export interface TrialWriter {
 
 export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
+  readonly getByIdAndOwnerId: (
+    trialId: TrialId,
+    ownerId: string,
+  ) => TE.TaskEither<Error, O.Option<Trial>>;
 }
 
 const makeTrialId = () =>
