@@ -6,7 +6,7 @@ import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
-import { User } from './users';
+import { Tenant } from './users';
 
 // a unique brand for trialId
 interface TrialIdBrand {
@@ -54,7 +54,7 @@ export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
   readonly getByIdAndOwnerId: (
     trialId: TrialId,
-    ownerId: string,
+    ownerId: Tenant['id'],
   ) => TE.TaskEither<Error, O.Option<Trial>>;
 }
 
@@ -68,7 +68,7 @@ const makeTrialId = () =>
 const makeTrial = (
   name: Trial['name'],
   description: Trial['description'],
-  ownerId: User['id'],
+  ownerId: Tenant['id'],
 ) =>
   pipe(
     makeTrialId(),
@@ -84,7 +84,7 @@ const makeTrial = (
 export const insertTrial = (
   name: Trial['name'],
   description: Trial['description'],
-  { id: ownerId }: User,
+  { id: ownerId }: Tenant,
 ) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialWriter'>>(),
@@ -94,8 +94,12 @@ export const insertTrial = (
     ),
   );
 
-export const getTrialById = (trialId: TrialId) =>
+export const getTrialById = (trialId: TrialId, tenant: Tenant) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialReader'>>(),
-    RTE.flatMapTaskEither(({ trialReader }) => trialReader.get(trialId)),
+    RTE.flatMapTaskEither(({ trialReader }) =>
+      tenant.type === 'owner'
+        ? trialReader.getByIdAndOwnerId(trialId, tenant.id)
+        : trialReader.get(trialId),
+    ),
   );
