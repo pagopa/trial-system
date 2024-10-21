@@ -154,7 +154,7 @@ resource "azurerm_api_management_group" "api_trial_support" {
   api_management_name = module.apim.name
   resource_group_name = module.apim.resource_group_name
   display_name        = "ApiTrialSupport"
-  description = "A group for customer support"
+  description         = "A group for customer support"
 }
 
 ####################################################################################
