@@ -52,7 +52,7 @@ export const parseHeaderParameter =
       ),
     );
 
-type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager';
+type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager' | 'ApiTrialSupport';
 /**
  * Verifies the presence of the `x-user-groups` header and checks if it includes
  * at least one of the specified groups. If the `x-user-groups` header is missing,
