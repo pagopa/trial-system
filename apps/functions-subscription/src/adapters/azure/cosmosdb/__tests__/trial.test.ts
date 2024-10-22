@@ -53,7 +53,7 @@ describe('makeTrialsCosmosContainer', () => {
     });
   });
   describe('getByIdAndOwnerId', () => {
-    it('should return the item if found', async () => {
+    it('should return the item', async () => {
       const mockDB = makeDatabaseMock();
 
       mockDB.container('').item.mockReturnValueOnce({
