@@ -3,7 +3,7 @@ import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { flow, pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/lib/ReaderTaskEither';
 import { SystemEnv } from '../../../system-env';
-import { parsePathParameter, verifyUserGroup } from './middleware';
+import { getAndValidateUser, parsePathParameter } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { ActivationJob as ActivationJobAPI } from '../../../generated/definitions/internal/ActivationJob';
 import { ItemNotFound } from '../../../domain/errors';
@@ -20,7 +20,7 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Env>(),
-    RTE.apFirst(RTE.fromEither(verifyUserGroup(['ApiTrialManager'])(req))),
+    RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req))),
     RTE.apSW(
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),

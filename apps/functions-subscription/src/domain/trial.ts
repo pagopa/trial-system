@@ -6,6 +6,7 @@ import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
+import { User } from './users';
 
 // a unique brand for trialId
 interface TrialIdBrand {
@@ -21,7 +22,7 @@ export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
 const BaseTrialCodec = t.intersection([
   t.strict({ id: TrialIdCodec, name: NonEmptyString }),
-  t.partial({ description: t.string }),
+  t.partial({ description: t.string, ownerId: t.string }), //ownerId should be mandatory after the migration
 ]);
 
 const CreatingTrialCodec = t.intersection([
@@ -61,7 +62,11 @@ const makeTrialId = () =>
     RTE.map(({ value }) => value as TrialId),
   );
 
-const makeTrial = (name: Trial['name'], description: Trial['description']) =>
+const makeTrial = (
+  name: Trial['name'],
+  description: Trial['description'],
+  ownerId: User['id'],
+) =>
   pipe(
     makeTrialId(),
     RTE.map((id) => ({
@@ -69,16 +74,18 @@ const makeTrial = (name: Trial['name'], description: Trial['description']) =>
       name,
       description,
       state: 'CREATING' as const,
+      ownerId,
     })),
   );
 
 export const insertTrial = (
   name: Trial['name'],
   description: Trial['description'],
+  { id: ownerId }: User,
 ) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialWriter'>>(),
-    RTE.apSW('trial', makeTrial(name, description)),
+    RTE.apSW('trial', makeTrial(name, description, ownerId)),
     RTE.flatMapTaskEither(({ trial, trialWriter }) =>
       trialWriter.insert(trial),
     ),

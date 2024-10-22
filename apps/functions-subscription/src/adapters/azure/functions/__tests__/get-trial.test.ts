@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
-import { makeAValidGetTrialRequest } from './data';
+import { makeAValidGetTrialRequest, managerHttpRequestHeaders } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { makeGetTrialHandler } from '../get-trial';
 import { aTrial } from '../../../../domain/__tests__/data';
@@ -12,7 +12,10 @@ describe('makeGetTrialHandler', () => {
     const request = new HttpRequest({
       url: makeAValidGetTrialRequest().url,
       method: makeAValidGetTrialRequest().method,
-      headers: { 'x-user-groups': 'Guest,AnotherGroup' },
+      headers: {
+        ...managerHttpRequestHeaders,
+        'x-user-groups': 'Guest,AnotherGroup',
+      },
       body: { string: await makeAValidGetTrialRequest().text() },
     });
     const env = makeTestSystemEnv();

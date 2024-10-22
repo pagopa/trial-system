@@ -76,10 +76,12 @@ const serviceBus = new ServiceBusClient(
 
 const subscriptionReaderWriter = makeSubscriptionCosmosContainer(
   replicaPreferredCosmosDB.database(config.cosmosdb.databaseName),
+  config.cosmosdb.containersNames.subscription,
 );
 
 const subscriptionHistoryReaderWriter = makeSubscriptionHistoryCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
+  config.cosmosdb.containersNames.subscriptionHistory,
 );
 
 const activationJobReaderWriter = makeActivationJobCosmosContainer(
@@ -102,6 +104,7 @@ const eventWriter = makeEventWriterServiceBus(
 
 const trialReaderWriter = makeTrialsCosmosContainer(
   cosmosDB.database(config.cosmosdb.databaseName),
+  config.cosmosdb.containersNames.trials,
 );
 
 const serviceBusManagementClient = new ServiceBusManagementClient(

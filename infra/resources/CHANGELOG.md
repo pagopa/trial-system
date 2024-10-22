@@ -1,5 +1,23 @@
 # @infra/resources
 
+## 0.6.2
+
+### Patch Changes
+
+- 7a3c588: Revert "[IOPLT-741] Update value of `TRIALS_COSMOSDB_CONTAINER_NAME` environment variable"
+
+## 0.6.1
+
+### Patch Changes
+
+- 3ba0161: [IOPLT-741] Update value of `TRIALS_COSMOSDB_CONTAINER_NAME` environment variable
+
+## 0.6.0
+
+### Minor Changes
+
+- 35c8bcf: [IOPLT-743] Add `subscription` container name to the environment variables of the Azure Functions
+
 ## 0.5.3
 
 ### Patch Changes
