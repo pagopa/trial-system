@@ -25,7 +25,15 @@ describe('makeTrialsCosmosContainer', () => {
       ).get(id)();
 
       expect(actual).toStrictEqual(E.right(O.some(aTrial)));
-      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+      expect(mockDB.container('').items.query).nthCalledWith(1, {
+        query: 'SELECT * FROM c WHERE c.id = @id OFFSET 0 LIMIT 1',
+        parameters: [
+          {
+            name: '@id',
+            value: aTrial.id,
+          },
+        ],
+      });
     });
 
     it('should return None if item does not exist', async () => {

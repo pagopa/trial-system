@@ -17,7 +17,6 @@ export const makeTrialsCosmosContainer = (
       pipe(
         TE.tryCatch(
           () =>
-            // Converted to items.query due to the change of container's partition key
             container.items
               .query({
                 query: 'SELECT * FROM c WHERE c.id = @id OFFSET 0 LIMIT 1',
