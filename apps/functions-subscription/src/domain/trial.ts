@@ -100,5 +100,5 @@ export const getTrialById = (trialId: TrialId) =>
 export const getAllTrials = () =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialReader'>>(),
-    RTE.flatMapTaskEither(({ trialReader }) => trialReader.getAll()),
+    RTE.flatMapTaskEither(({ trialReader }) => trialReader.list()),
   );
