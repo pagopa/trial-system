@@ -461,7 +461,7 @@ components:
         - CREATING
         - CREATED
     Trials:
-      type: arrays
+      type: array
       items:
         $ref: '#/components/schemas/Trial'
     Trial:
