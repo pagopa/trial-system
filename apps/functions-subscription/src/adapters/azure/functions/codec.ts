@@ -56,7 +56,3 @@ export const toTrialAPI = (trial: Trial): TrialAPI => {
       }
     : trialAPI;
 };
-
-export const toTrialAPIArray = (
-  trials: readonly Trial[],
-): readonly TrialAPI[] => trials.map(toTrialAPI);

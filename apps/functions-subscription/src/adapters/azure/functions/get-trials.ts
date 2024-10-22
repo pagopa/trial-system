@@ -6,7 +6,7 @@ import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial
 import { SystemEnv } from '../../../system-env';
 import { getAndValidateUser } from './middleware';
 import { toHttpProblemJson } from './errors';
-import { toTrialAPIArray } from './codec';
+import { toTrialAPI } from './codec';
 
 type Env = Pick<SystemEnv, 'getTrials'>;
 
@@ -20,7 +20,10 @@ const makeHandlerKitHandler: H.Handler<
     RTE.ask<Env>(),
     RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialSupport'])(req))),
     RTE.flatMapTaskEither(({ getTrials }) => getTrials()),
-    RTE.mapBoth(toHttpProblemJson, flow(toTrialAPIArray, H.successJson)),
+    RTE.mapBoth(
+      toHttpProblemJson,
+      flow((a) => a.map(toTrialAPI), H.successJson),
+    ),
     RTE.orElseW(RTE.of),
   ),
 );
