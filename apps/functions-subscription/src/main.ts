@@ -30,6 +30,7 @@ import { makeTrialsCosmosContainer } from './adapters/azure/cosmosdb/trial';
 import { makePostTrialHandler } from './adapters/azure/functions/create-trial';
 import { makeSubscriptionQueueEventHubProducer } from './adapters/azure/eventhubs/subscription';
 import { makeGetTrialHandler } from './adapters/azure/functions/get-trial';
+import { makeGetTrialsHandler } from './adapters/azure/functions/get-trials';
 import { makeTrialChangesHandler } from './adapters/azure/functions/process-trial-changes';
 import { ManagedServiceIdentityClient } from '@azure/arm-msi';
 import { AuthorizationManagementClient } from '@azure/arm-authorization';
@@ -202,6 +203,13 @@ app.http('getTrial', {
   authLevel: 'function',
   handler: makeGetTrialHandler(env),
   route: 'trials/{trialId}',
+});
+
+app.http('getTrials', {
+  methods: ['GET'],
+  authLevel: 'function',
+  handler: makeGetTrialsHandler(env),
+  route: 'trials',
 });
 
 const retry = {
