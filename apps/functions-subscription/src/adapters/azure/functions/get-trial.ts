@@ -20,12 +20,17 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Env>(),
-    RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req))),
+    RTE.apSW(
+      'tenant',
+      RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req)),
+    ),
     RTE.apSW(
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
     ),
-    RTE.flatMapTaskEither(({ getTrial, trialId }) => getTrial(trialId)),
+    RTE.flatMapTaskEither(({ getTrial, trialId, tenant }) =>
+      getTrial(trialId, tenant),
+    ),
     RTE.flatMapOption(
       (trial) => trial,
       () => new ItemNotFound('Trial not found'),

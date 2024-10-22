@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import { aSubscription, aTrial } from '../../domain/__tests__/data';
+import {
+  aSubscription,
+  aTrial,
+  aTrialSubscriber,
+} from '../../domain/__tests__/data';
 import { makeTestEnv } from '../../domain/__tests__/mocks';
 import { SubscriptionStoreError } from '../errors';
 import { ItemAlreadyExists, ItemNotFound } from '../../domain/errors';
@@ -16,7 +20,11 @@ describe('createSubscription', () => {
 
     env.trialReader.get.mockReturnValueOnce(TE.right(O.none));
 
-    const actual = await createSubscription(userId, trialId)(env)();
+    const actual = await createSubscription(
+      aTrialSubscriber,
+      userId,
+      trialId,
+    )(env)();
 
     expect(actual).toStrictEqual(E.left(new ItemNotFound('Trial not found')));
   });
@@ -30,7 +38,11 @@ describe('createSubscription', () => {
     );
     env.hashFn.mockReturnValueOnce({ value: aSubscription.id });
 
-    const actual = await createSubscription(userId, trialId)(env)();
+    const actual = await createSubscription(
+      aTrialSubscriber,
+      userId,
+      trialId,
+    )(env)();
 
     expect(actual).toStrictEqual(E.left(error));
   });
@@ -49,7 +61,11 @@ describe('createSubscription', () => {
       TE.right(aSubscription),
     );
 
-    const actual = await createSubscription(userId, trialId)(testEnv)();
+    const actual = await createSubscription(
+      aTrialSubscriber,
+      userId,
+      trialId,
+    )(testEnv)();
     const expected = E.right(aSubscription);
 
     expect(actual).toMatchObject(expected);
@@ -82,6 +98,7 @@ describe('createSubscription', () => {
     );
 
     const actual = await createSubscription(
+      aTrialSubscriber,
       userId,
       trialId,
       'ACTIVE',
@@ -106,7 +123,11 @@ describe('createSubscription', () => {
       TE.right(aSubscription),
     );
 
-    const actual = await createSubscription(userId, trialId)(testEnv)();
+    const actual = await createSubscription(
+      aTrialSubscriber,
+      userId,
+      trialId,
+    )(testEnv)();
     const expected = E.left(new SubscriptionStoreError());
     expect(actual).toMatchObject(expected);
     expect(
@@ -124,7 +145,11 @@ describe('createSubscription', () => {
     testEnv.subscriptionReader.get.mockReturnValueOnce(TE.left(error));
     testEnv.hashFn.mockReturnValueOnce({ value: aSubscription.id });
 
-    const actual = await createSubscription(userId, trialId)(testEnv)();
+    const actual = await createSubscription(
+      aTrialSubscriber,
+      userId,
+      trialId,
+    )(testEnv)();
     const expected = E.left(error);
     expect(actual).toMatchObject(expected);
   });
