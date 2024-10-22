@@ -52,7 +52,7 @@ export interface TrialWriter {
 
 export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
-  readonly getAll: () => TE.TaskEither<Error, readonly Trial[]>;
+  readonly list: () => TE.TaskEither<Error, readonly Trial[]>;
 }
 
 const makeTrialId = () =>
