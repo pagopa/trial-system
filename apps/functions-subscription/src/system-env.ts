@@ -6,7 +6,7 @@ import { processSubscriptionRequest } from './use-cases/process-subscription-req
 import { processActivationJob } from './use-cases/process-activation-job';
 import { processActivationRequest } from './use-cases/process-activation-request';
 import { getActivationJob, updateActivationJob } from './domain/activation-job';
-import { insertTrial, getTrialById, getAllTrials } from './domain/trial';
+import { insertTrial, getTrialById, listTrials } from './domain/trial';
 import { updateSubscription } from './use-cases/update-subscription';
 
 export const makeSystemEnv = (capabilities: Capabilities) => ({
@@ -23,7 +23,7 @@ export const makeSystemEnv = (capabilities: Capabilities) => ({
   updateActivationJob: flow(updateActivationJob, apply(capabilities)),
   createTrial: flow(insertTrial, apply(capabilities)),
   getTrial: flow(getTrialById, apply(capabilities)),
-  getTrials: flow(getAllTrials, apply(capabilities)),
+  listTrials: flow(listTrials, apply(capabilities)),
 });
 
 export type SystemEnv = ReturnType<typeof makeSystemEnv>;

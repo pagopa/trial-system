@@ -8,7 +8,7 @@ import { getAndValidateUser } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toTrialAPI } from './codec';
 
-type Env = Pick<SystemEnv, 'getTrials'>;
+type Env = Pick<SystemEnv, 'listTrials'>;
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
@@ -19,7 +19,7 @@ const makeHandlerKitHandler: H.Handler<
   pipe(
     RTE.ask<Env>(),
     RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialSupport'])(req))),
-    RTE.flatMapTaskEither(({ getTrials }) => getTrials()),
+    RTE.flatMapTaskEither(({ listTrials }) => listTrials()),
     RTE.mapBoth(
       toHttpProblemJson,
       flow((a) => a.map(toTrialAPI), H.successJson),
