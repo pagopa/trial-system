@@ -201,18 +201,18 @@ app.http('createTrial', {
   route: 'trials',
 });
 
-app.http('getTrial', {
-  methods: ['GET'],
-  authLevel: 'function',
-  handler: makeGetTrialHandler(env),
-  route: 'trials/{trialId}',
-});
-
 app.http('getTrials', {
   methods: ['GET'],
   authLevel: 'function',
   handler: makeGetTrialsHandler(env),
   route: 'trials',
+});
+
+app.http('getTrial', {
+  methods: ['GET'],
+  authLevel: 'function',
+  handler: makeGetTrialHandler(env),
+  route: 'trials/{trialId}',
 });
 
 const retry = {
