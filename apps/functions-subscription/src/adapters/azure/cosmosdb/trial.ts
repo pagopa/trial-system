@@ -17,7 +17,7 @@ export const makeTrialsCosmosContainer = (
         TE.tryCatch(() => container.item(trialId, trialId).read(), E.toError),
         TE.flatMapEither(decodeFromItem(TrialCodec)),
       ),
-    getAll: () =>
+    list: () =>
       pipe(
         TE.tryCatch(() => container.items.readAll().fetchAll(), E.toError),
         TE.flatMapEither(decodeFromFeed(TrialCodec)),
