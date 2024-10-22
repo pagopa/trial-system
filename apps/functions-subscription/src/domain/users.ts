@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
-// a unique brand for trial system userId
+// a unique brand for trial system tenantId
 interface TenantIdBrand {
   // use `unique symbol` here to ensure uniqueness across modules / packages
   readonly TenantId: unique symbol;
