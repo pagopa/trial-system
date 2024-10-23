@@ -181,7 +181,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trials'
+                $ref: '#/components/schemas/TrialCollection'
         '401':
           description: Unauthorized
         '403':
@@ -480,10 +480,10 @@ components:
       enum:
         - CREATING
         - CREATED
-    Trials:
+    TrialCollection:
       type: array
       items:
-        $ref: '#/components/schemas/Trial'
+        $ref: '#/components/schemas/TrialForCollection'
     Trial:
       type: object
       required:
@@ -519,3 +519,19 @@ components:
                   type: string
                   description: The identity ID used to receive events from the queue.
                   minLength: 1
+    TrialForCollection:
+      type: object
+      required:
+        - id
+        - name
+        - state
+      properties:
+        id:
+          $ref: '#/components/schemas/TrialId'
+        name:
+          $ref: '#/components/schemas/TrialName'
+        description:
+          $ref: '#/components/schemas/TrialDescription'
+        state:
+          $ref: '#/components/schemas/TrialState'
+          description: The current state of the trial.
