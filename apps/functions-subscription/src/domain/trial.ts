@@ -52,6 +52,7 @@ export interface TrialWriter {
 
 export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
+  readonly list: () => TE.TaskEither<Error, readonly Trial[]>;
 }
 
 const makeTrialId = () =>
@@ -94,4 +95,10 @@ export const getTrialById = (trialId: TrialId) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialReader'>>(),
     RTE.flatMapTaskEither(({ trialReader }) => trialReader.get(trialId)),
+  );
+
+export const listTrials = () =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'trialReader'>>(),
+    RTE.flatMapTaskEither(({ trialReader }) => trialReader.list()),
   );

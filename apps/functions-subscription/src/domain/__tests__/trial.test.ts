@@ -1,8 +1,8 @@
-import { aTrial, aTrialOwner } from './data';
+import { aTrial, aTrialOwner, aTrial1, aTrial2 } from './data';
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import { insertTrial } from '../trial';
+import { insertTrial, listTrials } from '../trial';
 import { ItemAlreadyExists } from '../errors';
 import { makeTestEnv } from './mocks';
 
@@ -20,6 +20,35 @@ describe('insertTrial', () => {
 
     expect(actual).toMatchObject(expected);
     expect(testEnv.trialWriter.insert).toBeCalledWith(aTrial);
+  });
+
+  it('should return all trials', async () => {
+    const testEnv = makeTestEnv();
+
+    testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial1.id });
+    testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial1));
+
+    await insertTrial(
+      aTrial1.name,
+      aTrial2.description,
+      aTrialOwner,
+    )(testEnv)();
+
+    testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial2.id });
+    testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial2));
+
+    await insertTrial(
+      aTrial2.name,
+      aTrial2.description,
+      aTrialOwner,
+    )(testEnv)();
+
+    testEnv.trialReader.list.mockReturnValueOnce(TE.right([aTrial1, aTrial2]));
+
+    const actual = await listTrials()(testEnv)();
+    const expected = E.right([aTrial1, aTrial2]);
+
+    expect(actual).toMatchObject(expected);
   });
 
   it('should return error if the trial already exists', async () => {

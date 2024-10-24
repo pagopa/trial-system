@@ -87,3 +87,16 @@ export const aCreatedTrial = {
   state: 'CREATED' as const,
   identityId: 'anIdentityId' as NonEmptyString,
 };
+
+export const aTrial1 = {
+  ...aTrial,
+  id: 'a1' as TrialId,
+  name: 'n1' as NonEmptyString,
+  description: 'd1',
+};
+export const aTrial2 = {
+  ...aTrial,
+  id: 'a2' as TrialId,
+  name: 'n2' as NonEmptyString,
+  description: 'd2',
+};

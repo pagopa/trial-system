@@ -27,6 +27,14 @@ export const managerHttpRequestHeaders = {
   'x-functions-key': 'aFunctionKey',
 };
 
+export const supportHttpRequestHeaders = {
+  'x-user-groups': 'ApiTrialSupport',
+  'x-user-id': 'aTrialOwnerId',
+  'x-subscription-id': 'anApimSubscriptionId',
+  'x-user-email': 'aUserEmail',
+  'x-functions-key': 'aFunctionKey',
+};
+
 /*
  * This is a function because, if it were an object, the `body` property
  * would be removed during the execution of the tests.
@@ -111,4 +119,12 @@ export const makeAValidGetTrialRequest = () =>
     params: {
       trialId: aTrialId,
     },
+  });
+
+export const makeAValidListTrialRequest = () =>
+  new HttpRequest({
+    url: 'https://function/trials',
+    method: 'GET',
+    headers: supportHttpRequestHeaders,
+    params: {},
   });
