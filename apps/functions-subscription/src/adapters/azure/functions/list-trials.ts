@@ -28,4 +28,4 @@ const makeHandlerKitHandler: H.Handler<
   ),
 );
 
-export const makeGetTrialsHandler = httpAzureFunction(makeHandlerKitHandler);
+export const makeListTrialsHandler = httpAzureFunction(makeHandlerKitHandler);
