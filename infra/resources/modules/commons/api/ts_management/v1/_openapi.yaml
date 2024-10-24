@@ -182,7 +182,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TrialCollection'
+                $ref: '#/components/schemas/TrialCollectionWithNextId'
         '400':
           description: Bad Request
           content:
@@ -308,6 +308,7 @@ components:
       name: pageSize
       in: query
       required: false
+      description: The maximum number of items the response will include.
       schema:
         type: integer
         minimum: 1
@@ -317,21 +318,21 @@ components:
       name: maximumId
       in: query
       required: false
+      description: The maximum id to get messages until to.
       schema:
         type: string
         maxLength: 26
         minLength: 26
-        pattern: '[0-9a-hjkmnp-tv-zA-HJKMNP-TV-Z]{26}'
       x-example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
     queryMinimumId:
       name: minimumId
       in: query
       required: false
+      description: The minimum id to get messages until to.
       schema:
         type: string
         maxLength: 26
         minLength: 26
-        pattern: '[0-9a-hjkmnp-tv-zA-HJKMNP-TV-Z]{26}'
       x-example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
   schemas:
     ProblemJson:
@@ -374,6 +375,10 @@ components:
     TrialId:
       type: string
       description: Unique identifier of the trial.
+      minLength: 1
+    NextTrialId:
+      type: string
+      description: Unique identifier of the next trial.
       minLength: 1
     TrialName:
       type: string
@@ -499,10 +504,17 @@ components:
       enum:
         - CREATING
         - CREATED
+    TrialCollectionWithNextId:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TrialCollection'
+        nextId:
+          $ref: '#/components/schemas/NextTrialId'
     TrialCollection:
       type: array
       items:
-        $ref: '#/components/schemas/TrialForCollection'
+        $ref: '#/components/schemas/TrialSlim'
     Trial:
       type: object
       required:
@@ -538,7 +550,7 @@ components:
                   type: string
                   description: The identity ID used to receive events from the queue.
                   minLength: 1
-    TrialForCollection:
+    TrialSlim:
       type: object
       required:
         - id
