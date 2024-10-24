@@ -198,11 +198,12 @@ paths:
   /trials:
     get:
       operationId: listTrials
-      description: List all trials
-      summary: List all trials
+      description: List trials
+      summary: List trials
       parameters:
-        - $ref: '#/components/parameters/queryPageNumber'
         - $ref: '#/components/parameters/queryPageSize'
+        - $ref: '#/components/parameters/queryMaximumId'
+        - $ref: '#/components/parameters/queryMinimumId'
       responses:
         '200':
           description: Success
@@ -309,14 +310,6 @@ components:
       schema:
         type: string
         minLength: 1
-    queryPageNumber:
-      name: pageNumber
-      in: query
-      required: false
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
     queryPageSize:
       name: pageSize
       in: query
@@ -326,6 +319,26 @@ components:
         minimum: 1
         maximum: 100
         default: 25
+    queryMaximumId:
+      name: maximumId
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 26
+        minLength: 26
+        pattern: '[0-9a-hjkmnp-tv-zA-HJKMNP-TV-Z]{26}'
+      x-example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
+    queryMinimumId:
+      name: minimumId
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 26
+        minLength: 26
+        pattern: '[0-9a-hjkmnp-tv-zA-HJKMNP-TV-Z]{26}'
+      x-example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
   schemas:
     ProblemJson:
       $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/ProblemJson'
