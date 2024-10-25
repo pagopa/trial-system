@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.6.1
+
+### Patch Changes
+
+- fee8730: [IOPLT-750] Update query removing the use of the partition key
+
 ## 3.6.0
 
 ### Minor Changes
