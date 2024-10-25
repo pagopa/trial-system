@@ -210,7 +210,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TrialCollectionWithNextId'
+                $ref: '#/components/schemas/TrialCollectionPaginated'
         '400':
           description: Bad Request
           content:
@@ -520,10 +520,12 @@ components:
       enum:
         - CREATING
         - CREATED
-    TrialCollectionWithNextId:
+    TrialCollectionPaginated:
       type: object
+      required:
+        - items
       properties:
-        data:
+        items:
           $ref: '#/components/schemas/TrialCollection'
         nextId:
           $ref: '#/components/schemas/NextTrialId'
