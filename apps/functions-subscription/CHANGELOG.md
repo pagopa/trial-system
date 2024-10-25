@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.7.0
+
+### Minor Changes
+
+- c649cb2: [IOPLT-675] Handle the tenant when calling `getTrial` function
+
 ## 3.6.1
 
 ### Patch Changes
