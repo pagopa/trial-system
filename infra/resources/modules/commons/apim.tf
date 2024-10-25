@@ -246,3 +246,33 @@ resource "azurerm_api_management_subscription" "io_backend" {
   state               = "active"
   allow_tracing       = false
 }
+
+####################################################################################
+# Support User
+####################################################################################
+resource "azurerm_api_management_user" "support_user" {
+  user_id             = "support-user"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  first_name          = "Support"
+  last_name           = "PagoPA"
+  email               = "trialsystem-support@pagopa.it"
+  state               = "active"
+}
+
+resource "azurerm_api_management_group_user" "support" {
+  user_id             = azurerm_api_management_user.support_user.user_id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  group_name          = azurerm_api_management_group.api_trial_support.name
+}
+
+resource "azurerm_api_management_subscription" "support" {
+  user_id             = azurerm_api_management_user.support_user.id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  product_id          = module.apim_product_ts_management.id
+  display_name        = "SUPPORT TRIAL MANAGER API"
+  state               = "active"
+  allow_tracing       = false
+}
