@@ -6,7 +6,7 @@ import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
-import { Tenant } from './users';
+import { Tenant, TenantIdCodec } from './users';
 
 // a unique brand for trialId
 interface TrialIdBrand {
@@ -21,8 +21,8 @@ export const TrialIdCodec = t.brand(
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
 const BaseTrialCodec = t.intersection([
-  t.strict({ id: TrialIdCodec, name: NonEmptyString }),
-  t.partial({ description: t.string, ownerId: t.string }), //ownerId should be mandatory after the migration
+  t.strict({ id: TrialIdCodec, name: NonEmptyString, ownerId: TenantIdCodec }),
+  t.partial({ description: t.string }), //ownerId should be mandatory after the migration
 ]);
 
 const CreatingTrialCodec = t.intersection([
@@ -54,7 +54,7 @@ export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
   readonly getByIdAndOwnerId: (
     trialId: TrialId,
-    ownerId: Tenant['id'],
+    ownerId: Trial['ownerId'],
   ) => TE.TaskEither<Error, O.Option<Trial>>;
 }
 

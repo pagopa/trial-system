@@ -6,12 +6,12 @@ interface TenantIdBrand {
   // use `unique symbol` here to ensure uniqueness across modules / packages
   readonly TenantId: unique symbol;
 }
-export const TenantId = t.brand(
+export const TenantIdCodec = t.brand(
   NonEmptyString,
   (str): str is t.Branded<NonEmptyString, TenantIdBrand> => str.length > 0,
   'TenantId',
 );
-export type TenantId = t.TypeOf<typeof TenantId>;
+export type TenantId = t.TypeOf<typeof TenantIdCodec>;
 
 interface BaseUser {
   readonly id: TenantId;

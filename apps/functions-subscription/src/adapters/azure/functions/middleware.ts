@@ -3,7 +3,7 @@ import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import * as H from '@pagopa/handler-kit';
 import { flow, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
-import { TenantId, Tenant } from '../../../domain/users';
+import { TenantIdCodec, Tenant } from '../../../domain/users';
 
 /**
  * Parses the request body using a specified schema and validates it.
@@ -60,7 +60,7 @@ const toTenantType = (groups: readonly string[]): Tenant['type'] => {
 };
 
 const toTenant =
-  (id: TenantId) =>
+  (id: Tenant['id']) =>
   (groups: readonly string[]): Tenant => ({
     id,
     type: toTenantType(groups),
@@ -76,7 +76,7 @@ const toTenant =
 export const getAndValidateUser =
   (allowedGroups: readonly AllowedGroup[]) => (req: H.HttpRequest) =>
     pipe(
-      parseHeaderParameter(TenantId, 'x-user-id')(req),
+      parseHeaderParameter(TenantIdCodec, 'x-user-id')(req),
       E.flatMap((userId) =>
         pipe(
           parseHeaderParameter(NonEmptyString, 'x-user-groups')(req),
