@@ -31,13 +31,13 @@
     "EVENTS_SERVICEBUS_TOPIC_NAME": "<put-here-the-the-service-bus-topic-name>",
 
     "ACTIVATION_CONSUMER": "on",
-    "ACTIVATIONS_COSMOSDB_CONTAINER_NAME": "activations",
+    "ACTIVATIONS_COSMOSDB_CONTAINER_NAME": "activation",
     "ACTIVATION_MAX_FETCH_SIZE": "50",
     "ActivationConsumerCosmosDBConnection": "<put-here-the-the-cosmos-database-connection-string>",
     "ActivationConsumerCosmosDBConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
     "TRIAL_CONSUMER": "off",
-    "TRIALS_COSMOSDB_CONTAINER_NAME": "trials",
+    "TRIALS_COSMOSDB_CONTAINER_NAME": "trial",
     "TrialsCosmosConnection": "<put-here-the-the-cosmos-database-connection-string>",
     "TrialsCosmosConnection__accountEndpoint": "<put-here-the-the-cosmos-database-account-endpoint>",
 
