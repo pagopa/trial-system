@@ -2,4 +2,4 @@
 "@infra/resources": minor
 ---
 
-Add user Support PagoPA to ApiTrialSupport.
+Add user Support PagoPA to `ApiTrialSupport` and create subscription key

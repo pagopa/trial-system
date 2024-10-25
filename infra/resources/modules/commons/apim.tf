@@ -250,7 +250,7 @@ resource "azurerm_api_management_subscription" "io_backend" {
 ####################################################################################
 # Support User
 ####################################################################################
-resource "azurerm_api_management_user" "support_user" {
+resource "azurerm_api_management_user" "support" {
   user_id             = "support-user"
   api_management_name = module.apim.name
   resource_group_name = module.apim.resource_group_name
@@ -261,18 +261,18 @@ resource "azurerm_api_management_user" "support_user" {
 }
 
 resource "azurerm_api_management_group_user" "support" {
-  user_id             = azurerm_api_management_user.support_user.user_id
+  user_id             = azurerm_api_management_user.support.user_id
   api_management_name = module.apim.name
   resource_group_name = module.apim.resource_group_name
   group_name          = azurerm_api_management_group.api_trial_support.name
 }
 
 resource "azurerm_api_management_subscription" "support" {
-  user_id             = azurerm_api_management_user.support_user.id
+  user_id             = azurerm_api_management_user.support.id
   api_management_name = module.apim.name
   resource_group_name = module.apim.resource_group_name
   product_id          = module.apim_product_ts_management.id
-  display_name        = "SUPPORT TRIAL MANAGER API"
+  display_name        = "PagoPA Support"
   state               = "active"
   allow_tracing       = false
 }
