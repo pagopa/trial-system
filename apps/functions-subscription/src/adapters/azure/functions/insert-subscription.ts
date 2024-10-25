@@ -43,7 +43,7 @@ const makeHandlerKitHandler: H.Handler<
       ({ createSubscription, trialId, requestBody, tenant }) =>
         createSubscription(
           tenant,
-          requestBody.userId as unknown as UserId,
+          requestBody.userId as UserId,
           trialId,
           requestBody.state,
         ),
