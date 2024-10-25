@@ -10,8 +10,8 @@ import { Trial } from '../../../../domain/trial';
 
 describe('makeTrialsCosmosContainer', () => {
   const containerName = 'aContainerName';
+  const { id, ownerId } = aTrial;
   describe('get', () => {
-    const { id } = aTrial;
     it('should return the item if found', async () => {
       const mockDB = makeDatabaseMock();
 
@@ -50,6 +50,38 @@ describe('makeTrialsCosmosContainer', () => {
 
       expect(actual).toStrictEqual(E.right(O.none));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('getByIdAndOwnerId', () => {
+    it('should return the item', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').item.mockReturnValueOnce({
+        read: () => Promise.resolve({ resource: aTrial }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).getByIdAndOwnerId(id, ownerId)();
+
+      expect(actual).toStrictEqual(E.right(O.some(aTrial)));
+      expect(mockDB.container('').item).toBeCalledWith(id, ownerId);
+    });
+    it('should return None if item does not exist', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').item.mockReturnValueOnce({
+        read: () => Promise.resolve({ resource: undefined }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).getByIdAndOwnerId(id, ownerId)();
+
+      expect(actual).toStrictEqual(E.right(O.none));
+      expect(mockDB.container('').item).toBeCalledWith(id, ownerId);
     });
   });
   describe('insert', () => {

@@ -6,7 +6,7 @@ import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
 import { ItemAlreadyExists } from './errors';
-import { User } from './users';
+import { Tenant, TenantIdCodec } from './users';
 
 // a unique brand for trialId
 interface TrialIdBrand {
@@ -21,8 +21,8 @@ export const TrialIdCodec = t.brand(
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
 const BaseTrialCodec = t.intersection([
-  t.strict({ id: TrialIdCodec, name: NonEmptyString }),
-  t.partial({ description: t.string, ownerId: t.string }), //ownerId should be mandatory after the migration
+  t.strict({ id: TrialIdCodec, name: NonEmptyString, ownerId: TenantIdCodec }),
+  t.partial({ description: t.string }), //ownerId should be mandatory after the migration
 ]);
 
 const CreatingTrialCodec = t.intersection([
@@ -52,6 +52,10 @@ export interface TrialWriter {
 
 export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
+  readonly getByIdAndOwnerId: (
+    trialId: TrialId,
+    ownerId: Trial['ownerId'],
+  ) => TE.TaskEither<Error, O.Option<Trial>>;
 }
 
 const makeTrialId = () =>
@@ -64,7 +68,7 @@ const makeTrialId = () =>
 const makeTrial = (
   name: Trial['name'],
   description: Trial['description'],
-  ownerId: User['id'],
+  ownerId: Tenant['id'],
 ) =>
   pipe(
     makeTrialId(),
@@ -80,7 +84,7 @@ const makeTrial = (
 export const insertTrial = (
   name: Trial['name'],
   description: Trial['description'],
-  { id: ownerId }: User,
+  { id: ownerId }: Tenant,
 ) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialWriter'>>(),
@@ -90,8 +94,12 @@ export const insertTrial = (
     ),
   );
 
-export const getTrialById = (trialId: TrialId) =>
+export const getTrialById = (trialId: TrialId, tenant: Tenant) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialReader'>>(),
-    RTE.flatMapTaskEither(({ trialReader }) => trialReader.get(trialId)),
+    RTE.flatMapTaskEither(({ trialReader }) =>
+      tenant.type === 'owner'
+        ? trialReader.getByIdAndOwnerId(trialId, tenant.id)
+        : trialReader.get(trialId),
+    ),
   );

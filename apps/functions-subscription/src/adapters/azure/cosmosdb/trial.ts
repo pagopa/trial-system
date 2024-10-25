@@ -3,7 +3,7 @@ import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { cosmosErrorToDomainError } from './errors';
-import { decodeFromFeed } from './decode';
+import { decodeFromFeed, decodeFromItem } from './decode';
 import { TrialCodec, TrialReader, TrialWriter } from '../../../domain/trial';
 import * as RA from 'fp-ts/ReadonlyArray';
 
@@ -32,6 +32,11 @@ export const makeTrialsCosmosContainer = (
         ),
         TE.flatMapEither(decodeFromFeed(TrialCodec)),
         TE.mapBoth(cosmosErrorToDomainError, RA.head),
+      ),
+    getByIdAndOwnerId: (trialId, ownerId) =>
+      pipe(
+        TE.tryCatch(() => container.item(trialId, ownerId).read(), E.toError),
+        TE.flatMapEither(decodeFromItem(TrialCodec)),
       ),
     insert: (trial) =>
       pipe(

@@ -6,6 +6,7 @@ import {
   aCreateSubscriptionWithActiveState,
   makeAValidCreateSubscriptionRequest,
   managerHttpRequestHeaders,
+  userHttpRequestHeaders,
 } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { SubscriptionStoreError } from '../../../../use-cases/errors';
@@ -40,12 +41,22 @@ describe('makePostSubscriptionHandler', () => {
     const env = makeTestSystemEnv();
     env.createSubscription.mockReturnValueOnce(TE.right(aSubscription));
 
+    const httpRequest = makeAValidCreateSubscriptionRequest(
+      aCreateSubscription,
+      userHttpRequestHeaders,
+    );
+    const tenant = {
+      id: userHttpRequestHeaders['x-user-id'],
+      type: 'subscriber',
+    };
+
     const actual = await makePostSubscriptionHandler(env)(
-      makeAValidCreateSubscriptionRequest(aCreateSubscription),
+      httpRequest,
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(201);
     expect(env.createSubscription).toHaveBeenCalledWith(
+      tenant,
       aSubscription.userId,
       aSubscription.trialId,
       undefined,
@@ -57,12 +68,21 @@ describe('makePostSubscriptionHandler', () => {
     const anActiveSubscription = { ...aSubscription, state: 'ACTIVE' as const };
     env.createSubscription.mockReturnValueOnce(TE.right(anActiveSubscription));
 
+    const httpRequest = makeAValidCreateSubscriptionRequest(
+      aCreateSubscriptionWithActiveState,
+    );
+    const tenant = {
+      id: httpRequest.headers.get('x-user-id'),
+      type: 'owner',
+    };
+
     const actual = await makePostSubscriptionHandler(env)(
-      makeAValidCreateSubscriptionRequest(aCreateSubscriptionWithActiveState),
+      httpRequest,
       makeFunctionContext(),
     );
     expect(actual.status).toStrictEqual(201);
     expect(env.createSubscription).toHaveBeenCalledWith(
+      tenant,
       anActiveSubscription.userId,
       anActiveSubscription.trialId,
       anActiveSubscription.state,
