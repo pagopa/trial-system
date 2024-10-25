@@ -221,7 +221,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TrialCollectionPaginated'
+                $ref: '#/components/schemas/TrialPaginatedCollection'
         '400':
           description: Bad Request
           content:
@@ -423,10 +423,6 @@ components:
       type: string
       description: Unique identifier of the trial.
       minLength: 1
-    NextTrialId:
-      type: string
-      description: Unique identifier of the next trial.
-      minLength: 1
     TrialName:
       type: string
       description: The name of the trial
@@ -551,15 +547,32 @@ components:
       enum:
         - CREATING
         - CREATED
-    TrialCollectionPaginated:
+    NextId:
+      type: string
+      description: Unique identifier of the next item.
+      minLength: 1
+    PreviousId:
+      type: string
+      description: Unique identifier of the previous item.
+      minLength: 1
+    PaginatedCollection:
       type: object
       required:
         - items
       properties:
-        items:
-          $ref: '#/components/schemas/TrialCollection'
+        previousId:
+          $ref: '#/components/schemas/PreviousId'
         nextId:
-          $ref: '#/components/schemas/NextTrialId'
+          $ref: '#/components/schemas/NextId'
+    TrialPaginatedCollection:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedCollection'
+        - type: object
+          required:
+            - items
+          properties:
+            items:
+              $ref: '#/components/schemas/TrialCollection'
     TrialCollection:
       type: array
       items:
