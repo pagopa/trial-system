@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.7.0
+
+### Minor Changes
+
+- b9cbb85: [IOPLT-749] Create `ApiTrialSupport` APIM group
+
 ## 0.6.2
 
 ### Patch Changes
