@@ -1,5 +1,17 @@
 # @infra/resources
 
+## 0.8.0
+
+### Minor Changes
+
+- 1c3277e: [IOPLT-741] Update reference to `trial` container
+
+## 0.7.0
+
+### Minor Changes
+
+- b9cbb85: [IOPLT-749] Create `ApiTrialSupport` APIM group
+
 ## 0.6.2
 
 ### Patch Changes
