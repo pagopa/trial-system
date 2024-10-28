@@ -49,6 +49,10 @@ module "apim" {
     instrumentation_key = azurerm_application_insights.ai.instrumentation_key
   }
 
+  # Add Monitor Diagnostic Settings
+  sec_log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+  sec_storage_id = "aStorageAccountIdInADifferentSubscription" // FIXME
+
   tags = var.tags
 }
 
