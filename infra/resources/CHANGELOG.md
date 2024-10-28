@@ -1,5 +1,12 @@
 # @infra/resources
 
+## 0.9.0
+
+### Minor Changes
+
+- 0a291fc: [IOPLT-742] Delete `trials` container
+- 4cd584b: Add user Support PagoPA to `ApiTrialSupport` and create subscription key
+
 ## 0.8.0
 
 ### Minor Changes
