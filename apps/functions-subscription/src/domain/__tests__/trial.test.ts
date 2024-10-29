@@ -45,7 +45,7 @@ describe('insertTrial', () => {
 
     testEnv.trialReader.list.mockReturnValueOnce(TE.right([aTrial1, aTrial2]));
 
-    const actual = await listTrials()(testEnv)();
+    const actual = await listTrials(1, aTrial1.id, aTrial2.id)(testEnv)();
     const expected = E.right([aTrial1, aTrial2]);
 
     expect(actual).toMatchObject(expected);
