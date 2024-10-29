@@ -5,9 +5,10 @@ import { getSubscription } from './use-cases/get-subscription';
 import { processSubscriptionRequest } from './use-cases/process-subscription-request';
 import { processActivationJob } from './use-cases/process-activation-job';
 import { processActivationRequest } from './use-cases/process-activation-request';
-import { getActivationJob, updateActivationJob } from './domain/activation-job';
+import { getActivationJob } from './domain/activation-job';
 import { insertTrial, getTrialById } from './domain/trial';
 import { updateSubscription } from './use-cases/update-subscription';
+import { updateActivationJob } from './use-cases/update-activation-job';
 
 export const makeSystemEnv = (capabilities: Capabilities) => ({
   createSubscription: flow(createSubscription, apply(capabilities)),
