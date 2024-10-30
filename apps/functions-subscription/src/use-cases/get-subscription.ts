@@ -1,19 +1,41 @@
-import { pipe } from 'fp-ts/lib/function';
+import { flow, pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
+import * as O from 'fp-ts/Option';
 import {
-  UserId,
-  makeSubscriptionId,
   getSubscriptionById,
+  makeSubscriptionId,
+  UserId,
 } from '../domain/subscription';
 import { ItemNotFound } from '../domain/errors';
-import { TrialId } from '../domain/trial';
+import { getTrialById, TrialId } from '../domain/trial';
+import { Tenant } from '../domain/users';
 
-export const getSubscription = (userId: UserId, trialId: TrialId) =>
+const subscriptionNotFoundError = new ItemNotFound('Subscription not found');
+
+const makeTrialId = (tenant: Tenant, trialId: TrialId) =>
   pipe(
-    makeSubscriptionId(trialId, userId),
+    tenant.type === 'owner'
+      ? pipe(
+          getTrialById(trialId, tenant),
+          RTE.flatMapOption(
+            flow(O.map(({ id }) => id)),
+            () => subscriptionNotFoundError,
+          ),
+        )
+      : RTE.of(trialId),
+  );
+
+export const getSubscription = (
+  tenant: Tenant,
+  userId: UserId,
+  trialId: TrialId,
+) =>
+  pipe(
+    makeTrialId(tenant, trialId),
+    RTE.flatMap((id) => makeSubscriptionId(id, userId)),
     RTE.flatMap(getSubscriptionById),
     RTE.flatMapOption(
       (subscription) => subscription,
-      () => new ItemNotFound('Subscription not found'),
+      () => subscriptionNotFoundError,
     ),
   );
