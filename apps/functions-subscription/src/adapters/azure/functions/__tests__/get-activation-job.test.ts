@@ -42,8 +42,16 @@ describe('makeGetActivationJobHandler', () => {
       makeFunctionContext(),
     );
 
+    const tenant = {
+      id: managerHttpRequestHeaders['x-user-id'],
+      type: 'owner',
+    };
+
     expect(actual.status).toStrictEqual(200);
-    expect(env.getActivationJob).toHaveBeenCalledWith(anActivationJob.trialId);
+    expect(env.getActivationJob).toHaveBeenCalledWith(
+      tenant,
+      anActivationJob.trialId,
+    );
   });
 
   it('should return 404 when the job does not exist', async () => {
