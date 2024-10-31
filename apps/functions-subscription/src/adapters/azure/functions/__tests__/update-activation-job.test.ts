@@ -6,7 +6,10 @@ import {
   managerHttpRequestHeaders,
 } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
-import { anActivationJob } from '../../../../domain/__tests__/data';
+import {
+  anActivationJob,
+  aTrialOwner,
+} from '../../../../domain/__tests__/data';
 import { ItemNotFound } from '../../../../domain/errors';
 import { makePutActivationJobHandler } from '../update-activation-job';
 
@@ -42,12 +45,8 @@ describe('makePutActivationJobHandler', () => {
       makeAValidUpdateActivationJobRequest(),
       makeFunctionContext(),
     );
-    const tenant = {
-      id: managerHttpRequestHeaders['x-user-id'],
-      type: 'owner',
-    };
     expect(actual.status).toStrictEqual(200);
-    expect(env.updateActivationJob).toBeCalledWith(tenant, trialId, {
+    expect(env.updateActivationJob).toBeCalledWith(aTrialOwner, trialId, {
       usersToActivate,
     });
   });

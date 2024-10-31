@@ -6,7 +6,10 @@ import {
   makeAValidGetActivationJobRequest,
   managerHttpRequestHeaders,
 } from './data';
-import { anActivationJob } from '../../../../domain/__tests__/data';
+import {
+  anActivationJob,
+  aTrialOwner,
+} from '../../../../domain/__tests__/data';
 import { makeGetActivationJobHandler } from '../get-activation-job';
 import { HttpRequest } from '@azure/functions';
 
@@ -42,14 +45,9 @@ describe('makeGetActivationJobHandler', () => {
       makeFunctionContext(),
     );
 
-    const tenant = {
-      id: managerHttpRequestHeaders['x-user-id'],
-      type: 'owner',
-    };
-
     expect(actual.status).toStrictEqual(200);
     expect(env.getActivationJob).toHaveBeenCalledWith(
-      tenant,
+      aTrialOwner,
       anActivationJob.trialId,
     );
   });

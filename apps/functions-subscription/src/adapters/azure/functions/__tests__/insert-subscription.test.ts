@@ -10,7 +10,11 @@ import {
 } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { SubscriptionStoreError } from '../../../../use-cases/errors';
-import { aSubscription } from '../../../../domain/__tests__/data';
+import {
+  aSubscription,
+  aTrialOwner,
+  aTrialSubscriber,
+} from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makePostSubscriptionHandler } from '../insert-subscription';
 
@@ -45,10 +49,6 @@ describe('makePostSubscriptionHandler', () => {
       aCreateSubscription,
       userHttpRequestHeaders,
     );
-    const tenant = {
-      id: userHttpRequestHeaders['x-user-id'],
-      type: 'subscriber',
-    };
 
     const actual = await makePostSubscriptionHandler(env)(
       httpRequest,
@@ -56,7 +56,7 @@ describe('makePostSubscriptionHandler', () => {
     );
     expect(actual.status).toStrictEqual(201);
     expect(env.createSubscription).toHaveBeenCalledWith(
-      tenant,
+      aTrialSubscriber,
       aSubscription.userId,
       aSubscription.trialId,
       undefined,
@@ -71,10 +71,6 @@ describe('makePostSubscriptionHandler', () => {
     const httpRequest = makeAValidCreateSubscriptionRequest(
       aCreateSubscriptionWithActiveState,
     );
-    const tenant = {
-      id: httpRequest.headers.get('x-user-id'),
-      type: 'owner',
-    };
 
     const actual = await makePostSubscriptionHandler(env)(
       httpRequest,
@@ -82,7 +78,7 @@ describe('makePostSubscriptionHandler', () => {
     );
     expect(actual.status).toStrictEqual(201);
     expect(env.createSubscription).toHaveBeenCalledWith(
-      tenant,
+      aTrialOwner,
       anActiveSubscription.userId,
       anActiveSubscription.trialId,
       anActiveSubscription.state,
