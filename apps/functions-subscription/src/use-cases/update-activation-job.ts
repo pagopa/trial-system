@@ -1,6 +1,6 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
-import { getTrialById } from '../domain/trial';
+import { getTrialIdByTenant } from '../domain/trial';
 import { ItemNotFound } from '../domain/errors';
 import {
   ActivationJob,
@@ -14,10 +14,7 @@ export const updateActivationJob = (
   update: Pick<ActivationJob, 'usersToActivate'>,
 ) =>
   pipe(
-    getTrialById(trialId, tenant),
-    RTE.flatMapOption(
-      (trial) => trial,
-      () => new ItemNotFound('Activation job not found'),
-    ),
-    RTE.flatMap(({ id }) => updateJob(id, update)),
+    getTrialIdByTenant(trialId, tenant),
+    RTE.mapLeft(() => new ItemNotFound('Activation job not found')),
+    RTE.flatMap((id) => updateJob(id, update)),
   );
