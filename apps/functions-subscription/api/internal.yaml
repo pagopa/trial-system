@@ -3,7 +3,7 @@ info:
   version: 0.0.0
   title: Trial System API
   description: |
-    Documentation of the Trial System Subscription function.
+    Documentation of the Trial System API functions.
 servers:
   - url: https://ts-p-itn-api-func-01.azurewebsites.net
 security:
@@ -30,9 +30,9 @@ paths:
   /trials/{trialId}/subscriptions/{userId}:
     get:
       operationId: getSubscription
-      summary: Get subscription detail
-      description: >-
-        Returns the details about the subscription of the specified user for
+      summary: Get subscription details
+      description: |
+        Returns the details of the user's subscription for
         the specified trial.
       parameters:
         - $ref: '#/components/parameters/pathTrialId'
@@ -51,7 +51,8 @@ paths:
         '403':
           description: Forbidden
         '404':
-          description: Not Found
+          description: |
+            Not Found. This occurs when the specified user is not listed under the trial.
         '500':
           description: Internal Server Error
           content:
@@ -60,9 +61,9 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
     put:
       operationId: updateSubscription
-      summary: Update a subscription
-      description: >-
-        Update the state of a subscription
+      summary: Update subscription
+      description: |
+        Updates the subscription status of a user.
       parameters:
         - $ref: '#/components/parameters/pathTrialId'
         - $ref: '#/components/parameters/pathUserId'
@@ -75,13 +76,16 @@ paths:
               $ref: '#/components/schemas/UpdateSubscription'
       responses:
         '202':
-          description: Accepted
+          description: |
+            The request has been accepted by the server and will be processed asynchronously.
+
+            An immediate GET request on this subscription's state may still show the old state.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdatedSubscription'
         '400':
-          description: Bad Request.
+          description: Bad Request
           content:
             application/json:
               schema:
@@ -102,7 +106,10 @@ paths:
     post:
       operationId: createSubscription
       summary: Create a subscription
-      description: Subscribe the given user to the given trial.
+      description: |
+        Registers a user for a trial.
+
+        The request body accepts an optional `state` parameter, which can define the user's subscription state within the trial. If not provided, the default state is `SUBSCRIBED`.
       parameters:
         - $ref: '#/components/parameters/pathTrialId'
         - $ref: '#/components/parameters/headerUserId'
@@ -114,15 +121,21 @@ paths:
               $ref: '#/components/schemas/CreateSubscription'
       responses:
         '201':
-          description: Created
+          description: |
+            Created: the request has been processed and the user has been registered for the trial.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Subscription'
         '202':
-          description: Accepted
+          description: |
+            Accepted: the request has been received, but the user may not yet be subscribed to the trial.
+
+            The server will process the request asynchronously.
+
+            Resubmitting the same request may result in a `409 Conflict` error.
         '400':
-          description: Bad Request.
+          description: Bad Request
           content:
             application/json:
               schema:
@@ -132,9 +145,11 @@ paths:
         '403':
           description: Forbidden
         '404':
-          description: Not Found
+          description: |
+            Not Found. This occurs when the specified trial does not exist.
         '409':
-          description: Conflict
+          description: |
+            Conflict. This occurs when the provided `userId` already exists within the specified trial.
         '500':
           description: Internal Server Error
           content:
@@ -148,11 +163,16 @@ paths:
       - $ref: '#/components/parameters/headerUserGroups'
     get:
       operationId: getActivationJob
-      description: Get the activation job for the given trial
-      summary: Get the activation job
+      description: |
+        Retrieves the activation job for the given trial.
+
+        The activation job provides information on the number of users activated for a trial and the target number set by the trial owner.
+
+        **NOTE**: There is no operation to create this resource because an activation job is automatically created when a trial is created. Only one activation job exists per trial.
+      summary: Get activation job details
       responses:
         '200':
-          description: The activation job
+          description: Activation job details
           content:
             application/json:
               schema:
@@ -162,7 +182,8 @@ paths:
         '403':
           description: Forbidden
         '404':
-          description: Not Found
+          description: |
+            Not Found. This occurs when the specified trial does not exist.
         '500':
           description: Internal Server Error
           content:
@@ -171,8 +192,11 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
     put:
       operationId: updateActivationJob
-      description: Update an activation job
-      summary: Update an activation job
+      description: |
+        Updates the number of users to activate for a trial.
+
+        This operation triggers an asynchronous process to activate the specified number of users for the trial.
+      summary: Update activation job
       requestBody:
         content:
           application/json:
@@ -180,7 +204,10 @@ paths:
               $ref: '#/components/schemas/UpdateActivationJob'
       responses:
         '200':
-          description: The activation job
+          description: |
+            Success: returns information on the updated activation job.
+
+            The activation request has been registered, and the server will activate the specified number of users asynchronously.
           content:
             application/json:
               schema:
@@ -196,7 +223,8 @@ paths:
         '403':
           description: Forbidden
         '404':
-          description: Not Found
+          description: |
+            Not Found. This occurs when the specified trial does not exist.
         '500':
           description: Internal Server Error
           content:
@@ -240,7 +268,14 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
     post:
       operationId: createTrial
-      description: Create a trial
+      description: |
+        This is an asynchronous operation. Along with trial creation, this also generates resources to manage events related to trial subscription.
+
+        The following resources are generated:
+          - A Service Bus Queue where all events for trial subscriptions are sent
+          - A Service Bus Topic Subscription with a rule to forward topic messages to the appropriate queue
+          - A User Assigned Identity for third-party access to Trial System published events on the queue
+          - The activation job associated with the trial
       summary: Create a trial
       requestBody:
         content:
@@ -249,7 +284,8 @@ paths:
               $ref: '#/components/schemas/CreateTrial'
       responses:
         '202':
-          description: Accepted
+          description: |
+            The server has received the request and will create resources asynchronously.
           content:
             application/json:
               schema:
@@ -281,7 +317,10 @@ paths:
         - $ref: '#/components/parameters/headerUserGroups'
       responses:
         '200':
-          description: Success
+          description: |
+            Success. Returns trial information.
+
+            The `state` property indicates if all resources related to the trial have been created (state = `CREATED`). Otherwise, it will be `CREATING`.
           content:
             application/json:
               schema:
@@ -291,14 +330,14 @@ paths:
         '403':
           description: Forbidden
         '404':
-          description: Not Found
+          description: |
+            Not Found. This occurs when the specified trial does not exist.
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-
 components:
   securitySchemes:
     ApiKeyAuth:
