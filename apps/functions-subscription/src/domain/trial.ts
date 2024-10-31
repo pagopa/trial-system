@@ -5,8 +5,9 @@ import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
-import { ItemAlreadyExists } from './errors';
+import { ItemAlreadyExists, ItemNotFound } from './errors';
 import { Tenant, TenantIdCodec } from './users';
+import { flow } from 'fp-ts/lib/function';
 
 // a unique brand for trialId
 interface TrialIdBrand {
@@ -101,5 +102,27 @@ export const getTrialById = (trialId: TrialId, tenant: Tenant) =>
       tenant.type === 'owner'
         ? trialReader.getByIdAndOwnerId(trialId, tenant.id)
         : trialReader.get(trialId),
+    ),
+  );
+
+/**
+ * Return a trialId, on the right side.
+ * If the tenant is a `owner`, then we need to get the trial first; if the trial does not
+ * exist, then return a {@link ItemNotFound} error on the left side.
+ * If the tenant is not an owner, then we do not need to check if the trial exists.
+ */
+export const getTrialIdByTenant = (trialId: TrialId, tenant: Tenant) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'trialReader'>>(),
+    RTE.flatMapTaskEither(({ trialReader }) =>
+      tenant.type === 'owner'
+        ? pipe(
+            trialReader.getByIdAndOwnerId(trialId, tenant.id),
+            TE.flatMapOption(
+              flow(O.map(({ id }) => id)),
+              () => new ItemNotFound('Item not found'),
+            ),
+          )
+        : TE.of(trialId),
     ),
   );
