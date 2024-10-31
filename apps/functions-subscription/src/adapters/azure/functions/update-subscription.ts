@@ -23,7 +23,10 @@ const makeHandlerKitHandler: H.Handler<
 > = H.of((req: H.HttpRequest) => {
   return pipe(
     RTE.ask<Pick<SystemEnv, 'updateSubscription'>>(),
-    RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req))),
+    RTE.apSW(
+      'tenant',
+      RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req)),
+    ),
     RTE.apSW(
       'userId',
       RTE.fromEither(parsePathParameter(UserIdCodec, 'userId')(req)),
@@ -37,8 +40,8 @@ const makeHandlerKitHandler: H.Handler<
       RTE.fromEither(parseRequestBody(UpdateSubscription)(req)),
     ),
     RTE.flatMapTaskEither(
-      ({ updateSubscription, trialId, userId, requestBody }) =>
-        updateSubscription(userId, trialId, requestBody.state),
+      ({ updateSubscription, tenant, trialId, userId, requestBody }) =>
+        updateSubscription(tenant, userId, trialId, requestBody.state),
     ),
     RTE.mapBoth(
       toHttpProblemJson,
