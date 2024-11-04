@@ -23,7 +23,7 @@ export const makeTrialsCosmosContainer = (
         TE.tryCatch(() => container.item(trialId, trialId).read(), E.toError),
         TE.flatMapEither(decodeFromItem(TrialCodec)),
       ),
-    list: (pageSize, maximumId, minimumId) =>
+    list: (pageSize, maximumId?, minimumId?) =>
       pipe(
         {
           parameters: [],

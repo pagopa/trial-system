@@ -1,6 +1,7 @@
 import * as H from '@pagopa/handler-kit';
 import { pipe, flow } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
+import * as t from 'io-ts';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 import { SystemEnv } from '../../../system-env';
@@ -8,9 +9,25 @@ import { getAndValidateUser, parseQueryParameter } from './middleware';
 import { toHttpProblemJson } from './errors';
 import { toTrialAPI } from './codec';
 import { TrialIdCodec } from '../../../domain/trial';
-import { NumberFromString } from '@pagopa/ts-commons/lib/numbers';
+import {
+  IWithinRangeIntegerTag,
+  NumberFromString,
+  WithinRangeInteger,
+} from '@pagopa/ts-commons/lib/numbers';
+import { withDefault } from '@pagopa/ts-commons/lib/types';
 
 type Env = Pick<SystemEnv, 'listTrials'>;
+
+export type QueryPageSize = t.TypeOf<typeof QueryPageSizeBase>;
+const QueryPageSizeBase = t.union([
+  WithinRangeInteger<1, 100, IWithinRangeIntegerTag<1, 100>>(1, 100),
+  t.literal(100),
+]);
+
+export const QueryPageSize = withDefault(
+  QueryPageSizeBase,
+  25 as QueryPageSize,
+);
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
@@ -23,15 +40,30 @@ const makeHandlerKitHandler: H.Handler<
     RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialSupport'])(req))),
     RTE.apSW(
       'pageSize',
-      RTE.fromEither(parseQueryParameter(NumberFromString, 'pageSize')(req)),
+      RTE.fromEither(
+        parseQueryParameter(
+          t.union([NumberFromString, QueryPageSize]),
+          'pageSize',
+        )(req),
+      ),
     ),
     RTE.apSW(
       'maximumId',
-      RTE.fromEither(parseQueryParameter(TrialIdCodec, 'maximumId')(req)),
+      RTE.fromEither(
+        parseQueryParameter(
+          t.union([TrialIdCodec, t.undefined]),
+          'maximumId',
+        )(req),
+      ),
     ),
     RTE.apSW(
       'minimumId',
-      RTE.fromEither(parseQueryParameter(TrialIdCodec, 'minimumId')(req)),
+      RTE.fromEither(
+        parseQueryParameter(
+          t.union([TrialIdCodec, t.undefined]),
+          'minimumId',
+        )(req),
+      ),
     ),
     RTE.flatMapTaskEither(({ listTrials, pageSize, maximumId, minimumId }) =>
       listTrials(pageSize, maximumId, minimumId),

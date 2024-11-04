@@ -54,8 +54,8 @@ export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
   readonly list: (
     pageSize: number,
-    maximumId: TrialId,
-    minimumId: TrialId,
+    maximumId?: TrialId | null,
+    minimumId?: TrialId | null,
   ) => TE.TaskEither<Error, readonly Trial[]>;
 }
 
@@ -103,8 +103,8 @@ export const getTrialById = (trialId: TrialId) =>
 
 export const listTrials = (
   pageSize: number,
-  maximumId: TrialId,
-  minimumId: TrialId,
+  maximumId?: TrialId | null,
+  minimumId?: TrialId | null,
 ) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialReader'>>(),
