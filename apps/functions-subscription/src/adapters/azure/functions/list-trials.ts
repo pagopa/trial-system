@@ -4,10 +4,11 @@ import * as RTE from 'fp-ts/ReaderTaskEither';
 import * as t from 'io-ts';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
+import { TrialId } from '../../../generated/definitions/internal/TrialId';
 import { SystemEnv } from '../../../system-env';
 import { getAndValidateUser, parseQueryParameter } from './middleware';
 import { toHttpProblemJson } from './errors';
-import { toTrialAPI } from './codec';
+import { toTrialListAPI } from './codec';
 import { TrialIdCodec } from '../../../domain/trial';
 import {
   IWithinRangeIntegerTag,
@@ -31,7 +32,11 @@ export const QueryPageSize = withDefault(
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
-  | H.HttpResponse<readonly TrialAPI[]>
+  | H.HttpResponse<{
+      readonly items: readonly TrialAPI[];
+      readonly previousId: TrialId;
+      readonly nextId: TrialId;
+    }>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
   Env
 > = H.of((req: H.HttpRequest) =>
@@ -68,10 +73,7 @@ const makeHandlerKitHandler: H.Handler<
     RTE.flatMapTaskEither(({ listTrials, pageSize, maximumId, minimumId }) =>
       listTrials(pageSize, maximumId, minimumId),
     ),
-    RTE.mapBoth(
-      toHttpProblemJson,
-      flow((a) => a.map(toTrialAPI), H.successJson),
-    ),
+    RTE.mapBoth(toHttpProblemJson, flow(toTrialListAPI, H.successJson)),
     RTE.orElseW(RTE.of),
   ),
 );
