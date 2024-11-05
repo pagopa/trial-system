@@ -149,6 +149,14 @@ resource "azurerm_api_management_group" "api_trial_user" {
   description         = "A group that enables users to manage their trial subscriptions"
 }
 
+resource "azurerm_api_management_group" "api_trial_support" {
+  name                = "apitrialsupport"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  display_name        = "ApiTrialSupport"
+  description         = "A group for customer support"
+}
+
 ####################################################################################
 # IO Wallet User
 ####################################################################################
@@ -235,6 +243,36 @@ resource "azurerm_api_management_subscription" "io_backend" {
   user_id             = azurerm_api_management_user.io_backend.id
   resource_group_name = module.apim.resource_group_name
   display_name        = "IO Backend"
+  state               = "active"
+  allow_tracing       = false
+}
+
+####################################################################################
+# Support User
+####################################################################################
+resource "azurerm_api_management_user" "support" {
+  user_id             = "support-user"
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  first_name          = "Support"
+  last_name           = "PagoPA"
+  email               = "trialsystem-support@pagopa.it"
+  state               = "active"
+}
+
+resource "azurerm_api_management_group_user" "support" {
+  user_id             = azurerm_api_management_user.support.user_id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  group_name          = azurerm_api_management_group.api_trial_support.name
+}
+
+resource "azurerm_api_management_subscription" "support" {
+  user_id             = azurerm_api_management_user.support.id
+  api_management_name = module.apim.name
+  resource_group_name = module.apim.resource_group_name
+  product_id          = module.apim_product_ts_management.id
+  display_name        = "PagoPA Support"
   state               = "active"
   allow_tracing       = false
 }

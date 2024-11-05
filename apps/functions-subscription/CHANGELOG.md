@@ -1,5 +1,17 @@
 # functions-subscription
 
+## 3.7.0
+
+### Minor Changes
+
+- c649cb2: [IOPLT-675] Handle the tenant when calling `getTrial` function
+
+## 3.6.1
+
+### Patch Changes
+
+- fee8730: [IOPLT-750] Update query removing the use of the partition key
+
 ## 3.6.0
 
 ### Minor Changes

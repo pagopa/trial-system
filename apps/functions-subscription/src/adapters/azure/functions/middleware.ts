@@ -3,7 +3,7 @@ import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import * as H from '@pagopa/handler-kit';
 import { flow, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
-import { User } from '../../../domain/users';
+import { TenantIdCodec, Tenant } from '../../../domain/users';
 
 /**
  * Parses the request body using a specified schema and validates it.
@@ -65,11 +65,18 @@ export const parseHeaderParameter =
 
 type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager' | 'ApiTrialSupport';
 
-const toUserType = (groups: readonly string[]): User['type'] => {
+const toTenantType = (groups: readonly string[]): Tenant['type'] => {
   return groups.some((group) => group === 'ApiTrialManager')
     ? 'owner'
     : 'subscriber';
 };
+
+const toTenant =
+  (id: Tenant['id']) =>
+  (groups: readonly string[]): Tenant => ({
+    id,
+    type: toTenantType(groups),
+  });
 
 /**
  * Verifies the presence of the `x-user-id` and `x-user-groups` headers.
@@ -81,7 +88,7 @@ const toUserType = (groups: readonly string[]): User['type'] => {
 export const getAndValidateUser =
   (allowedGroups: readonly AllowedGroup[]) => (req: H.HttpRequest) =>
     pipe(
-      parseHeaderParameter(NonEmptyString, 'x-user-id')(req),
+      parseHeaderParameter(TenantIdCodec, 'x-user-id')(req),
       E.flatMap((userId) =>
         pipe(
           parseHeaderParameter(NonEmptyString, 'x-user-groups')(req),
@@ -96,8 +103,7 @@ export const getAndValidateUser =
                 `Missing required group: ${allowedGroups}`,
               ),
           ),
-          E.map(toUserType),
-          E.map((type) => ({ id: userId, type })),
+          E.map(toTenant(userId)),
         ),
       ),
     );

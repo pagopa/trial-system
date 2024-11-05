@@ -35,15 +35,26 @@ export const supportHttpRequestHeaders = {
   'x-functions-key': 'aFunctionKey',
 };
 
+export const userHttpRequestHeaders = {
+  'x-user-groups': 'ApiTrialUser',
+  'x-user-id': 'aTrialOwnerId',
+  'x-subscription-id': 'anApimSubscriptionId',
+  'x-user-email': 'aUserEmail',
+  'x-functions-key': 'aFunctionKey',
+};
+
 /*
  * This is a function because, if it were an object, the `body` property
  * would be removed during the execution of the tests.
  */
-export const makeAValidCreateSubscriptionRequest = (body: CreateSubscription) =>
+export const makeAValidCreateSubscriptionRequest = (
+  body: CreateSubscription,
+  headers: typeof managerHttpRequestHeaders = managerHttpRequestHeaders,
+) =>
   new HttpRequest({
     url: 'https://function/trials/{trialId}/subscriptions',
     method: 'POST',
-    headers: managerHttpRequestHeaders,
+    headers: headers,
     body: { string: JSON.stringify(body) },
     params: {
       trialId: aTrialId,
