@@ -3,7 +3,7 @@ import * as E from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/lib/Option';
 import { Database, ErrorResponse } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
-import { aTrial } from '../../../../domain/__tests__/data';
+import { aTrial, aTrial1, aTrial2 } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makeTrialsCosmosContainer } from '../trial';
 
@@ -41,6 +41,41 @@ describe('makeTrialsCosmosContainer', () => {
 
       expect(actual).toStrictEqual(E.right(O.none));
       expect(mockDB.container('').item).toBeCalledWith(id, id);
+    });
+  });
+  describe('list', () => {
+    it('should return list of trials', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const trials = [aTrial1, aTrial2];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list(0)();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return an empty list', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: [] }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list(0)();
+
+      expect(actual).toStrictEqual(E.right([]));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
     });
   });
   describe('insert', () => {

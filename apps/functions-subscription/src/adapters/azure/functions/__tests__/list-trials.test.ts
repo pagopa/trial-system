@@ -40,7 +40,7 @@ describe('makeGetTrialHandler', () => {
     );
 
     expect(actual.status).toStrictEqual(200);
-    expect(await actual.json()).toMatchObject([]);
+    expect(await actual.json()).toMatchObject({ items: [] });
   });
 
   it('should return 500 when an error occurred', async () => {
@@ -71,15 +71,18 @@ describe('makeGetTrialHandler', () => {
       makeFunctionContext(),
     );
 
-    const result: readonly Trial[] = (await actual.json()) as readonly Trial[];
+    const result: { readonly items: readonly Trial[] } =
+      (await actual.json()) as {
+        readonly items: readonly Trial[];
+      };
 
     expect(actual.status).toStrictEqual(200);
-    expect(result.length).toStrictEqual(2);
+    expect(result.items.length).toStrictEqual(2);
 
-    expect(result[0].name).toMatchObject(aTrial1.name);
-    expect(result[0].description).toMatchObject(aTrial1.description);
+    expect(result.items[0].name).toMatchObject(aTrial1.name);
+    expect(result.items[0].description).toMatchObject(aTrial1.description);
 
-    expect(result[1].name).toMatchObject(aTrial2.name);
-    expect(result[1].description).toMatchObject(aTrial2.description);
+    expect(result.items[1].name).toMatchObject(aTrial2.name);
+    expect(result.items[1].description).toMatchObject(aTrial2.description);
   });
 });
