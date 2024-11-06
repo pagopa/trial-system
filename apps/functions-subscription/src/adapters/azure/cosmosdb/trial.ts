@@ -49,7 +49,7 @@ export const makeTrialsCosmosContainer = (
         {
           parameters: [],
           // WHERE 1=1 here ensures the where clause works without minimumId or maximumId, withoud adding additional logic
-          query: `SELECT * FROM t WHERE 1=1`,
+          query: `SELECT * FROM t`,
         },
         TE.of,
         TE.bindTo('commonQuerySpec'),
