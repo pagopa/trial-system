@@ -29,7 +29,7 @@ export const managerHttpRequestHeaders = {
 
 export const supportHttpRequestHeaders = {
   'x-user-groups': 'ApiTrialSupport',
-  'x-user-id': 'aTrialOwnerId',
+  'x-user-id': 'aSupportUserId',
   'x-subscription-id': 'anApimSubscriptionId',
   'x-user-email': 'aUserEmail',
   'x-functions-key': 'aFunctionKey',
