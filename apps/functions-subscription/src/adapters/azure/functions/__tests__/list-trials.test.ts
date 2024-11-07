@@ -7,7 +7,7 @@ import { aTrial1, aTrial2 } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
 import { Trial } from '../../../../domain/trial';
 
-describe('makeGetTrialHandler', () => {
+describe('makeListTrialsHandler', () => {
   it('should return 403 if x-user-groups header does not contain the correct group', async () => {
     const request = new HttpRequest({
       url: makeAValidListTrialRequest().url,
