@@ -48,7 +48,6 @@ export const makeTrialsCosmosContainer = (
       pipe(
         {
           parameters: [],
-          // WHERE 1=1 here ensures the where clause works without minimumId or maximumId, withoud adding additional logic
           query: `SELECT * FROM t`,
         },
         TE.of,
@@ -59,7 +58,7 @@ export const makeTrialsCosmosContainer = (
             O.foldW(
               () => emptyMessageParameter,
               (maximumId) => ({
-                condition: ` AND t.id < @maxId`,
+                condition: ` WHERE t.id < @maxId`,
                 parameters: [{ name: '@maxId', value: maximumId }],
               }),
             ),
@@ -72,7 +71,7 @@ export const makeTrialsCosmosContainer = (
             O.foldW(
               () => emptyMessageParameter,
               (minimumId) => ({
-                condition: ` AND t.id > @minId`,
+                condition: `${maximumId ? ' AND' : ' WHERE'} t.id > @minId`,
                 parameters: [{ name: '@minId', value: minimumId }],
               }),
             ),
