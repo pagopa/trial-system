@@ -97,7 +97,7 @@ describe('makeTrialsCosmosContainer', () => {
       const actual = await makeTrialsCosmosContainer(
         mockDB as unknown as Database,
         containerName,
-      ).list(0)();
+      ).list({ pageSize: 25, maximumId: undefined, minimumId: undefined })();
 
       expect(actual).toStrictEqual(E.right(trials));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
@@ -113,7 +113,7 @@ describe('makeTrialsCosmosContainer', () => {
       const actual = await makeTrialsCosmosContainer(
         mockDB as unknown as Database,
         containerName,
-      ).list(0)();
+      ).list({ pageSize: 25, maximumId: undefined, minimumId: undefined })();
 
       expect(actual).toStrictEqual(E.right([]));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);

@@ -44,7 +44,7 @@ export const makeTrialsCosmosContainer = (
         TE.tryCatch(() => container.item(trialId, ownerId).read(), E.toError),
         TE.flatMapEither(decodeFromItem(TrialCodec)),
       ),
-    list: (pageSize, maximumId?, minimumId?) =>
+    list: (options) =>
       pipe(
         {
           parameters: [],
@@ -54,7 +54,7 @@ export const makeTrialsCosmosContainer = (
         TE.bindTo('commonQuerySpec'),
         TE.bind('maxMessagesParams', () =>
           pipe(
-            O.fromNullable(maximumId),
+            O.fromNullable(options.maximumId),
             O.foldW(
               () => emptyMessageParameter,
               (maximumId) => ({
@@ -67,11 +67,11 @@ export const makeTrialsCosmosContainer = (
         ),
         TE.bind('minMessagesParams', () =>
           pipe(
-            O.fromNullable(minimumId),
+            O.fromNullable(options.minimumId),
             O.foldW(
               () => emptyMessageParameter,
               (minimumId) => ({
-                condition: `${maximumId ? ' AND' : ' WHERE'} t.id > @minId`,
+                condition: `${options.maximumId ? ' AND' : ' WHERE'} t.id > @minId`,
                 parameters: [{ name: '@minId', value: minimumId }],
               }),
             ),
@@ -87,7 +87,7 @@ export const makeTrialsCosmosContainer = (
                     ...commonQuerySpec.parameters,
                     ...maxMessagesParams.parameters,
                     ...minMessagesParams.parameters,
-                    { name: '@limit', value: pageSize },
+                    { name: '@limit', value: options.pageSize },
                   ],
                   query: `${commonQuerySpec.query}${maxMessagesParams.condition}${minMessagesParams.condition} ORDER BY t.id DESC OFFSET 0 LIMIT @limit`,
                 })

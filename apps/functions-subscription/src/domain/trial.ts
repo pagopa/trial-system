@@ -18,7 +18,14 @@ export const TrialIdCodec = t.brand(
   (str): str is t.Branded<NonEmptyString, TrialIdBrand> => str.length > 0,
   'TrialId',
 );
-export type TrialId = t.TypeOf<typeof TrialIdCodec>; 
+export type TrialId = t.TypeOf<typeof TrialIdCodec>;
+
+const ListTrialOptionsCodec = t.strict({
+  pageSize: t.number,
+  maximumId: t.union([TrialIdCodec, t.undefined]),
+  minimumId: t.union([TrialIdCodec, t.undefined]),
+});
+export type ListTrialOptions = t.TypeOf<typeof ListTrialOptionsCodec>;
 
 const BaseTrialCodec = t.intersection([
   t.strict({ id: TrialIdCodec, name: NonEmptyString, ownerId: TenantIdCodec }),
@@ -53,9 +60,7 @@ export interface TrialWriter {
 export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
   readonly list: (
-    pageSize: number,
-    maximumId?: TrialId,
-    minimumId?: TrialId,
+    options: ListTrialOptions,
   ) => TE.TaskEither<Error, readonly Trial[]>;
   readonly getByIdAndOwnerId: (
     trialId: TrialId,
@@ -109,14 +114,8 @@ export const getTrialById = (trialId: TrialId, tenant: Tenant) =>
     ),
   );
 
-export const listTrials = (
-  pageSize: number,
-  maximumId?: TrialId,
-  minimumId?: TrialId,
-) =>
+export const listTrials = (options: ListTrialOptions) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialReader'>>(),
-    RTE.flatMapTaskEither(({ trialReader }) =>
-      trialReader.list(pageSize, maximumId, minimumId),
-    ),
+    RTE.flatMapTaskEither(({ trialReader }) => trialReader.list(options)),
   );

@@ -71,7 +71,7 @@ const makeHandlerKitHandler: H.Handler<
       ),
     ),
     RTE.flatMapTaskEither(({ listTrials, pageSize, maximumId, minimumId }) =>
-      listTrials(pageSize, maximumId, minimumId),
+      listTrials({ pageSize, maximumId, minimumId }),
     ),
     RTE.mapBoth(toHttpProblemJson, flow(toTrialListAPI, H.successJson)),
     RTE.orElseW(RTE.of),
