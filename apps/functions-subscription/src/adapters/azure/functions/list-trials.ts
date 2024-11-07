@@ -3,8 +3,7 @@ import { pipe, flow } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import * as t from 'io-ts';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
-import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
-import { TrialId } from '../../../generated/definitions/internal/TrialId';
+import { TrialPaginatedCollection } from '../../../generated/definitions/internal/TrialPaginatedCollection';
 import { SystemEnv } from '../../../system-env';
 import { getAndValidateUser, parseQueryParameter } from './middleware';
 import { toHttpProblemJson } from './errors';
@@ -32,11 +31,7 @@ export const QueryPageSize = withDefault(
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
-  | H.HttpResponse<{
-      readonly items: readonly TrialAPI[];
-      readonly previousId: TrialId;
-      readonly nextId: TrialId;
-    }>
+  | H.HttpResponse<TrialPaginatedCollection>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
   Env
 > = H.of((req: H.HttpRequest) =>
