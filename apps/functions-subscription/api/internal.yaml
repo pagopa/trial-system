@@ -443,6 +443,13 @@ components:
             activate the user if any slot for the trial is available.
         - ACTIVE: The user has the access to the specified trial.
         - DISABLED: The user does not have the access to the specified trial.
+
+        When a user subscribes a trial, the subscription is in the `SUBSCRIBED` state
+        If the user wants to unsubscribe, the state changes to `UNSUBSCRIBED`.
+        When the trial is going to be activated (by the Trial Manager), then the state of the selected
+        `SUBSCRIBED` users becomes `ACTIVE`.
+        The Trial Manager can change the state of any user, within its own subscription,
+        to any state (e.g. can disable a subscription setting the state to `DISABLED`).
       enum:
         - UNSUBSCRIBED
         - SUBSCRIBED
