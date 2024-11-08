@@ -68,6 +68,12 @@ module "apim_key_vault_access_policy" {
   ]
 }
 
+resource "azurerm_role_assignment" "apim_ai_publisher" {
+  scope                = azurerm_application_insights.ai.id
+  principal_id         = module.apim.principal_id
+  role_definition_name = "Monitoring Metrics Publisher"
+}
+
 module "apim_product_ts_management" {
   source = "github.com/pagopa/terraform-azurerm-v3//api_management_product?ref=v8.26.0"
 
