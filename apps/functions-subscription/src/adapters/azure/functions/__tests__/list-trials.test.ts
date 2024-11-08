@@ -80,8 +80,7 @@ describe('makeListTrialsHandler', () => {
       makeFunctionContext(),
     );
 
-    const result: TrialPaginatedCollection =
-      (await actual.json()) as TrialPaginatedCollection;
+    const result = (await actual.json()) as TrialPaginatedCollection;
 
     expect(actual.status).toStrictEqual(200);
     expect(result.items.length).toStrictEqual(2);
