@@ -66,7 +66,7 @@ resource "azurerm_monitor_diagnostic_setting" "apim" {
 
   metric {
     category = "AllMetrics"
-    enabled  = false
+    enabled  = true
   }
 }
 
