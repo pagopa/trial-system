@@ -53,7 +53,6 @@ module "apim" {
   tags = var.tags
 }
 
-
 # Diagnostic settings
 resource "azurerm_monitor_diagnostic_setting" "apim" {
   name                           = "APIMLogs"
@@ -84,12 +83,6 @@ module "apim_key_vault_access_policy" {
       }
     }
   ]
-}
-
-resource "azurerm_role_assignment" "apim_ai_publisher" {
-  scope                = azurerm_application_insights.ai.id
-  principal_id         = module.apim.principal_id
-  role_definition_name = "Monitoring Metrics Publisher"
 }
 
 module "apim_product_ts_management" {
