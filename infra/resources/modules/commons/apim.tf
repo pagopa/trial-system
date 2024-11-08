@@ -53,6 +53,24 @@ module "apim" {
   tags = var.tags
 }
 
+
+# Diagnostic settings
+resource "azurerm_monitor_diagnostic_setting" "apim" {
+  name                           = "APIMLogs"
+  target_resource_id             = module.apim.id
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.law.id
+  log_analytics_destination_type = "AzureDiagnostics"
+
+  enabled_log {
+    category = "GatewayLogs"
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+  }
+}
+
 module "apim_key_vault_access_policy" {
   source       = "github.com/pagopa/dx//infra/modules/azure_role_assignments?ref=64bece38e810e3744a142345f985ac2f279b93a9"
   principal_id = module.apim.principal_id
