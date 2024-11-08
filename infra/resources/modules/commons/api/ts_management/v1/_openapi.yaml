@@ -372,10 +372,15 @@ components:
         - ACTIVE: The user has the access to the specified trial.
       enum:
         - ACTIVE
-    TrialId:
+    ItemId:
       type: string
+      description: Unique identifier of an item.
+      maxLength: 26
+      minLength: 26
+    TrialId:
       description: Unique identifier of the trial.
-      minLength: 1
+      allOf:
+        - $ref: '#/components/schemas/ItemId'
     TrialName:
       type: string
       description: The name of the trial
@@ -501,13 +506,13 @@ components:
         - CREATING
         - CREATED
     NextId:
-      type: string
       description: Unique identifier of the next item.
-      minLength: 1
+      allOf:
+        - $ref: '#/components/schemas/ItemId'
     PreviousId:
-      type: string
       description: Unique identifier of the previous item.
-      minLength: 1
+      allOf:
+        - $ref: '#/components/schemas/ItemId'
     PaginatedCollection:
       type: object
       required:
