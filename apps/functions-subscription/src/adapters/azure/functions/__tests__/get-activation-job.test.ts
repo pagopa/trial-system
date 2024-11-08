@@ -6,7 +6,10 @@ import {
   makeAValidGetActivationJobRequest,
   managerHttpRequestHeaders,
 } from './data';
-import { anActivationJob } from '../../../../domain/__tests__/data';
+import {
+  anActivationJob,
+  aTrialOwner,
+} from '../../../../domain/__tests__/data';
 import { makeGetActivationJobHandler } from '../get-activation-job';
 import { HttpRequest } from '@azure/functions';
 
@@ -43,7 +46,10 @@ describe('makeGetActivationJobHandler', () => {
     );
 
     expect(actual.status).toStrictEqual(200);
-    expect(env.getActivationJob).toHaveBeenCalledWith(anActivationJob.trialId);
+    expect(env.getActivationJob).toHaveBeenCalledWith(
+      aTrialOwner,
+      anActivationJob.trialId,
+    );
   });
 
   it('should return 404 when the job does not exist', async () => {

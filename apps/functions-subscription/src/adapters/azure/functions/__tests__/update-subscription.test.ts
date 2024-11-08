@@ -6,7 +6,10 @@ import {
   managerHttpRequestHeaders,
 } from './data';
 import { makeFunctionContext, makeTestSystemEnv } from './mocks';
-import { anActivationRequest } from '../../../../domain/__tests__/data';
+import {
+  anActivationRequest,
+  aTrialOwner,
+} from '../../../../domain/__tests__/data';
 import { ItemNotFound } from '../../../../domain/errors';
 import { makePutSubscriptionHandler } from '../update-subscription';
 import { SubscriptionStateEnum } from '../../../../generated/definitions/internal/SubscriptionState';
@@ -49,6 +52,7 @@ describe('makeUpdateSubscriptionHandler', () => {
     );
     expect(actual.status).toStrictEqual(202);
     expect(env.updateSubscription).toHaveBeenCalledWith(
+      aTrialOwner,
       anActivationRequest.userId,
       anActivationRequest.trialId,
       anUpdateSubscription.state,

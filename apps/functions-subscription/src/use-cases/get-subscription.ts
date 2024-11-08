@@ -1,16 +1,23 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import {
-  UserId,
-  makeSubscriptionId,
   getSubscriptionById,
+  makeSubscriptionId,
+  UserId,
 } from '../domain/subscription';
 import { ItemNotFound } from '../domain/errors';
-import { TrialId } from '../domain/trial';
+import { getTrialIdByTenant, TrialId } from '../domain/trial';
+import { Tenant } from '../domain/users';
 
-export const getSubscription = (userId: UserId, trialId: TrialId) =>
+export const getSubscription = (
+  tenant: Tenant,
+  userId: UserId,
+  trialId: TrialId,
+) =>
   pipe(
-    makeSubscriptionId(trialId, userId),
+    getTrialIdByTenant(trialId, tenant),
+    RTE.mapLeft(() => new ItemNotFound('Subscription not found')),
+    RTE.flatMap((id) => makeSubscriptionId(id, userId)),
     RTE.flatMap(getSubscriptionById),
     RTE.flatMapOption(
       (subscription) => subscription,
