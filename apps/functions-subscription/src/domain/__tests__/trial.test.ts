@@ -1,10 +1,11 @@
-import { aTrial, aTrialOwner, aTrial1, aTrial2 } from './data';
+import { aTrial, aTrialOwner } from './data';
 import { describe, expect, it } from 'vitest';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import { insertTrial, listTrials } from '../trial';
+import { insertTrial, listTrials, TrialId } from '../trial';
 import { ItemAlreadyExists } from '../errors';
 import { makeTestEnv } from './mocks';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 const { name, description } = aTrial;
 
@@ -25,32 +26,23 @@ describe('insertTrial', () => {
   it('should return all trials', async () => {
     const testEnv = makeTestEnv();
 
-    testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial1.id });
-    testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial1));
+    const anotherTrial = {
+      ...aTrial,
+      id: 'anotherTrialId' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+      description: 'anotherTrialDescription',
+    };
 
-    await insertTrial(
-      aTrial1.name,
-      aTrial2.description,
-      aTrialOwner,
-    )(testEnv)();
-
-    testEnv.monotonicIdFn.mockReturnValueOnce({ value: aTrial2.id });
-    testEnv.trialWriter.insert.mockReturnValueOnce(TE.right(aTrial2));
-
-    await insertTrial(
-      aTrial2.name,
-      aTrial2.description,
-      aTrialOwner,
-    )(testEnv)();
-
-    testEnv.trialReader.list.mockReturnValueOnce(TE.right([aTrial1, aTrial2]));
+    testEnv.trialReader.list.mockReturnValueOnce(
+      TE.right([aTrial, anotherTrial]),
+    );
 
     const actual = await listTrials({
       pageSize: 1,
-      maximumId: aTrial1.id,
-      minimumId: aTrial2.id,
+      maximumId: undefined,
+      minimumId: undefined,
     })(testEnv)();
-    const expected = E.right([aTrial1, aTrial2]);
+    const expected = E.right([aTrial, anotherTrial]);
 
     expect(actual).toMatchObject(expected);
   });

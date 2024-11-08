@@ -3,10 +3,11 @@ import * as E from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/lib/Option';
 import { Database, ErrorResponse } from '@azure/cosmos';
 import { makeDatabaseMock } from './mocks';
-import { aTrial, aTrial1, aTrial2 } from '../../../../domain/__tests__/data';
+import { aTrial } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makeTrialsCosmosContainer } from '../trial';
-import { Trial } from '../../../../domain/trial';
+import { Trial, TrialId } from '../../../../domain/trial';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 describe('makeTrialsCosmosContainer', () => {
   const containerName = 'aContainerName';
@@ -88,7 +89,14 @@ describe('makeTrialsCosmosContainer', () => {
     it('should return list of trials', async () => {
       const mockDB = makeDatabaseMock();
 
-      const trials = [aTrial1, aTrial2];
+      const anotherTrial = {
+        ...aTrial,
+        id: 'anotherTrialId' as TrialId,
+        name: 'anotherTrialName' as NonEmptyString,
+        description: 'anotherTrialDescription',
+      };
+
+      const trials = [aTrial, anotherTrial];
 
       mockDB.container('').items.query.mockReturnValueOnce({
         fetchAll: () => Promise.resolve({ resources: trials }),
