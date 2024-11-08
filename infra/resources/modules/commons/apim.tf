@@ -23,6 +23,7 @@ module "apim" {
   sku_name                  = var.apim_config.sku
   virtual_network_type      = "Internal"
   subnet_id                 = module.apim_snet.id
+  diagnostic_verbosity      = "information"
 
   redis_cache_id = null
 
@@ -48,10 +49,6 @@ module "apim" {
     enabled             = true
     instrumentation_key = azurerm_application_insights.ai.instrumentation_key
   }
-
-  # Add Monitor Diagnostic Settings
-  sec_log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
-  sec_storage_id = "aStorageAccountIdInADifferentSubscription" // FIXME
 
   tags = var.tags
 }
