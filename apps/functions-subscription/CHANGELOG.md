@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.7.1
+
+### Patch Changes
+
+- 2d49887: [IOPLT-767] Check the trial belongs to the owner on missing endpoints
+
 ## 3.7.0
 
 ### Minor Changes

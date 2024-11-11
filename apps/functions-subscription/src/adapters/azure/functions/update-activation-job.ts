@@ -17,13 +17,16 @@ import { TrialIdCodec } from '../../../domain/trial';
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
-  | H.HttpResponse<ActivationJobAPI, 200>
+  | H.HttpResponse<ActivationJobAPI>
   | H.HttpResponse<H.ProblemJson, H.HttpErrorStatusCode>,
   Pick<SystemEnv, 'updateActivationJob'>
 > = H.of((req: H.HttpRequest) =>
   pipe(
     RTE.ask<Pick<SystemEnv, 'updateActivationJob'>>(),
-    RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req))),
+    RTE.apSW(
+      'tenant',
+      RTE.fromEither(getAndValidateUser(['ApiTrialManager'])(req)),
+    ),
     RTE.apSW(
       'trialId',
       RTE.fromEither(parsePathParameter(TrialIdCodec, 'trialId')(req)),
@@ -32,10 +35,11 @@ const makeHandlerKitHandler: H.Handler<
       'requestBody',
       RTE.fromEither(parseRequestBody(UpdateActivationJob)(req)),
     ),
-    RTE.flatMapTaskEither(({ updateActivationJob, trialId, requestBody }) =>
-      updateActivationJob(trialId, {
-        usersToActivate: requestBody.usersToActivate as NonNegativeInteger,
-      }),
+    RTE.flatMapTaskEither(
+      ({ updateActivationJob, trialId, requestBody, tenant }) =>
+        updateActivationJob(tenant, trialId, {
+          usersToActivate: requestBody.usersToActivate as NonNegativeInteger,
+        }),
     ),
     RTE.mapBoth(toHttpProblemJson, flow(toActivationJobAPI, H.successJson)),
     RTE.orElseW(RTE.of),
