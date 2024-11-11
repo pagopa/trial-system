@@ -378,9 +378,9 @@ components:
       maxLength: 26
       minLength: 26
     TrialId:
-      type: string
       description: Unique identifier of the trial.
-      minLength: 1
+      allOf:
+        - $ref: '#/components/schemas/ItemId'
     TrialName:
       type: string
       description: The name of the trial

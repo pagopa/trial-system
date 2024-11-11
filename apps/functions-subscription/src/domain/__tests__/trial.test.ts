@@ -29,7 +29,7 @@ describe('insertTrial', () => {
 
     const anotherTrial = {
       ...aTrial,
-      id: 'anotherTrialId' as TrialId,
+      id: 'anotherTrialId012345678901' as TrialId,
       name: 'anotherTrialName' as NonEmptyString,
       description: 'anotherTrialDescription',
     };

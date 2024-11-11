@@ -46,22 +46,22 @@ describe('makeTrialChangesHandler', () => {
     const context = makeFunctionContext();
     const creatingTrial0 = {
       ...aTrial,
-      id: '0' as TrialId,
+      id: 'aTrialId012345678901234568' as TrialId,
     };
     const creatingTrial1 = {
       ...aTrial,
-      id: '1' as TrialId,
+      id: 'aTrialId012345678901234569' as TrialId,
     };
     const creatingTrials = [creatingTrial0, creatingTrial1];
     const messages = [...creatingTrials, aCreatedTrial];
 
     const channel0 = {
       identityId: 'anIdentityId-0' as NonEmptyString,
-      queueName: creatingTrial0.id as NonEmptyString,
+      queueName: `${creatingTrial0.id}` as NonEmptyString,
     };
     const channel1 = {
       identityId: 'anIdentityId-1' as NonEmptyString,
-      queueName: creatingTrial0.id as NonEmptyString,
+      queueName: `${creatingTrial0.id}` as NonEmptyString,
     };
 
     env.channelAdmin.create

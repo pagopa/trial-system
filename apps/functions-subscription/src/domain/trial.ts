@@ -1,7 +1,10 @@
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as O from 'fp-ts/lib/Option';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import {
+  NonEmptyString,
+  WithinRangeString,
+} from '@pagopa/ts-commons/lib/strings';
 import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
@@ -15,8 +18,9 @@ interface TrialIdBrand {
   readonly TrialId: unique symbol;
 }
 export const TrialIdCodec = t.brand(
-  NonEmptyString,
-  (str): str is t.Branded<NonEmptyString, TrialIdBrand> => str.length > 0,
+  WithinRangeString(26, 27),
+  (str): str is t.Branded<WithinRangeString<26, 27>, TrialIdBrand> =>
+    str.length >= 26 && str.length < 27,
   'TrialId',
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;

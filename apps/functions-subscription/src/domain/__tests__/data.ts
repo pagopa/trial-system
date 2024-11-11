@@ -12,7 +12,7 @@ const aSubscriptionHistoryIdV1 =
   'aSubscriptionHistoryIdV1' as SubscriptionHistoryId;
 const aSubscriptionId = 'aSubscriptionId' as SubscriptionId;
 const aUserId = 'aUserId' as UserId;
-const aTrialId = 'aTrialId' as TrialId;
+const aTrialId = 'aTrialId012345678901234567' as TrialId;
 const anActivationRequestId = 'anActivationRequestId' as ActivationRequestId;
 
 export const aTrialOwner = {

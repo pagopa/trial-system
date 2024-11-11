@@ -8,7 +8,8 @@ import { TrialStateEnum } from '../../../generated/definitions/internal/TrialSta
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 import { ActivationRequest } from '../../../domain/activation-request';
 import { UpdatedSubscription } from '../../../generated/definitions/internal/UpdatedSubscription';
-import { TrialId } from '../../../generated/definitions/internal/TrialId';
+import { TrialPaginatedCollection } from '../../../generated/definitions/internal/TrialPaginatedCollection';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 export const toSubscriptionAPI = (
   subscription: Subscription,
@@ -51,7 +52,7 @@ export const toTrialAPI = (trial: Trial): TrialAPI => {
         channel: {
           azure: {
             identityId: trial.identityId,
-            queueName: id,
+            queueName: `${id}` as NonEmptyString,
           },
         },
       }
@@ -60,11 +61,7 @@ export const toTrialAPI = (trial: Trial): TrialAPI => {
 
 export const toTrialListAPI = (
   trials: readonly Trial[],
-): {
-  readonly items: readonly TrialAPI[];
-  readonly previousId: TrialId;
-  readonly nextId: TrialId;
-} => {
+): TrialPaginatedCollection => {
   return {
     items: trials.map(toTrialAPI),
     previousId: trials[trials.length - 1]?.id,
