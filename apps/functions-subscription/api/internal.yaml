@@ -207,6 +207,37 @@ paths:
     parameters:
       - $ref: '#/components/parameters/headerUserId'
       - $ref: '#/components/parameters/headerUserGroups'
+    get:
+      operationId: listTrials
+      description: List trials
+      summary: List trials
+      parameters:
+        - $ref: '#/components/parameters/queryPageSize'
+        - $ref: '#/components/parameters/queryMaximumId'
+        - $ref: '#/components/parameters/queryMinimumId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrialPaginatedCollection'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
     post:
       operationId: createTrial
       description: Create a trial
@@ -316,6 +347,36 @@ components:
       schema:
         type: string
         minLength: 1
+    queryPageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: The maximum number of items the response will include.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+    queryMaximumId:
+      name: maximumId
+      in: query
+      required: false
+      description: The maximum id to get messages until to.
+      schema:
+        type: string
+        maxLength: 26
+        minLength: 26
+      x-example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
+    queryMinimumId:
+      name: minimumId
+      in: query
+      required: false
+      description: The minimum id to get messages until to.
+      schema:
+        type: string
+        maxLength: 26
+        minLength: 26
+      x-example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
   schemas:
     ProblemJson:
       $ref: 'https://raw.githubusercontent.com/pagopa/io-functions-commons/v29.0.0/openapi/definitions.yaml#/ProblemJson'
@@ -358,6 +419,11 @@ components:
       enum:
         - SUBSCRIBED
         - ACTIVE
+    ItemId:
+      type: string
+      description: Unique identifier of an item.
+      maxLength: 26
+      minLength: 26
     TrialId:
       type: string
       description: Unique identifier of the trial.
@@ -486,6 +552,36 @@ components:
       enum:
         - CREATING
         - CREATED
+    NextId:
+      description: Unique identifier of the next item.
+      allOf:
+        - $ref: '#/components/schemas/ItemId'
+    PreviousId:
+      description: Unique identifier of the previous item.
+      allOf:
+        - $ref: '#/components/schemas/ItemId'
+    PaginatedCollection:
+      type: object
+      required:
+        - items
+      properties:
+        previousId:
+          $ref: '#/components/schemas/PreviousId'
+        nextId:
+          $ref: '#/components/schemas/NextId'
+    TrialPaginatedCollection:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedCollection'
+        - type: object
+          required:
+            - items
+          properties:
+            items:
+              $ref: '#/components/schemas/TrialCollection'
+    TrialCollection:
+      type: array
+      items:
+        $ref: '#/components/schemas/TrialSlim'
     Trial:
       type: object
       required:
@@ -521,3 +617,19 @@ components:
                   type: string
                   description: The identity ID used to receive events from the queue.
                   minLength: 1
+    TrialSlim:
+      type: object
+      required:
+        - id
+        - name
+        - state
+      properties:
+        id:
+          $ref: '#/components/schemas/TrialId'
+        name:
+          $ref: '#/components/schemas/TrialName'
+        description:
+          $ref: '#/components/schemas/TrialDescription'
+        state:
+          $ref: '#/components/schemas/TrialState'
+          description: The current state of the trial.
