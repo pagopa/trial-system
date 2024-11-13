@@ -62,7 +62,7 @@ describe('makeListTrialsHandler', () => {
     });
   });
 
-  it('should return 200 when the trial exists', async () => {
+  it('should return 200 when trials exists', async () => {
     const env = makeTestSystemEnv();
 
     const aSlimTrial = {
@@ -84,6 +84,120 @@ describe('makeListTrialsHandler', () => {
 
     const actual = await makeListTrialsHandler(env)(
       makeAValidListTrialRequest(),
+      makeFunctionContext(),
+    );
+
+    const result = await actual.json();
+
+    expect(actual.status).toStrictEqual(200);
+
+    expect(result).toMatchObject({
+      items: [aSlimTrial, anotherSlimTrial],
+      previousId: anotherSlimTrial.id,
+      nextId: aSlimTrial.id,
+    });
+  });
+
+  it('should return 200 and trials with id less than 3', async () => {
+    const env = makeTestSystemEnv();
+
+    const aSlimTrial = {
+      id: '1',
+      name: aTrial.name,
+      state: aTrial.state,
+      description: aTrial.description,
+    } as Trial;
+
+    const anotherSlimTrial = {
+      ...aSlimTrial,
+      id: '2' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    } as Trial;
+
+    env.listTrials.mockReturnValueOnce(
+      TE.right([aSlimTrial, anotherSlimTrial]),
+    );
+
+    const actual = await makeListTrialsHandler(env)(
+      makeAValidListTrialRequest({
+        maximumId: '3',
+      }),
+      makeFunctionContext(),
+    );
+
+    const result = await actual.json();
+
+    expect(actual.status).toStrictEqual(200);
+
+    expect(result).toMatchObject({
+      items: [aSlimTrial, anotherSlimTrial],
+      previousId: anotherSlimTrial.id,
+      nextId: aSlimTrial.id,
+    });
+  });
+
+  it('should return 200 and trials with id greater than 1', async () => {
+    const env = makeTestSystemEnv();
+
+    const aSlimTrial = {
+      id: '2',
+      name: aTrial.name,
+      state: aTrial.state,
+      description: aTrial.description,
+    } as Trial;
+
+    const anotherSlimTrial = {
+      ...aSlimTrial,
+      id: '3' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    } as Trial;
+
+    env.listTrials.mockReturnValueOnce(
+      TE.right([aSlimTrial, anotherSlimTrial]),
+    );
+
+    const actual = await makeListTrialsHandler(env)(
+      makeAValidListTrialRequest({
+        minimumId: '1',
+      }),
+      makeFunctionContext(),
+    );
+
+    const result = await actual.json();
+
+    expect(actual.status).toStrictEqual(200);
+
+    expect(result).toMatchObject({
+      items: [aSlimTrial, anotherSlimTrial],
+      previousId: anotherSlimTrial.id,
+      nextId: aSlimTrial.id,
+    });
+  });
+
+  it('should return 200 and two trials', async () => {
+    const env = makeTestSystemEnv();
+
+    const aSlimTrial = {
+      id: '1',
+      name: aTrial.name,
+      state: aTrial.state,
+      description: aTrial.description,
+    } as Trial;
+
+    const anotherSlimTrial = {
+      ...aSlimTrial,
+      id: '2' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    } as Trial;
+
+    env.listTrials.mockReturnValueOnce(
+      TE.right([aSlimTrial, anotherSlimTrial]),
+    );
+
+    const actual = await makeListTrialsHandler(env)(
+      makeAValidListTrialRequest({
+        pageSize: '2',
+      }),
       makeFunctionContext(),
     );
 

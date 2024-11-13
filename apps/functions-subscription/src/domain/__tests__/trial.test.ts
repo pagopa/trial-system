@@ -45,6 +45,60 @@ describe('insertTrial', () => {
     expect(actual).toMatchObject(expected);
   });
 
+  it('should return trials with ID greater than 1', async () => {
+    const testEnv = makeTestEnv();
+
+    const anotherTrial2 = {
+      ...aTrial,
+      id: '2' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    };
+    const anotherTrial3 = {
+      ...aTrial,
+      id: '3' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    };
+
+    testEnv.trialReader.list.mockReturnValueOnce(
+      TE.right([anotherTrial2, anotherTrial3]),
+    );
+
+    const actual = await listTrials({
+      pageSize: 10,
+      minimumId: '1' as TrialId,
+    })(testEnv)();
+    const expected = E.right([anotherTrial2, anotherTrial3]);
+
+    expect(actual).toMatchObject(expected);
+  });
+
+  it('should return trials with ID less than 3', async () => {
+    const testEnv = makeTestEnv();
+
+    const anotherTrial1 = {
+      ...aTrial,
+      id: '1' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    };
+    const anotherTrial2 = {
+      ...aTrial,
+      id: '2' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    };
+
+    testEnv.trialReader.list.mockReturnValueOnce(
+      TE.right([anotherTrial1, anotherTrial2]),
+    );
+
+    const actual = await listTrials({
+      pageSize: 10,
+      minimumId: '3' as TrialId,
+    })(testEnv)();
+    const expected = E.right([anotherTrial1, anotherTrial2]);
+
+    expect(actual).toMatchObject(expected);
+  });
+
   it('should return error if the trial already exists', async () => {
     const testEnv = makeTestEnv();
     const error = new ItemAlreadyExists('Trial already exists');

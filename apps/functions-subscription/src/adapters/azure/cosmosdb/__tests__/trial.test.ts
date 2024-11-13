@@ -110,6 +110,64 @@ describe('makeTrialsCosmosContainer', () => {
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
     });
 
+    it('should return list of trials with id greater than 1', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const anotherTrial2 = {
+        ...aTrial,
+        id: '2' as TrialId,
+        name: 'anotherTrialName' as NonEmptyString,
+      };
+      const anotherTrial3 = {
+        ...aTrial,
+        id: '3' as TrialId,
+        name: 'anotherTrialName' as NonEmptyString,
+      };
+
+      const trials = [anotherTrial2, anotherTrial3];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({ pageSize: 2, minimumId: '1' as TrialId })();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return list of trials with id less than 3', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const anotherTrial1 = {
+        ...aTrial,
+        id: '1' as TrialId,
+        name: 'anotherTrialName' as NonEmptyString,
+      };
+      const anotherTrial2 = {
+        ...aTrial,
+        id: '2' as TrialId,
+        name: 'anotherTrialName' as NonEmptyString,
+      };
+
+      const trials = [anotherTrial1, anotherTrial2];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({ pageSize: 2, maximumId: '3' as TrialId })();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+
     it('should return an empty list', async () => {
       const mockDB = makeDatabaseMock();
 
