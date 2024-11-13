@@ -2,7 +2,11 @@ import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as H from '@pagopa/handler-kit';
 import { describe, expect, it } from 'vitest';
-import { getAndValidateUser, parseQueryParameter, parseRequestBody } from '../middleware';
+import {
+  getAndValidateUser,
+  parseQueryParameter,
+  parseRequestBody,
+} from '../middleware';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 const DummySchema = t.type({
@@ -14,7 +18,7 @@ const aValidBody: DummySchema = {
 };
 const aValidQuery = {
   name: 'Anakin Skywalker',
-}
+};
 
 const aValidRequest = H.request('https://function/anEndpoint');
 

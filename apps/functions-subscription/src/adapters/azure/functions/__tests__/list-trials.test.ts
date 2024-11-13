@@ -69,16 +69,18 @@ describe('makeListTrialsHandler', () => {
       id: aTrial.id,
       name: aTrial.name,
       state: aTrial.state,
-      description: aTrial.description
+      description: aTrial.description,
     } as Trial;
 
     const anotherSlimTrial = {
       ...aSlimTrial,
       id: 'anotherTrialId' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString
+      name: 'anotherTrialName' as NonEmptyString,
     } as Trial;
 
-    env.listTrials.mockReturnValueOnce(TE.right([aSlimTrial, anotherSlimTrial]));
+    env.listTrials.mockReturnValueOnce(
+      TE.right([aSlimTrial, anotherSlimTrial]),
+    );
 
     const actual = await makeListTrialsHandler(env)(
       makeAValidListTrialRequest(),
