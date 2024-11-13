@@ -2,7 +2,8 @@ import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as H from '@pagopa/handler-kit';
 import { describe, expect, it } from 'vitest';
-import { getAndValidateUser, parseRequestBody } from '../middleware';
+import { getAndValidateUser, parseQueryParameter, parseRequestBody } from '../middleware';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 const DummySchema = t.type({
   name: t.string,
@@ -11,6 +12,9 @@ type DummySchema = t.TypeOf<typeof DummySchema>;
 const aValidBody: DummySchema = {
   name: 'Anakin Skywalker',
 };
+const aValidQuery = {
+  name: 'Anakin Skywalker',
+}
 
 const aValidRequest = H.request('https://function/anEndpoint');
 
@@ -30,6 +34,26 @@ describe('parseRequestBody', () => {
       body: {},
     };
     const actual = parseRequestBody(DummySchema)(req);
+    expect(E.isLeft(actual)).toStrictEqual(true);
+  });
+});
+
+describe('parseQueryParameter', () => {
+  it('should return a parsed property', async () => {
+    const req: H.HttpRequest = {
+      ...aValidRequest,
+      query: aValidQuery,
+    };
+    const actual = parseQueryParameter(NonEmptyString, 'name')(req);
+    expect(actual).toStrictEqual(E.right('Anakin Skywalker'));
+  });
+
+  it('should return an error because the query parameter is not valid', async () => {
+    const req: H.HttpRequest = {
+      ...aValidRequest,
+      query: {},
+    };
+    const actual = parseQueryParameter(NonEmptyString, 'name')(req);
     expect(E.isLeft(actual)).toStrictEqual(true);
   });
 });

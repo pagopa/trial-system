@@ -59,7 +59,7 @@ describe('makePutActivationJobHandler', () => {
       headers: managerHttpRequestHeaders,
       body: { string: '{}' },
       params: {
-        trialId: 'aTrialId012345678901234567',
+        trialId: 'aTrialId',
       },
     });
 

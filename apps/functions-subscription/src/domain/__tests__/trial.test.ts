@@ -24,14 +24,13 @@ describe('insertTrial', () => {
     expect(testEnv.trialWriter.insert).toBeCalledWith(aTrial);
   });
 
-  it('should return all trials', async () => {
+  it('should return two trials', async () => {
     const testEnv = makeTestEnv();
 
     const anotherTrial = {
       ...aTrial,
-      id: 'anotherTrialId012345678901' as TrialId,
+      id: 'anotherTrialId' as TrialId,
       name: 'anotherTrialName' as NonEmptyString,
-      description: 'anotherTrialDescription',
     };
 
     testEnv.trialReader.list.mockReturnValueOnce(
@@ -39,9 +38,7 @@ describe('insertTrial', () => {
     );
 
     const actual = await listTrials({
-      pageSize: 1,
-      maximumId: undefined,
-      minimumId: undefined,
+      pageSize: 2,
     })(testEnv)();
     const expected = E.right([aTrial, anotherTrial]);
 

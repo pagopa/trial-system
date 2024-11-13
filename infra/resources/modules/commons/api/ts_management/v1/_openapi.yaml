@@ -375,8 +375,7 @@ components:
     ItemId:
       type: string
       description: Unique identifier of an item.
-      maxLength: 26
-      minLength: 26
+      minLength: 1
     TrialId:
       description: Unique identifier of the trial.
       allOf:

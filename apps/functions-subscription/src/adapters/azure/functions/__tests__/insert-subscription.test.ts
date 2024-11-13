@@ -105,7 +105,7 @@ describe('makePostSubscriptionHandler', () => {
       body: { string: '{}' },
       headers: managerHttpRequestHeaders,
       params: {
-        trialId: 'aTrialId012345678901234567',
+        trialId: 'aTrialId',
       },
     });
     const env = makeTestSystemEnv();

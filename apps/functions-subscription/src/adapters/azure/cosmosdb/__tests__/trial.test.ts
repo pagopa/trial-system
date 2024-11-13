@@ -91,9 +91,8 @@ describe('makeTrialsCosmosContainer', () => {
 
       const anotherTrial = {
         ...aTrial,
-        id: 'anotherTrialId012345678901' as TrialId,
+        id: 'anotherTrialId' as TrialId,
         name: 'anotherTrialName' as NonEmptyString,
-        description: 'anotherTrialDescription',
       };
 
       const trials = [aTrial, anotherTrial];
@@ -121,7 +120,7 @@ describe('makeTrialsCosmosContainer', () => {
       const actual = await makeTrialsCosmosContainer(
         mockDB as unknown as Database,
         containerName,
-      ).list({ pageSize: 25, maximumId: undefined, minimumId: undefined })();
+      ).list({ pageSize: 25 })();
 
       expect(actual).toStrictEqual(E.right([]));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);

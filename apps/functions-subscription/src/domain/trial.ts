@@ -1,10 +1,7 @@
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as O from 'fp-ts/lib/Option';
-import {
-  NonEmptyString,
-  WithinRangeString,
-} from '@pagopa/ts-commons/lib/strings';
+import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 import { pipe } from 'fp-ts/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
 import { Capabilities } from './capabilities';
@@ -18,18 +15,21 @@ interface TrialIdBrand {
   readonly TrialId: unique symbol;
 }
 export const TrialIdCodec = t.brand(
-  WithinRangeString(26, 27),
-  (str): str is t.Branded<WithinRangeString<26, 27>, TrialIdBrand> =>
-    str.length >= 26 && str.length < 27,
+  NonEmptyString,
+  (str): str is t.Branded<NonEmptyString, TrialIdBrand> => str.length > 0,
   'TrialId',
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
-const ListTrialOptionsCodec = t.strict({
-  pageSize: t.number,
-  maximumId: t.union([TrialIdCodec, t.undefined]),
-  minimumId: t.union([TrialIdCodec, t.undefined]),
-});
+const ListTrialOptionsCodec = t.intersection([
+  t.type({
+    pageSize: t.number,
+  }),
+  t.partial({
+    maximumId: t.union([TrialIdCodec, t.undefined]),
+    minimumId: t.union([TrialIdCodec, t.undefined]),
+  })
+])
 export type ListTrialOptions = t.TypeOf<typeof ListTrialOptionsCodec>;
 
 const BaseTrialCodec = t.intersection([

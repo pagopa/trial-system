@@ -9,7 +9,6 @@ import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial
 import { ActivationRequest } from '../../../domain/activation-request';
 import { UpdatedSubscription } from '../../../generated/definitions/internal/UpdatedSubscription';
 import { TrialPaginatedCollection } from '../../../generated/definitions/internal/TrialPaginatedCollection';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 export const toSubscriptionAPI = (
   subscription: Subscription,
@@ -52,7 +51,7 @@ export const toTrialAPI = (trial: Trial): TrialAPI => {
         channel: {
           azure: {
             identityId: trial.identityId,
-            queueName: `${id}` as NonEmptyString,
+            queueName: id,
           },
         },
       }

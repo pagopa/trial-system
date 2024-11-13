@@ -5,8 +5,7 @@ import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { makeListTrialsHandler } from '../list-trials';
 import { aTrial } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
-import { TrialPaginatedCollection } from '../../../../generated/definitions/internal/TrialPaginatedCollection';
-import { TrialId } from '../../../../domain/trial';
+import { Trial, TrialId } from '../../../../domain/trial';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 describe('makeListTrialsHandler', () => {
@@ -42,7 +41,7 @@ describe('makeListTrialsHandler', () => {
     );
 
     expect(actual.status).toStrictEqual(200);
-    expect(await actual.json()).toMatchObject({ items: [] });
+    expect(await actual.json()).toStrictEqual({ items: [] });
   });
 
   it('should return 500 when an error occurred', async () => {
@@ -66,29 +65,34 @@ describe('makeListTrialsHandler', () => {
   it('should return 200 when the trial exists', async () => {
     const env = makeTestSystemEnv();
 
-    const anotherTrial = {
-      ...aTrial,
-      id: 'anotherTrialId012345678901' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString,
-      description: 'anotherTrialDescription',
-    };
+    const aSlimTrial = {
+      id: aTrial.id,
+      name: aTrial.name,
+      state: aTrial.state,
+      description: aTrial.description
+    } as Trial;
 
-    env.listTrials.mockReturnValueOnce(TE.right([aTrial, anotherTrial]));
+    const anotherSlimTrial = {
+      ...aSlimTrial,
+      id: 'anotherTrialId' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString
+    } as Trial;
+
+    env.listTrials.mockReturnValueOnce(TE.right([aSlimTrial, anotherSlimTrial]));
 
     const actual = await makeListTrialsHandler(env)(
       makeAValidListTrialRequest(),
       makeFunctionContext(),
     );
 
-    const result = (await actual.json()) as TrialPaginatedCollection;
+    const result = await actual.json();
 
     expect(actual.status).toStrictEqual(200);
-    expect(result.items.length).toStrictEqual(2);
 
-    expect(result.items[0].name).toMatchObject(aTrial.name);
-    expect(result.items[0].description).toMatchObject(aTrial.description);
-
-    expect(result.items[1].name).toMatchObject(anotherTrial.name);
-    expect(result.items[1].description).toMatchObject(anotherTrial.description);
+    expect(result).toMatchObject({
+      items: [aSlimTrial, anotherSlimTrial],
+      previousId: anotherSlimTrial.id,
+      nextId: aSlimTrial.id,
+    });
   });
 });

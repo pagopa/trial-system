@@ -7,7 +7,7 @@ import { anActivationJob, aTrial } from '../../../../domain/__tests__/data';
 import { UpdateSubscription } from '../../../../generated/definitions/internal/UpdateSubscription';
 
 const aUserId = 'aUserId' as UserId;
-const aTrialId = 'aTrialId012345678901234567' as TrialId;
+const aTrialId = 'aTrialId' as TrialId;
 
 export const aCreateSubscription: CreateSubscription = {
   userId: aUserId,
