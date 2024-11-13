@@ -1,5 +1,16 @@
 # @infra/resources
 
+## 0.10.0
+
+### Minor Changes
+
+- b35d13b: [IOPLT-748] Add listTrials to OpenAPI Specification.
+- f410278: Create APIM diagnostic settings
+
+### Patch Changes
+
+- f410278: Set APIM log verbosity to information
+
 ## 0.9.0
 
 ### Minor Changes
