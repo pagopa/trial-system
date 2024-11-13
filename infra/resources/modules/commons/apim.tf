@@ -23,6 +23,7 @@ module "apim" {
   sku_name                  = var.apim_config.sku
   virtual_network_type      = "Internal"
   subnet_id                 = module.apim_snet.id
+  diagnostic_verbosity      = "information"
 
   redis_cache_id = null
 
@@ -50,6 +51,23 @@ module "apim" {
   }
 
   tags = var.tags
+}
+
+# Diagnostic settings
+resource "azurerm_monitor_diagnostic_setting" "apim" {
+  name                           = "APIMLogs"
+  target_resource_id             = module.apim.id
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.law.id
+  log_analytics_destination_type = "AzureDiagnostics"
+
+  enabled_log {
+    category = "GatewayLogs"
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = true
+  }
 }
 
 module "apim_key_vault_access_policy" {
