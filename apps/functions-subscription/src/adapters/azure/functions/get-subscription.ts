@@ -21,7 +21,11 @@ const makeHandlerKitHandler: H.Handler<
     RTE.apSW(
       'tenant',
       RTE.fromEither(
-        getAndValidateUser(['ApiTrialManager', 'ApiTrialUser'])(req),
+        getAndValidateUser([
+          'ApiTrialManager',
+          'ApiTrialUser',
+          'ApiTrialSupport',
+        ])(req),
       ),
     ),
     RTE.apSW(
