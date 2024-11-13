@@ -1,5 +1,12 @@
 # functions-subscription
 
+## 3.8.0
+
+### Minor Changes
+
+- b35d13b: [IOPLT-748] Add listTrials to OpenAPI Specification.
+- 87703c7: [IOPLT-772] Add ApiTrialSupport to AllowedGroup type.
+
 ## 3.7.1
 
 ### Patch Changes
