@@ -51,7 +51,7 @@ export const parseHeaderParameter =
       ),
     );
 
-type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager';
+type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager' | 'ApiTrialSupport';
 
 const toTenantType = (groups: readonly string[]): Tenant['type'] => {
   return groups.some((group) => group === 'ApiTrialManager')
