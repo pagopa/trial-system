@@ -6,7 +6,6 @@ import { aTrial, aTrialOwner, aTrialSubscriber } from './data';
 import { getTrialIdByTenant, insertTrial, listTrials, TrialId } from '../trial';
 import { ItemAlreadyExists, ItemNotFound } from '../errors';
 import { makeTestEnv } from './mocks';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 const { name, description, id } = aTrial;
 
@@ -22,81 +21,6 @@ describe('insertTrial', () => {
 
     expect(actual).toMatchObject(expected);
     expect(testEnv.trialWriter.insert).toBeCalledWith(aTrial);
-  });
-
-  it('should return two trials', async () => {
-    const testEnv = makeTestEnv();
-
-    const anotherTrial = {
-      ...aTrial,
-      id: 'anotherTrialId' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString,
-    };
-
-    testEnv.trialReader.list.mockReturnValueOnce(
-      TE.right([aTrial, anotherTrial]),
-    );
-
-    const actual = await listTrials({
-      pageSize: 2,
-    })(testEnv)();
-    const expected = E.right([aTrial, anotherTrial]);
-
-    expect(actual).toMatchObject(expected);
-  });
-
-  it('should return trials with ID greater than 1', async () => {
-    const testEnv = makeTestEnv();
-
-    const anotherTrial2 = {
-      ...aTrial,
-      id: '2' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString,
-    };
-    const anotherTrial3 = {
-      ...aTrial,
-      id: '3' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString,
-    };
-
-    testEnv.trialReader.list.mockReturnValueOnce(
-      TE.right([anotherTrial2, anotherTrial3]),
-    );
-
-    const actual = await listTrials({
-      pageSize: 10,
-      minimumId: '1' as TrialId,
-    })(testEnv)();
-    const expected = E.right([anotherTrial2, anotherTrial3]);
-
-    expect(actual).toMatchObject(expected);
-  });
-
-  it('should return trials with ID less than 3', async () => {
-    const testEnv = makeTestEnv();
-
-    const anotherTrial1 = {
-      ...aTrial,
-      id: '1' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString,
-    };
-    const anotherTrial2 = {
-      ...aTrial,
-      id: '2' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString,
-    };
-
-    testEnv.trialReader.list.mockReturnValueOnce(
-      TE.right([anotherTrial1, anotherTrial2]),
-    );
-
-    const actual = await listTrials({
-      pageSize: 10,
-      minimumId: '3' as TrialId,
-    })(testEnv)();
-    const expected = E.right([anotherTrial1, anotherTrial2]);
-
-    expect(actual).toMatchObject(expected);
   });
 
   it('should return error if the trial already exists', async () => {
@@ -121,6 +45,30 @@ describe('insertTrial', () => {
     const actual = await insertTrial(name, description, aTrialOwner)(testEnv)();
     const expected = E.left(error);
     expect(actual).toMatchObject(expected);
+  });
+});
+
+describe('listTrials', () => {
+  it('should return a list of trials', async () => {
+    const testEnv = makeTestEnv();
+
+    const anotherTrial = {
+      ...aTrial,
+      id: 'anotherTrialId' as TrialId,
+    };
+
+    testEnv.trialReader.list.mockReturnValueOnce(
+      TE.right([aTrial, anotherTrial]),
+    );
+
+    const actual = await listTrials({
+      pageSize: 2,
+    })(testEnv)();
+    const expected = E.right([aTrial, anotherTrial]);
+    expect(actual).toMatchObject(expected);
+    expect(testEnv.trialReader.list).toHaveBeenNthCalledWith(1, {
+      pageSize: 2,
+    });
   });
 });
 

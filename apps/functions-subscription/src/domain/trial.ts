@@ -26,8 +26,8 @@ const ListTrialOptionsCodec = t.intersection([
     pageSize: t.number,
   }),
   t.partial({
-    maximumId: t.union([TrialIdCodec, t.undefined]),
-    minimumId: t.union([TrialIdCodec, t.undefined]),
+    maximumId: TrialIdCodec,
+    minimumId: TrialIdCodec,
   }),
 ]);
 export type ListTrialOptions = t.TypeOf<typeof ListTrialOptionsCodec>;

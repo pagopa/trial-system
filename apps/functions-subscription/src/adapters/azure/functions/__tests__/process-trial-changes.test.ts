@@ -46,11 +46,11 @@ describe('makeTrialChangesHandler', () => {
     const context = makeFunctionContext();
     const creatingTrial0 = {
       ...aTrial,
-      id: 'aTrialId' as TrialId,
+      id: '0' as TrialId,
     };
     const creatingTrial1 = {
       ...aTrial,
-      id: 'aTrialId' as TrialId,
+      id: '1' as TrialId,
     };
     const creatingTrials = [creatingTrial0, creatingTrial1];
     const messages = [...creatingTrials, aCreatedTrial];

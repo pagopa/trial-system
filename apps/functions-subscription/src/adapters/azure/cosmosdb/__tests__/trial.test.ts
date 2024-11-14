@@ -7,7 +7,6 @@ import { aTrial } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makeTrialsCosmosContainer } from '../trial';
 import { Trial, TrialId } from '../../../../domain/trial';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 describe('makeTrialsCosmosContainer', () => {
   const containerName = 'aContainerName';
@@ -86,14 +85,13 @@ describe('makeTrialsCosmosContainer', () => {
     });
   });
   describe('list', () => {
+    const anotherTrial = {
+      ...aTrial,
+      id: 'anotherTrialId' as TrialId,
+    };
+
     it('should return list of trials', async () => {
       const mockDB = makeDatabaseMock();
-
-      const anotherTrial = {
-        ...aTrial,
-        id: 'anotherTrialId' as TrialId,
-        name: 'anotherTrialName' as NonEmptyString,
-      };
 
       const trials = [aTrial, anotherTrial];
 
@@ -110,21 +108,10 @@ describe('makeTrialsCosmosContainer', () => {
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
     });
 
-    it('should return list of trials with id greater than 1', async () => {
+    it('should return list of trials with id greater than "a"', async () => {
       const mockDB = makeDatabaseMock();
 
-      const anotherTrial2 = {
-        ...aTrial,
-        id: '2' as TrialId,
-        name: 'anotherTrialName' as NonEmptyString,
-      };
-      const anotherTrial3 = {
-        ...aTrial,
-        id: '3' as TrialId,
-        name: 'anotherTrialName' as NonEmptyString,
-      };
-
-      const trials = [anotherTrial2, anotherTrial3];
+      const trials = [aTrial, anotherTrial];
 
       mockDB.container('').items.query.mockReturnValueOnce({
         fetchAll: () => Promise.resolve({ resources: trials }),
@@ -133,27 +120,16 @@ describe('makeTrialsCosmosContainer', () => {
       const actual = await makeTrialsCosmosContainer(
         mockDB as unknown as Database,
         containerName,
-      ).list({ pageSize: 2, minimumId: '1' as TrialId })();
+      ).list({ pageSize: 2, minimumId: 'a' as TrialId })();
 
       expect(actual).toStrictEqual(E.right(trials));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
     });
 
-    it('should return list of trials with id less than 3', async () => {
+    it('should return list of trials with id less than "z"', async () => {
       const mockDB = makeDatabaseMock();
 
-      const anotherTrial1 = {
-        ...aTrial,
-        id: '1' as TrialId,
-        name: 'anotherTrialName' as NonEmptyString,
-      };
-      const anotherTrial2 = {
-        ...aTrial,
-        id: '2' as TrialId,
-        name: 'anotherTrialName' as NonEmptyString,
-      };
-
-      const trials = [anotherTrial1, anotherTrial2];
+      const trials = [aTrial, anotherTrial];
 
       mockDB.container('').items.query.mockReturnValueOnce({
         fetchAll: () => Promise.resolve({ resources: trials }),
@@ -162,7 +138,7 @@ describe('makeTrialsCosmosContainer', () => {
       const actual = await makeTrialsCosmosContainer(
         mockDB as unknown as Database,
         containerName,
-      ).list({ pageSize: 2, maximumId: '3' as TrialId })();
+      ).list({ pageSize: 2, maximumId: 'z' as TrialId })();
 
       expect(actual).toStrictEqual(E.right(trials));
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
