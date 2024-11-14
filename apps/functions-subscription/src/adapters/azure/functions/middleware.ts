@@ -54,10 +54,8 @@ export const parseHeaderParameter =
 type AllowedGroup = 'ApiTrialUser' | 'ApiTrialManager' | 'ApiTrialSupport';
 
 const toTenantType = (groups: readonly string[]): Tenant['type'] => {
-  if(groups.some((group) => group === 'ApiTrialManager'))
-    return 'owner';
-  if(groups.some((group) => group === 'ApiTrialSupport'))
-    return 'support';
+  if (groups.some((group) => group === 'ApiTrialManager')) return 'owner';
+  if (groups.some((group) => group === 'ApiTrialSupport')) return 'support';
   return 'subscriber';
 };
 
