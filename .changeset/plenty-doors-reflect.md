@@ -2,4 +2,4 @@
 "functions-subscription": patch
 ---
 
-[IOPLT-718] Get subscriptions by trial id and user id
+[IOPLT-718] Allow ApiTrialSupport to use method getSubscription
