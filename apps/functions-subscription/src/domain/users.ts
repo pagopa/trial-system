@@ -25,7 +25,7 @@ type TrialSubscriber = BaseUser & {
   readonly type: 'subscriber';
 };
 
-type TrialSupport = BaseUser & {
+type Support = BaseUser & {
   readonly type: 'support';
 };
 
