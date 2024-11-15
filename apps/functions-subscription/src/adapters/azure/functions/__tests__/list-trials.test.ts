@@ -7,17 +7,11 @@ import { aTrial } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
 import { Trial, TrialId } from '../../../../domain/trial';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
+import { HttpBadRequestError } from '@pagopa/handler-kit';
 
 describe('makeListTrialsHandler', () => {
-  const aSlimTrial = {
-    id: aTrial.id,
-    name: aTrial.name,
-    state: aTrial.state,
-    description: aTrial.description,
-  } as Trial;
-
-  const anotherSlimTrial = {
-    ...aSlimTrial,
+  const anotherTrial = {
+    ...aTrial,
     id: 'anotherTrialId' as TrialId,
     name: 'anotherTrialName' as NonEmptyString,
   } as Trial;
@@ -63,32 +57,20 @@ describe('makeListTrialsHandler', () => {
   it('should return 200 when trials exists', async () => {
     const env = makeTestSystemEnv();
 
-    env.listTrials.mockReturnValueOnce(
-      TE.right([aSlimTrial, anotherSlimTrial]),
-    );
+    const aSlimTrial = {
+      id: aTrial.id,
+      name: aTrial.name,
+      state: aTrial.state,
+      description: aTrial.description,
+    } as Trial;
 
-    const actual = await makeListTrialsHandler(env)(
-      makeAValidListTrialRequest(),
-      makeFunctionContext(),
-    );
+    const anotherSlimTrial = {
+      ...aSlimTrial,
+      id: 'anotherTrialId' as TrialId,
+      name: 'anotherTrialName' as NonEmptyString,
+    } as Trial;
 
-    const result = await actual.json();
-
-    expect(actual.status).toStrictEqual(200);
-
-    expect(result).toMatchObject({
-      items: [aSlimTrial, anotherSlimTrial],
-      previousId: anotherSlimTrial.id,
-      nextId: aSlimTrial.id,
-    });
-  });
-
-  it('should return 200 when parameters are valid', async () => {
-    const env = makeTestSystemEnv();
-
-    env.listTrials.mockReturnValueOnce(
-      TE.right([aSlimTrial, anotherSlimTrial]),
-    );
+    env.listTrials.mockReturnValueOnce(TE.right([aTrial, anotherTrial]));
 
     const actual = await makeListTrialsHandler(env)(
       makeAValidListTrialRequest({

@@ -132,14 +132,18 @@ export const makeAValidGetTrialRequest = () =>
     },
   });
 
-export const makeAValidListTrialRequest = (params?: {
+export interface IMakeAValidListTrialRequest {
   readonly pageSize?: string;
   readonly maximumId?: string;
   readonly minimumId?: string;
-}) =>
+}
+
+export const makeAValidListTrialRequest = (
+  params?: IMakeAValidListTrialRequest,
+) =>
   new HttpRequest({
     url: 'https://function/trials',
     method: 'GET',
     headers: supportHttpRequestHeaders,
-    params,
+    params: params as Record<string, string>,
   });

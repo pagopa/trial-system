@@ -108,7 +108,7 @@ describe('makeTrialsCosmosContainer', () => {
       expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
     });
 
-    it('should return list of trials with id greater than "a"', async () => {
+    it('should make the query with pageSize and minimumId', async () => {
       const mockDB = makeDatabaseMock();
 
       const trials = [aTrial, anotherTrial];
@@ -123,10 +123,17 @@ describe('makeTrialsCosmosContainer', () => {
       ).list({ pageSize: 2, minimumId: 'a' as TrialId })();
 
       expect(actual).toStrictEqual(E.right(trials));
-      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+      expect(mockDB.container('').items.query).nthCalledWith(1, {
+        query:
+          'SELECT * FROM t WHERE t.id > @minId ORDER BY t.id DESC OFFSET 0 LIMIT @limit',
+        parameters: [
+          { name: '@minId', value: 'a' },
+          { name: '@limit', value: 2 },
+        ],
+      });
     });
 
-    it('should return list of trials with id less than "z"', async () => {
+    it('should make the query with pageSize and maximumId', async () => {
       const mockDB = makeDatabaseMock();
 
       const trials = [aTrial, anotherTrial];
@@ -141,7 +148,44 @@ describe('makeTrialsCosmosContainer', () => {
       ).list({ pageSize: 2, maximumId: 'z' as TrialId })();
 
       expect(actual).toStrictEqual(E.right(trials));
-      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+      expect(mockDB.container('').items.query).nthCalledWith(1, {
+        query:
+          'SELECT * FROM t WHERE t.id < @maxId ORDER BY t.id DESC OFFSET 0 LIMIT @limit',
+        parameters: [
+          { name: '@maxId', value: 'z' },
+          { name: '@limit', value: 2 },
+        ],
+      });
+    });
+
+    it('should make the query with pageSize, maximumId and minimumId', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const trials = [aTrial, anotherTrial];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({
+        pageSize: 2,
+        minimumId: 'a' as TrialId,
+        maximumId: 'z' as TrialId,
+      })();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).nthCalledWith(1, {
+        query:
+          'SELECT * FROM t WHERE t.id < @maxId AND t.id > @minId ORDER BY t.id DESC OFFSET 0 LIMIT @limit',
+        parameters: [
+          { name: '@maxId', value: 'z' },
+          { name: '@minId', value: 'a' },
+          { name: '@limit', value: 2 },
+        ],
+      });
     });
 
     it('should return an empty list', async () => {
