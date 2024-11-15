@@ -29,4 +29,4 @@ type TrialSupport = BaseUser & {
   readonly type: 'support';
 };
 
-export type Tenant = TrialOwner | TrialSubscriber | TrialSupport;
+export type Tenant = TrialOwner | TrialSubscriber | Support;
