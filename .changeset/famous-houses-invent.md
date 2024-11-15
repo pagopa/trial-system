@@ -2,4 +2,4 @@
 "functions-subscription": patch
 ---
 
-[IOPLT-774] Added tenant TrialSupport
+[IOPLT-774] Add `Support` tenant
