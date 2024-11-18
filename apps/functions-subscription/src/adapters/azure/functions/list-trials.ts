@@ -10,23 +10,18 @@ import { toHttpProblemJson } from './errors';
 import { toTrialListAPI } from './codec';
 import { TrialIdCodec } from '../../../domain/trial';
 import {
-  IWithinRangeIntegerTag,
-  NumberFromString,
+  IntegerFromString,
   WithinRangeInteger,
 } from '@pagopa/ts-commons/lib/numbers';
 import { withDefault } from '@pagopa/ts-commons/lib/types';
 
 type Env = Pick<SystemEnv, 'listTrials'>;
 
-export type QueryPageSize = t.TypeOf<typeof QueryPageSizeBase>;
-const QueryPageSizeBase = t.union([
-  WithinRangeInteger<1, 100, IWithinRangeIntegerTag<1, 100>>(1, 100),
-  t.literal(100),
-]);
+const QueryPageSizeBase = IntegerFromString.pipe(WithinRangeInteger(1, 100));
 
 export const QueryPageSize = withDefault(
   QueryPageSizeBase,
-  25 as QueryPageSize,
+  25 as t.TypeOf<typeof QueryPageSizeBase>,
 );
 
 const makeHandlerKitHandler: H.Handler<
@@ -42,7 +37,7 @@ const makeHandlerKitHandler: H.Handler<
       'pageSize',
       RTE.fromEither(
         parseQueryParameter(
-          t.union([NumberFromString, QueryPageSize]),
+          QueryPageSize,
           'pageSize',
         )(req),
       ),

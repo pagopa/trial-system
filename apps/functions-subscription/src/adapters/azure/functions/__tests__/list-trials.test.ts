@@ -19,21 +19,15 @@ describe('makeListTrialsHandler', () => {
   it('should return 400 on invalid pageSize parameter', async () => {
     const env = makeTestSystemEnv();
 
-    const error = new HttpBadRequestError(
-      'Invalid format of pageSize parameter',
-    );
-    env.listTrials.mockReturnValueOnce(TE.left(error));
-
     const actual = await makeListTrialsHandler(env)(
-      makeAValidListTrialRequest({ pageSize: 'aString' }),
+      makeAValidListTrialRequest({ pageSize: '101' }),
       makeFunctionContext(),
     );
 
     expect(actual.status).toStrictEqual(400);
     expect(await actual.json()).toMatchObject({
-      title: 'Bad Request',
       status: 400,
-      detail: 'Invalid format of pageSize parameter',
+      title: "Bad Request",
     });
   });
 
