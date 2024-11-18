@@ -123,6 +123,8 @@ export const getTrialIdByTenant = (trialId: TrialId, tenant: Tenant) =>
               () => new ItemNotFound('Item not found'),
             ),
           )
-        : TE.of(trialId),
+        : tenant.type == 'subscriber'
+          ? TE.of(trialId)
+          : TE.of(trialId),
     ),
   );
