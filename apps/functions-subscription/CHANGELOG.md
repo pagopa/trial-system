@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.8.1
+
+### Patch Changes
+
+- c471578: [IOPLT-774] Add `Support` tenant
+
 ## 3.8.0
 
 ### Minor Changes
