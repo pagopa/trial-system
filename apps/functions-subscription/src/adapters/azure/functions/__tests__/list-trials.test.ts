@@ -7,7 +7,6 @@ import { aTrial } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
 import { Trial, TrialId } from '../../../../domain/trial';
 import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
-import { HttpBadRequestError } from '@pagopa/handler-kit';
 
 describe('makeListTrialsHandler', () => {
   const anotherTrial = {
@@ -27,7 +26,22 @@ describe('makeListTrialsHandler', () => {
     expect(actual.status).toStrictEqual(400);
     expect(await actual.json()).toMatchObject({
       status: 400,
-      title: "Bad Request",
+      title: 'Bad Request',
+    });
+  });
+
+  it('should return 400 on invalid pageSize parameter', async () => {
+    const env = makeTestSystemEnv();
+
+    const actual = await makeListTrialsHandler(env)(
+      makeAValidListTrialRequest({ pageSize: 'aString' }),
+      makeFunctionContext(),
+    );
+
+    expect(actual.status).toStrictEqual(400);
+    expect(await actual.json()).toMatchObject({
+      status: 400,
+      title: 'Bad Request',
     });
   });
 
@@ -90,9 +104,17 @@ describe('makeListTrialsHandler', () => {
     const actual = await makeListTrialsHandler(env)(
       makeAValidListTrialRequest({
         pageSize: '2',
+        maximumId: 'z',
+        minimumId: 'a',
       }),
       makeFunctionContext(),
     );
+
+    expect(env.listTrials).nthCalledWith(1, {
+      pageSize: 2,
+      maximumId: 'z',
+      minimumId: 'a',
+    });
 
     const result = await actual.json();
 
@@ -114,6 +136,12 @@ describe('makeListTrialsHandler', () => {
       makeAValidListTrialRequest(),
       makeFunctionContext(),
     );
+
+    expect(env.listTrials).nthCalledWith(1, {
+      pageSize: 25,
+      maximumId: undefined,
+      minimumId: undefined,
+    });
 
     expect(actual.status).toStrictEqual(200);
     expect(await actual.json()).toStrictEqual({ items: [] });

@@ -1,6 +1,8 @@
 import * as H from '@pagopa/handler-kit';
 import { pipe, flow } from 'fp-ts/lib/function';
 import * as RTE from 'fp-ts/ReaderTaskEither';
+import * as E from 'fp-ts/Either';
+import * as O from 'fp-ts/lib/Option';
 import * as t from 'io-ts';
 import { httpAzureFunction } from '@pagopa/handler-kit-azure-func';
 import { TrialPaginatedCollection } from '../../../generated/definitions/internal/TrialPaginatedCollection';
@@ -13,16 +15,13 @@ import {
   IntegerFromString,
   WithinRangeInteger,
 } from '@pagopa/ts-commons/lib/numbers';
-import { withDefault } from '@pagopa/ts-commons/lib/types';
 
 type Env = Pick<SystemEnv, 'listTrials'>;
 
-const QueryPageSizeBase = IntegerFromString.pipe(WithinRangeInteger(1, 100));
-
-export const QueryPageSize = withDefault(
-  QueryPageSizeBase,
-  25 as t.TypeOf<typeof QueryPageSizeBase>,
-);
+export const QueryPageSize = t.union([
+  t.undefined,
+  IntegerFromString.pipe(WithinRangeInteger(1, 100)),
+]);
 
 const makeHandlerKitHandler: H.Handler<
   H.HttpRequest,
@@ -35,11 +34,11 @@ const makeHandlerKitHandler: H.Handler<
     RTE.apFirst(RTE.fromEither(getAndValidateUser(['ApiTrialSupport'])(req))),
     RTE.apSW(
       'pageSize',
-      RTE.fromEither(
-        parseQueryParameter(
-          QueryPageSize,
-          'pageSize',
-        )(req),
+      pipe(
+        parseQueryParameter(QueryPageSize, 'pageSize')(req),
+        E.map(O.fromNullable),
+        E.map(O.getOrElseW(() => 25)),
+        RTE.fromEither,
       ),
     ),
     RTE.apSW(
