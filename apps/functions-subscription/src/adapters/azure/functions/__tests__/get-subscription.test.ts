@@ -113,7 +113,7 @@ describe('makeGetSubscriptionHandler', () => {
       state: aSubscription.state,
     });
   });
-  
+
   it('should return 200 when the subscription exist and the x-user-groups header has ApiTrialSupport', async () => {
     const env = makeTestSystemEnv();
 
