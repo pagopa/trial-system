@@ -5,16 +5,15 @@ import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { makeListTrialsHandler } from '../list-trials';
 import { aTrial } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
-import { Trial } from '../../../../domain/trial';
+import { TrialId } from '../../../../domain/trial';
 import { TrialSlim } from '../../../../generated/definitions/internal/TrialSlim';
 import { TrialStateEnum } from '../../../../generated/definitions/internal/TrialState';
-import { TrialId } from '../../../../generated/definitions/internal/TrialId';
 
 describe('makeListTrialsHandler', () => {
   const anotherTrial = {
     ...aTrial,
-    id: 'anotherTrialId',
-  } as Trial;
+    id: 'anotherTrialId' as TrialId,
+  };
 
   it('should return 400 on out of range pageSize parameter', async () => {
     const env = makeTestSystemEnv();
