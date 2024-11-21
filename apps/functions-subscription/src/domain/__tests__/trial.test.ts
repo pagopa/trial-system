@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { aTrial, aTrialOwner, aTrialSubscriber } from './data';
-import { getTrialIdByTenant, insertTrial } from '../trial';
+import { getTrialIdByTenant, insertTrial, listTrials, TrialId } from '../trial';
 import { ItemAlreadyExists, ItemNotFound } from '../errors';
 import { makeTestEnv } from './mocks';
 
@@ -45,6 +45,30 @@ describe('insertTrial', () => {
     const actual = await insertTrial(name, description, aTrialOwner)(testEnv)();
     const expected = E.left(error);
     expect(actual).toMatchObject(expected);
+  });
+});
+
+describe('listTrials', () => {
+  it('should return a list of trials', async () => {
+    const testEnv = makeTestEnv();
+
+    const anotherTrial = {
+      ...aTrial,
+      id: 'anotherTrialId' as TrialId,
+    };
+
+    testEnv.trialReader.list.mockReturnValueOnce(
+      TE.right([aTrial, anotherTrial]),
+    );
+
+    const actual = await listTrials({
+      pageSize: 2,
+    })(testEnv)();
+    const expected = E.right([aTrial, anotherTrial]);
+    expect(actual).toMatchObject(expected);
+    expect(testEnv.trialReader.list).toHaveBeenNthCalledWith(1, {
+      pageSize: 2,
+    });
   });
 });
 

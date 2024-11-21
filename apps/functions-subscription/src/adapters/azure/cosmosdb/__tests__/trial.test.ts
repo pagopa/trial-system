@@ -6,7 +6,7 @@ import { makeDatabaseMock } from './mocks';
 import { aTrial } from '../../../../domain/__tests__/data';
 import { ItemAlreadyExists } from '../../../../domain/errors';
 import { makeTrialsCosmosContainer } from '../trial';
-import { Trial } from '../../../../domain/trial';
+import { Trial, TrialId } from '../../../../domain/trial';
 
 describe('makeTrialsCosmosContainer', () => {
   const containerName = 'aContainerName';
@@ -82,6 +82,126 @@ describe('makeTrialsCosmosContainer', () => {
 
       expect(actual).toStrictEqual(E.right(O.none));
       expect(mockDB.container('').item).toBeCalledWith(id, ownerId);
+    });
+  });
+  describe('list', () => {
+    const anotherTrial = {
+      ...aTrial,
+      id: 'anotherTrialId',
+    };
+
+    it('should return list of trials', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const trials = [aTrial, anotherTrial];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({ pageSize: 25 })();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
+    });
+
+    it('should make the query with pageSize and minimumId', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const trials = [aTrial, anotherTrial];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({ pageSize: 2, minimumId: 'a' as TrialId })();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).nthCalledWith(1, {
+        query:
+          'SELECT * FROM t WHERE t.id > @minId ORDER BY t.id DESC OFFSET 0 LIMIT @limit',
+        parameters: [
+          { name: '@minId', value: 'a' },
+          { name: '@limit', value: 2 },
+        ],
+      });
+    });
+
+    it('should make the query with pageSize and maximumId', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const trials = [aTrial, anotherTrial];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({ pageSize: 2, maximumId: 'z' as TrialId })();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).nthCalledWith(1, {
+        query:
+          'SELECT * FROM t WHERE t.id < @maxId ORDER BY t.id DESC OFFSET 0 LIMIT @limit',
+        parameters: [
+          { name: '@maxId', value: 'z' },
+          { name: '@limit', value: 2 },
+        ],
+      });
+    });
+
+    it('should make the query with pageSize, maximumId and minimumId', async () => {
+      const mockDB = makeDatabaseMock();
+
+      const trials = [aTrial, anotherTrial];
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: trials }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({
+        pageSize: 2,
+        minimumId: 'a' as TrialId,
+        maximumId: 'z' as TrialId,
+      })();
+
+      expect(actual).toStrictEqual(E.right(trials));
+      expect(mockDB.container('').items.query).nthCalledWith(1, {
+        query:
+          'SELECT * FROM t WHERE t.id < @maxId AND t.id > @minId ORDER BY t.id DESC OFFSET 0 LIMIT @limit',
+        parameters: [
+          { name: '@maxId', value: 'z' },
+          { name: '@minId', value: 'a' },
+          { name: '@limit', value: 2 },
+        ],
+      });
+    });
+
+    it('should return an empty list', async () => {
+      const mockDB = makeDatabaseMock();
+
+      mockDB.container('').items.query.mockReturnValueOnce({
+        fetchAll: () => Promise.resolve({ resources: [] }),
+      });
+
+      const actual = await makeTrialsCosmosContainer(
+        mockDB as unknown as Database,
+        containerName,
+      ).list({ pageSize: 25 })();
+
+      expect(actual).toStrictEqual(E.right([]));
+      expect(mockDB.container('').items.query).toHaveBeenCalledTimes(1);
     });
   });
   describe('insert', () => {

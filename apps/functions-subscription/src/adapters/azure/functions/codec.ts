@@ -8,6 +8,8 @@ import { TrialStateEnum } from '../../../generated/definitions/internal/TrialSta
 import { Trial as TrialAPI } from '../../../generated/definitions/internal/Trial';
 import { ActivationRequest } from '../../../domain/activation-request';
 import { UpdatedSubscription } from '../../../generated/definitions/internal/UpdatedSubscription';
+import { TrialPaginatedCollection } from '../../../generated/definitions/internal/TrialPaginatedCollection';
+import { TrialSlim } from '../../../generated/definitions/internal/TrialSlim';
 
 export const toSubscriptionAPI = (
   subscription: Subscription,
@@ -55,4 +57,24 @@ export const toTrialAPI = (trial: Trial): TrialAPI => {
         },
       }
     : trialAPI;
+};
+
+export const toTrialSlimAPI = (trial: Trial): TrialSlim => {
+  const { id, name, description, state } = trial;
+  return {
+    id,
+    name,
+    state: TrialStateEnum[state],
+    description,
+  };
+};
+
+export const toTrialListAPI = (
+  trials: readonly Trial[],
+): TrialPaginatedCollection => {
+  return {
+    items: trials.map(toTrialSlimAPI),
+    previousId: trials[trials.length - 1]?.id,
+    nextId: trials[0]?.id,
+  };
 };

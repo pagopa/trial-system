@@ -21,6 +21,17 @@ export const TrialIdCodec = t.brand(
 );
 export type TrialId = t.TypeOf<typeof TrialIdCodec>;
 
+const ListTrialOptionsCodec = t.intersection([
+  t.type({
+    pageSize: t.number,
+  }),
+  t.partial({
+    maximumId: TrialIdCodec,
+    minimumId: TrialIdCodec,
+  }),
+]);
+export type ListTrialOptions = t.TypeOf<typeof ListTrialOptionsCodec>;
+
 const BaseTrialCodec = t.intersection([
   t.strict({ id: TrialIdCodec, name: NonEmptyString, ownerId: TenantIdCodec }),
   t.partial({ description: t.string }), //ownerId should be mandatory after the migration
@@ -53,6 +64,9 @@ export interface TrialWriter {
 
 export interface TrialReader {
   readonly get: (trialId: TrialId) => TE.TaskEither<Error, O.Option<Trial>>;
+  readonly list: (
+    options: ListTrialOptions,
+  ) => TE.TaskEither<Error, readonly Trial[]>;
   readonly getByIdAndOwnerId: (
     trialId: TrialId,
     ownerId: Trial['ownerId'],
@@ -103,6 +117,12 @@ export const getTrialById = (trialId: TrialId, tenant: Tenant) =>
         ? trialReader.getByIdAndOwnerId(trialId, tenant.id)
         : trialReader.get(trialId),
     ),
+  );
+
+export const listTrials = (options: ListTrialOptions) =>
+  pipe(
+    RTE.ask<Pick<Capabilities, 'trialReader'>>(),
+    RTE.flatMapTaskEither(({ trialReader }) => trialReader.list(options)),
   );
 
 /**

@@ -35,6 +35,18 @@ export const parsePathParameter =
     );
 
 /**
+ * Parses a specific query parameter of an HTTP request using the provided schema.
+ */
+export const parseQueryParameter =
+  <T>(schema: Decoder<unknown, T>, paramName: string) =>
+  (req: H.HttpRequest) =>
+    pipe(
+      req.query[paramName],
+      H.parse(schema, `Invalid format of ${paramName} parameter`),
+      E.mapLeft(({ message }) => new H.HttpBadRequestError(message)),
+    );
+
+/**
  * Parses a specific header parameter of an HTTP request using the provided schema.
  */
 export const parseHeaderParameter =

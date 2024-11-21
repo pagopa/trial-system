@@ -27,6 +27,14 @@ export const managerHttpRequestHeaders = {
   'x-functions-key': 'aFunctionKey',
 };
 
+export const supportHttpRequestHeaders = {
+  'x-user-groups': 'ApiTrialSupport',
+  'x-user-id': 'aSupportUserId',
+  'x-subscription-id': 'anApimSubscriptionId',
+  'x-user-email': 'aUserEmail',
+  'x-functions-key': 'aFunctionKey',
+};
+
 export const userHttpRequestHeaders = {
   'x-user-groups': 'ApiTrialUser',
   'x-user-id': 'aTrialSubscriberId',
@@ -122,4 +130,12 @@ export const makeAValidGetTrialRequest = () =>
     params: {
       trialId: aTrialId,
     },
+  });
+
+export const makeAValidListTrialRequest = (query?: Record<string, string>) =>
+  new HttpRequest({
+    url: 'https://function/trials',
+    method: 'GET',
+    headers: supportHttpRequestHeaders,
+    query,
   });
