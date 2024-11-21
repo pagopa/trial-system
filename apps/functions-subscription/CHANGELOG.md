@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.8.2
+
+### Patch Changes
+
+- ddb27e9: [IOPLT-718] Allow ApiTrialSupport to use method getSubscription
+
 ## 3.8.1
 
 ### Patch Changes
