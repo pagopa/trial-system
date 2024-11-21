@@ -87,7 +87,7 @@ describe('makeTrialsCosmosContainer', () => {
   describe('list', () => {
     const anotherTrial = {
       ...aTrial,
-      id: 'anotherTrialId' as TrialId,
+      id: 'anotherTrialId',
     };
 
     it('should return list of trials', async () => {
