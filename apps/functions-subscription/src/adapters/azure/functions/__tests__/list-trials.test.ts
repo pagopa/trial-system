@@ -6,16 +6,14 @@ import { makeListTrialsHandler } from '../list-trials';
 import { aTrial } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
 import { Trial, TrialId } from '../../../../domain/trial';
-import { NonEmptyString } from '@pagopa/ts-commons/lib/strings';
 
 describe('makeListTrialsHandler', () => {
   const anotherTrial = {
     ...aTrial,
     id: 'anotherTrialId' as TrialId,
-    name: 'anotherTrialName' as NonEmptyString,
   } as Trial;
 
-  it('should return 400 on invalid pageSize parameter', async () => {
+  it('should return 400 on out of range pageSize parameter', async () => {
     const env = makeTestSystemEnv();
 
     const actual = await makeListTrialsHandler(env)(
@@ -96,7 +94,6 @@ describe('makeListTrialsHandler', () => {
     const anotherSlimTrial = {
       ...aSlimTrial,
       id: 'anotherTrialId' as TrialId,
-      name: 'anotherTrialName' as NonEmptyString,
     } as Trial;
 
     env.listTrials.mockReturnValueOnce(TE.right([aTrial, anotherTrial]));
@@ -139,8 +136,6 @@ describe('makeListTrialsHandler', () => {
 
     expect(env.listTrials).nthCalledWith(1, {
       pageSize: 25,
-      maximumId: undefined,
-      minimumId: undefined,
     });
 
     expect(actual.status).toStrictEqual(200);

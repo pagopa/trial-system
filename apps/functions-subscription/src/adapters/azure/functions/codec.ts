@@ -59,7 +59,7 @@ export const toTrialAPI = (trial: Trial): TrialAPI => {
     : trialAPI;
 };
 
-export const toSlimTrialAPI = (trial: Trial): TrialSlim => {
+export const toTrialSlimAPI = (trial: Trial): TrialSlim => {
   const { id, name, description, state } = trial;
   return {
     id,
@@ -73,7 +73,7 @@ export const toTrialListAPI = (
   trials: readonly Trial[],
 ): TrialPaginatedCollection => {
   return {
-    items: trials.map(toSlimTrialAPI),
+    items: trials.map(toTrialSlimAPI),
     previousId: trials[trials.length - 1]?.id,
     nextId: trials[0]?.id,
   };

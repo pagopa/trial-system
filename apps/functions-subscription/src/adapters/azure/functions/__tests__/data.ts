@@ -137,5 +137,5 @@ export const makeAValidListTrialRequest = (query?: Record<string, string>) =>
     url: 'https://function/trials',
     method: 'GET',
     headers: supportHttpRequestHeaders,
-    query: query,
+    query,
   });
