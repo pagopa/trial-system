@@ -134,15 +134,19 @@ export const listTrials = (options: ListTrialOptions) =>
 export const getTrialIdByTenant = (trialId: TrialId, tenant: Tenant) =>
   pipe(
     RTE.ask<Pick<Capabilities, 'trialReader'>>(),
-    RTE.flatMapTaskEither(({ trialReader }) =>
-      tenant.type === 'owner'
-        ? pipe(
+    RTE.flatMapTaskEither(({ trialReader }) => {
+      switch (tenant.type) {
+        case 'owner':
+          return pipe(
             trialReader.getByIdAndOwnerId(trialId, tenant.id),
             TE.flatMapOption(
               flow(O.map(({ id }) => id)),
               () => new ItemNotFound('Item not found'),
             ),
-          )
-        : TE.of(trialId),
-    ),
+          );
+        case 'subscriber':
+        case 'support':
+          return TE.right(trialId);
+      }
+    }),
   );

@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.10.1
+
+### Patch Changes
+
+- bcf90cf: [IOPLT-729] Improve descriptions of OpenAPI operations and schemas
+
 ## 0.10.0
 
 ### Minor Changes
