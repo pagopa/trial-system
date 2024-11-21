@@ -5,12 +5,13 @@ import { makeFunctionContext, makeTestSystemEnv } from './mocks';
 import { makeListTrialsHandler } from '../list-trials';
 import { aTrial } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
-import { Trial, TrialId } from '../../../../domain/trial';
+import { Trial } from '../../../../domain/trial';
+import { TrialSlim } from '../../../../generated/definitions/internal/TrialSlim';
 
 describe('makeListTrialsHandler', () => {
   const anotherTrial = {
     ...aTrial,
-    id: 'anotherTrialId' as TrialId,
+    id: 'anotherTrialId',
   } as Trial;
 
   it('should return 400 on out of range pageSize parameter', async () => {
@@ -89,12 +90,12 @@ describe('makeListTrialsHandler', () => {
       name: aTrial.name,
       state: aTrial.state,
       description: aTrial.description,
-    } as Trial;
+    } as TrialSlim;
 
     const anotherSlimTrial = {
       ...aSlimTrial,
-      id: 'anotherTrialId' as TrialId,
-    } as Trial;
+      id: 'anotherTrialId',
+    } as TrialSlim;
 
     env.listTrials.mockReturnValueOnce(TE.right([aTrial, anotherTrial]));
 

@@ -20,7 +20,8 @@ type Env = Pick<SystemEnv, 'listTrials'>;
 
 export const QueryPageSize = t.union([
   t.undefined,
-  IntegerFromString.pipe(WithinRangeInteger(1, 100)),
+  // cast the value to an integer and ensure it's within the 1 to 100 range (1 <= value < 101)
+  IntegerFromString.pipe(WithinRangeInteger(1, 101)),
 ]);
 
 const makeHandlerKitHandler: H.Handler<
@@ -36,6 +37,7 @@ const makeHandlerKitHandler: H.Handler<
       'pageSize',
       pipe(
         parseQueryParameter(QueryPageSize, 'pageSize')(req),
+        // set a default pageSize if the value received from the request is null or undefined
         E.map(O.fromNullable),
         E.map(O.getOrElseW(() => 25)),
         RTE.fromEither,
