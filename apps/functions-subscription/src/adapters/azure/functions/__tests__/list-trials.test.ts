@@ -7,6 +7,8 @@ import { aTrial } from '../../../../domain/__tests__/data';
 import { HttpRequest } from '@azure/functions';
 import { Trial } from '../../../../domain/trial';
 import { TrialSlim } from '../../../../generated/definitions/internal/TrialSlim';
+import { TrialStateEnum } from '../../../../generated/definitions/internal/TrialState';
+import { TrialId } from '../../../../generated/definitions/internal/TrialId';
 
 describe('makeListTrialsHandler', () => {
   const anotherTrial = {
@@ -85,17 +87,17 @@ describe('makeListTrialsHandler', () => {
   it('should return 200 when trials exists', async () => {
     const env = makeTestSystemEnv();
 
-    const aSlimTrial = {
-      id: aTrial.id,
+    const aSlimTrial: TrialSlim = {
+      id: aTrial.id as TrialId,
       name: aTrial.name,
-      state: aTrial.state,
+      state: TrialStateEnum[aTrial.state],
       description: aTrial.description,
-    } as TrialSlim;
+    };
 
     const anotherSlimTrial = {
       ...aSlimTrial,
-      id: 'anotherTrialId',
-    } as TrialSlim;
+      id: 'anotherTrialId' as TrialId,
+    };
 
     env.listTrials.mockReturnValueOnce(TE.right([aTrial, anotherTrial]));
 
