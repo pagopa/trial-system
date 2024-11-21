@@ -1,5 +1,11 @@
 # @infra/resources
 
+## 0.10.2
+
+### Patch Changes
+
+- aaf2fd0: [IOPLT-746] Updated the OpenApi specification
+
 ## 0.10.1
 
 ### Patch Changes
