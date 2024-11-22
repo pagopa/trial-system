@@ -1,5 +1,11 @@
 # functions-subscription
 
+## 3.9.0
+
+### Minor Changes
+
+- aaf2fd0: [IOPLT-746] Create endpoint to get the trial list
+
 ## 3.8.2
 
 ### Patch Changes
