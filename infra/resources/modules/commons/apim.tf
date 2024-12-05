@@ -315,7 +315,14 @@ module "storage_account" {
 
   subnet_pep_id                        = module.pendpoints_snet.id
   private_dns_zone_resource_group_name = azurerm_resource_group.net_rg.name
+  force_public_network_access_enabled  = true
 
+  network_rules = {
+    default_action             = "Allow"
+    bypass                     = []
+    ip_rules                   = []
+    virtual_network_subnet_ids = []
+  }
   subservices_enabled = {
     blob  = true
     file  = false
