@@ -310,21 +310,24 @@ module "storage_account" {
     instance_number = "01"
   }
 
-  tier                = "s"
+  tier        = "s"
+  access_tier = "Cool"
+
   resource_group_name = azurerm_resource_group.rg_routing.name
 
   subnet_pep_id                        = module.pendpoints_snet.id
   private_dns_zone_resource_group_name = azurerm_resource_group.net_rg.name
-  force_public_network_access_enabled  = true
+  force_public_network_access_enabled  = false
 
   network_rules = {
-    default_action             = "Allow"
+    default_action             = "Deny"
     bypass                     = []
     ip_rules                   = []
     virtual_network_subnet_ids = []
   }
+
   subservices_enabled = {
-    blob  = true
+    blob  = false
     file  = false
     queue = false
     table = false
