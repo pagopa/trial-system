@@ -10,11 +10,6 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = azurerm_resource_group.net_rg.name
   location            = azurerm_resource_group.net_rg.location
 
-  ddos_protection_plan {
-    enable = true
-    id     = "/subscriptions/0da48c97-355f-4050-a520-f11a18b8be90/resourceGroups/sec-p-ddos/providers/Microsoft.Network/ddosProtectionPlans/sec-p-ddos-protection"
-  }
-
   tags = var.tags
 }
 
