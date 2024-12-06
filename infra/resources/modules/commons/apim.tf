@@ -294,3 +294,50 @@ resource "azurerm_api_management_subscription" "support" {
   state               = "active"
   allow_tracing       = false
 }
+
+####################################################################################
+# BACKUP
+####################################################################################
+
+module "storage_account" {
+  source = "github.com/pagopa/dx//infra/modules/azure_storage_account?ref=main"
+
+  environment = {
+    prefix          = var.prefix
+    env_short       = var.env_short
+    location        = var.location
+    app_name        = "backup"
+    instance_number = "01"
+  }
+
+  tier        = "s"
+  access_tier = "Cool"
+
+  resource_group_name = azurerm_resource_group.rg_routing.name
+
+  subnet_pep_id                        = module.pendpoints_snet.id
+  private_dns_zone_resource_group_name = azurerm_resource_group.net_rg.name
+  force_public_network_access_enabled  = false
+
+  network_rules = {
+    default_action             = "Deny"
+    bypass                     = []
+    ip_rules                   = []
+    virtual_network_subnet_ids = []
+  }
+
+  subservices_enabled = {
+    blob  = false
+    file  = false
+    queue = false
+    table = false
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_storage_container" "backup" {
+  name                  = "apim-backup"
+  storage_account_name  = module.storage_account.name
+  container_access_type = "private"
+}
