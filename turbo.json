@@ -3,7 +3,7 @@
   "globalDependencies": [
     "**/.env.*local"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "inputs": [
         "src/**/*.ts",
@@ -40,19 +40,34 @@
       ]
     },
     "test": {
-      "dependsOn": ["typecheck", "^test"],
-      "inputs": ["src/**/*.test.ts"],
-      "outputMode": "errors-only"
+      "dependsOn": [
+        "typecheck",
+        "^test"
+      ],
+      "inputs": [
+        "src/**/*.test.ts"
+      ],
+      "outputLogs": "errors-only"
     },
     "test:coverage": {
-      "dependsOn": ["^typecheck", "^test"],
-      "inputs": ["src/**/*.test.ts"],
-      "outputMode": "errors-only"
+      "dependsOn": [
+        "^typecheck",
+        "^test"
+      ],
+      "inputs": [
+        "src/**/*.test.ts"
+      ],
+      "outputLogs": "errors-only"
     },
     "//#test:coverage": {
-      "inputs": ["apps/**/src/**/*.ts", "packages/**/src/**/*.ts"],
-      "outputs": ["coverage"],
-      "outputMode": "errors-only"
+      "inputs": [
+        "apps/**/src/**/*.ts",
+        "packages/**/src/**/*.ts"
+      ],
+      "outputs": [
+        "coverage"
+      ],
+      "outputLogs": "errors-only"
     }
   }
 }
