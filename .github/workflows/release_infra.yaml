@@ -13,7 +13,7 @@ jobs:
       cancel-in-progress: false
       group: terraform
 
-    uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
+    uses: pagopa/dx/.github/workflows/infra_apply.yaml@625f02f382c33eb449cd94facb8e426bf7ae37ea # main
     name: Infrastructure Apply
     secrets: inherit
     with:
