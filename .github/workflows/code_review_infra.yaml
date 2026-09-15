@@ -24,7 +24,7 @@ jobs:
       cancel-in-progress: false
       group: terraform
 
-    uses: pagopa/dx/.github/workflows/infra_plan.yaml@main
+    uses: pagopa/dx/.github/workflows/infra_plan.yaml@a18d71062ddaaa09f8e145835a05aefd7701935e # main
     name: Infrastructure Plan
     secrets: inherit
     with:
